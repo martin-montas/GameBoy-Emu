@@ -21,7 +21,6 @@ class GameBoy {
         void init();
         void run();
         void deinit();
-
     private:
 
         // Registers are defined here
@@ -37,4 +36,4 @@ class GameBoy {
         const int8_t VRAM[8192];
 };
 
-#endif // GameBoy
+#endif // GAME_BOY_HPP

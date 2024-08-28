@@ -1,10 +1,13 @@
 #include <iostream>
+#include <fstream>
+#include <vector>
 #include <SFML/Graphics.hpp>
 
 // #include "game_boy.hpp" 
 
 using namespace std;
 
+/*
 int main() {
     // WHERE TO START:
     // Create a window with dimensions 800x600
@@ -36,8 +39,8 @@ int main() {
 
     return 0;
 }
+*/
 
-/*
 int main(int argc, char **argv) { 
     if (argc != 2) {
         cout << "Usage: GAME <ROM file>" << endl;
@@ -47,4 +50,3 @@ int main(int argc, char **argv) {
     GameBoy game = new GameBoy();
     return 0;
 }
-*/

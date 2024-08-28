@@ -1,9 +1,9 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+
 // #include "game_boy.hpp" 
 
 using namespace std;
-
 
 int main() {
     // WHERE TO START:
@@ -47,4 +47,4 @@ int main(int argc, char **argv) {
     GameBoy game = new GameBoy();
     return 0;
 }
- */
+*/

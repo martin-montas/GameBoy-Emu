@@ -4,23 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-struct Registers {
-    int8_t a; 
-    int8_t b; 
-    int8_t c; 
-    int8_t d; 
-    int8_t e; 
-    int8_t h; 
-    int8_t l;
-};
-
-struct FlagsRegister {
-    bool zero;
-    bool subtract;
-    bool halfCarry;
-    bool carry;
-}
-
+#include "registers.hpp" 
 
 class Cpu {
 
@@ -28,17 +12,16 @@ class Cpu {
         Cpu();
         ~Cpu();
 
-        void readOpcodes();
+        void read_rom();
+        std::vector<uint8_t> load_rom(const std::string &filename);
 
-        std::vector<uint8_t> loadRom(const std::string &filename);
     private:
-        Registers registers;
-
+        Registers *register;
         std::vector<uint8_t> rom_data(size);
 
         uint16_t pc;
-        uint8_t opcode;
- 
+        uint16_t sp;
+
 };
 
 #endif // CPU_HPP

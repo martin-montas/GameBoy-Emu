@@ -11,7 +11,6 @@ void Registers::AF(uint8_t &a, uint8_t &f) {
     uint16_t af = (a << 8) | f;
 }
 
-
 void Registers::BC(uint8_t &b, uint8_t &c) {
 
     uint16_t bc = (b << 8) | c;

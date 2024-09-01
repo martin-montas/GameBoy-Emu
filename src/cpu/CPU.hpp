@@ -100,8 +100,6 @@ class CPU {
       std::array<std::function<void()>, 256> opcode_table; 
       uint16_t pc;
       uint16_t sp;
-      std::vector<uint8_t> romData;
-
       uint32_t cycle;
       uint32_t cycle_count;
 };

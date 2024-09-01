@@ -1,9 +1,7 @@
 #include <iostream>
-#include <fstream>
-#include <vector>
 #include <SFML/Graphics.hpp>
 
-#include "/src/game-boy.hpp" 
+#include "src/game-boy.hpp" 
 
 using namespace std;
 
@@ -46,6 +44,9 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    GameBoy game = new GameBoy();
+    // pass the ROM file path to the gameboy constructor
+    
+    GameBoy *game = new GameBoy();
+    game->load_rom(argv[1]);
     return 0;
 }

@@ -1,13 +1,13 @@
 #ifndef OPCODE_HPP
 #define OPCODE_HPP
 
-class Opcode {
+class Instruction {
     public:
         Opcode();
         ~Opcode();
         void run();
     private:
-        int8_t opcode;
+        // int8_t opcode;
 }; 
 
 

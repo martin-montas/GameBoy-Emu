@@ -1,10 +1,9 @@
 #ifndef REGISTERS_HPP
 #define REGISTERS_HPP
 
+#include <cstdint>
 class Registers {
     public:
-        uint16_t pc = 0;
-        uint16_t sp;
 
         void HL(uint8_t &h, uint8_t &l);
         void AF(uint8_t &a, uint8_t &f);
@@ -19,6 +18,11 @@ class Registers {
         int8_t e; 
         int8_t h; 
         int8_t l;
+
+        uint16_t hl;
+        uint16_t af;
+        uint16_t bc;
+        uint16_t de;
 };
 
 

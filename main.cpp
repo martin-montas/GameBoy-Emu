@@ -39,13 +39,14 @@ int main() {
 }
 */
 int main(int argc, char **argv) { 
+
     if (argc != 2) {
         cout << "Usage: GAME <ROM file>" << endl;
         return 1;
     }
 
     // pass the ROM file path to the gameboy constructor
-    
+
     GameBoy *game = new GameBoy();
     game->load_rom(argv[1]);
     return 0;

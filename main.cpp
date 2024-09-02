@@ -38,6 +38,8 @@ int main() {
     return 0;
 }
 */
+
+
 int main(int argc, char **argv) { 
 
     if (argc != 2) {
@@ -49,5 +51,7 @@ int main(int argc, char **argv) {
 
     GameBoy *game = new GameBoy();
     game->load_rom(argv[1]);
+    
+    game->run_emulation();
     return 0;
 }

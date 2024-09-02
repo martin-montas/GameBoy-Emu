@@ -1,3 +1,7 @@
+#include <cstdint>
+#include <fstream>
+#include <iostream>
+
 #include "CPU.hpp"
 
 CPU::CPU() {
@@ -75,7 +79,6 @@ void CPU::init_opcode_table() {
     opcode_table[0x3E] = [this]() { load_a_n(); };          // 0x3E: LD A, n
     opcode_table[0x3F] = [this]() { ccf(); };               // 0x3F: CCF
 
-
     opcode_table[0x40] = [this]() { load_b_b(); };         // 0x40: LD B, B
     opcode_table[0x41] = [this]() { load_b_c(); };         // 0x41: LD B, C
     opcode_table[0x42] = [this]() { load_b_d(); };         // 0x42: LD B, D
@@ -92,7 +95,7 @@ void CPU::init_opcode_table() {
     opcode_table[0x4D] = [this]() { load_c_l(); };         // 0x4D: LD C, L
     opcode_table[0x4E] = [this]() { load_c_hl_mem(); };    // 0x4E: LD C, (HL)
     opcode_table[0x4F] = [this]() { load_c_a(); };         // 0x4F: LD C, A
-                                                               
+
     opcode_table[0x50] = [this]() { load_d_b(); };         // 0x50: LD D, B
     opcode_table[0x51] = [this]() { load_d_c(); };         // 0x51: LD D, C
     opcode_table[0x52] = [this]() { load_d_d(); };         // 0x52: LD D, D
@@ -229,7 +232,7 @@ void CPU::init_opcode_table() {
     opcode_table[0xCD] = [this]() { call_nn(); };          // 0xCD: CALL nn
     opcode_table[0xCE] = [this]() { adc_a_n(); };          // 0xCE: ADC A, n
     opcode_table[0xCF] = [this]() { rst_08h(); };          // 0xCF: RST 08H
-                                                           
+
     opcode_table[0xD0] = [this]() { ret_nc(); };           // 0xD0: RET NC
     opcode_table[0xD1] = [this]() { pop_de(); };           // 0xD1: POP DE
     opcode_table[0xD2] = [this]() { jp_nc_nn(); };         // 0xD2: JP NC, nn
@@ -308,7 +311,7 @@ void CPU::sbc_a_n(){
 }
 void CPU::rst_18h(){
 }
-                    
+
 void CPU::ld_ff_a(){
 }
 void CPU::pop_hl(){
@@ -470,13 +473,11 @@ void CPU::load_hl_n() {
 void CPU::scf() {
 }
 
-void CPU::jr_c_n() {
-}
 
 void CPU::add_hl_sp() {
 }
 
-void CPU::load_a_hl_minu() {
+void CPU::load_a_hl_minus() {
 }
 
 void CPU::dec_sp() {
@@ -671,24 +672,70 @@ void CPU::sub_a_n(){
 void CPU::rst_10h(){
 }
 
+void CPU::emulate_cycle() {
+    opcode = romData[pc];
+    pc++; 
+
+    uint32_t cycleCount = opcode_cycles[opcode]; 
+}
+
+
+
 void CPU::step() {
-    // Emulate cycles for a fixed time slice
-    const uint32_t timeSlice = 1000; // Time slice in microseconds
-    const double cyclesPerMicrosecond = 4.194304; // 4.194304 MHz
+    const uint32_t timeSlice = 1000; 
+    const double cyclesPerMicrosecond = 4.194304; 
     uint32_t cyclesToRun = timeSlice * cyclesPerMicrosecond;
 
     while (cyclesToRun > 0) {
-        // emulateCycle(); // Execute one instruction
-        // cyclesToRun -= cycles; // Decrement remaining cycles
+        emulateCycle(); 
+        // cyclesToRun -= cycles; 
     }
 }
 
-void CPU::read_rom(const std::vector<uint8_t> &romData) {
-    uint8_t opcode;
-    while (pc < romData.size()) {
-        opcode = romData[pc];
-        pc++; 
+void CPU::emulate_cycles(uint32_t cyclesToRun) {
+        uint8_t opcode ;
+        while (cyclesToRun > 0) {
+            // Fetch and decode opcode
+            opcode = romData[pc];
+            pc++;
 
-        opcode_table[opcode]();
-    }
+            // Execute instruction and get cycle count
+            uint32_t cycleCount = execute_opcode(opcode);
+
+            // Update global cycle counter
+            globalCycles += cycleCount;
+
+            // Decrement cycles to run
+            cyclesToRun -= cycleCount;
+
+            // Handle other components (GPU, APU) based on elapsed cycles
+            // updateComponents(cycleCount);
+        }
 }
+
+uint32_t CPU::execute_opcode(uint8_t opcode) {
+    uint32_t cycleCount = opcode_cycles[opcode]; 
+    opcode_table[opcode]();
+
+    return cycleCount;
+}
+
+
+std::vector<uint8_t> CPU::load_rom(const std::string &filename) {
+    std::ifstream file(filename, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open ROM file." << std::endl;
+        exit(1);
+    }
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    if (!file.read(reinterpret_cast<char*>(romData.data()), size)) {
+        std::cerr << "Error: Could not read ROM file." << std::endl;
+        exit(1);
+    }
+
+    file.close();
+    return romData;
+}
+

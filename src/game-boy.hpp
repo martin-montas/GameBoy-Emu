@@ -4,16 +4,12 @@
 #include "cpu/CPU.hpp"
 
 class GameBoy {
-
     private:
         CPU *cpu;
-
-      std::vector<uint8_t> romData;
+        bool emulationRunning;
     public:
-        // GameBoy();
         ~GameBoy();
-        std::vector<uint8_t> load_rom(const std::string &filename);
-
+        void run_emulation();
 };
 
 #endif // GAMEBOY_HPP

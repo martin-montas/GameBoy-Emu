@@ -673,12 +673,11 @@ void CPU::rst_10h(){
 }
 
 void CPU::emulate_cycle() {
-    opcode = romData[pc];
+    uint8_t opcode = romData[pc];
     pc++; 
 
     uint32_t cycleCount = opcode_cycles[opcode]; 
 }
-
 
 
 void CPU::step() {
@@ -687,7 +686,7 @@ void CPU::step() {
     uint32_t cyclesToRun = timeSlice * cyclesPerMicrosecond;
 
     while (cyclesToRun > 0) {
-        emulateCycle(); 
+        emulate_cycle(); 
         // cyclesToRun -= cycles; 
     }
 }

@@ -20,6 +20,4 @@ CPU.o: ./src/cpu/CPU.cpp ./src/cpu/CPU.hpp
 registers.o: ./src/registers.cpp ./src/registers.hpp
 		g++ -c  src/registers.cpp 
 
-instructions.o: ./src/instructions.cpp ./src/instructions.hpp
-		g++ -c  ./src/instructions.cpp 
 

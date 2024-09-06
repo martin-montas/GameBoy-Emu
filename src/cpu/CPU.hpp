@@ -3,11 +3,12 @@
 
 #include <cstdint>
 #include <vector>
-#include <functional>
-#include <array>
 #include <string>
+#include <array>
+#include <functional>
 
-// #include "../registers.hpp" 
+#include "../registers.hpp" 
+#include "../memory/MMU.hpp"
 
 class CPU {
 
@@ -20,11 +21,8 @@ class CPU {
         std::vector<uint8_t> load_rom(const std::string &filename);
         uint32_t execute_opcode(uint8_t opcode);
         void emulate_cycles(uint32_t cyclesToRun);
+
         void init_opcode_table();
-        std::vector<uint8_t> romData;
-
-        void emulate_cycle(); 
-
         // opcodes
         void load_sp_nn();
         void load_bc_nn();
@@ -306,7 +304,7 @@ class CPU {
         void cp_n(); 
         void rst_38h(); 
 
-        const uint8_t opcode_cycles[256] = {
+        const int opcode_cycles[256] = {
             4, 12, 8, 8, 4, 4, 8, 4, 20, 8, 8, 8, 4, 4, 8, 4,       // 0x0_
             4, 12, 8, 8, 4, 4, 8, 4,  12, 8, 8, 8, 4, 4, 8, 4,      // 0x1_
             0, 12, 8, 8, 4, 4, 8, 4,  0, 8, 8, 8, 4, 4, 8, 4,       // 0x2_
@@ -324,13 +322,25 @@ class CPU {
             12, 12, 8, 0, 0, 16, 8, 16,  16, 4, 16, 0, 0, 0, 8, 16, // 0xe_
             12, 12, 8, 4, 0, 16, 8, 16,  12, 8, 16, 4, 0, 0, 8, 16  // 0xf_
         };
-
         std::array<std::function<void()>, 256> opcode_table; 
-        uint16_t pc;
-        uint16_t sp;
+
+    private:
+        Registers *registers;
+        std::vector<uint8_t> romData;
+
         uint32_t cycle;
         uint32_t cycle_count;
         uint32_t globalCycles;
+
+        // program counter
+        uint16_t pc;
+
+        // stack pointer
+        uint16_t sp;
+
+        // memory management unit
+        MMU *mmu;
 };
+
 
 #endif // CPU_HPP

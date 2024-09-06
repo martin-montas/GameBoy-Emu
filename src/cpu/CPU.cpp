@@ -8,6 +8,63 @@ CPU::CPU() {
     init_opcode_table();
 }
 
+void CPU::step() {
+    const uint32_t timeSlice = 1000; 
+    const double cyclesPerMicrosecond = 4.194304; 
+    uint32_t cyclesToRun = timeSlice * cyclesPerMicrosecond;
+
+    while (cyclesToRun > 0) {
+        emulate_cycles(cyclesToRun); 
+        // cyclesToRun -= cycles; 
+    }
+}
+
+void CPU::emulate_cycles(uint32_t cyclesToRun) {
+        uint8_t opcode;
+        while (cyclesToRun > 0) {
+            // Fetch and decode opcode
+            opcode = romData[pc];
+            pc++;
+
+            // Execute instruction and get cycle count
+            uint32_t cycleCount = execute_opcode(opcode);
+
+            // Update global cycle counter
+            globalCycles += cycleCount;
+
+            // Decrement cycles to run
+            cyclesToRun -= cycleCount;
+
+            // Handle other components (GPU, APU) based on elapsed cycles
+            // updateComponents(cycleCount);
+        }
+}
+
+uint32_t CPU::execute_opcode(uint8_t opcode) {
+    uint32_t cycleCount = opcode_cycles[opcode]; 
+    opcode_table[opcode]();
+
+    return cycleCount;
+}
+
+std::vector<uint8_t> CPU::load_rom(const std::string &filename) {
+    std::ifstream file(filename, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open ROM file." << std::endl;
+        exit(1);
+    }
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    if (!file.read(reinterpret_cast<char*>(romData.data()), size)) {
+        std::cerr << "Error: Could not read ROM file." << std::endl;
+        exit(1);
+    }
+
+    file.close();
+    return romData;
+}
+
 void CPU::init_opcode_table() {
 
     // Initialize the opcode table
@@ -354,15 +411,39 @@ void CPU::jr_c_n() {
 }
 void CPU::load_b_h() {
 }
+
 void CPU::load_bc_nn() {
+    pc += 1;
+    uint8_t tmp_1 = romData[pc];
+    pc += 1;
+    uint8_t tmp_2 = romData[pc];
+    registers->BC = (tmp_2 << 8) | tmp_1;
+
 }
 void CPU::load_b_n() {
 }
 void CPU::nop() {
+    return;
 }
 void CPU::nn() {
 }
 void CPU::load_bc_a() {
+    uint16_t tmp = registers->BC;
+
+    // rom
+    if (tmp >= 0x0000 && tmp <= 0x7FFF) {
+        // registers->A = romData[tmp];
+    }
+
+    // video ram
+    if (tmp >= 0x8000 && tmp <= 0x9FFF) {
+        mmu->VRAM[tmp - 0x8000] = registers->A;
+    }
+
+    // cartridge ram
+    if (tmp >= 0xA000 && tmp <= 0xBFFF) {
+    }
+
 }
 void CPU::load_a_bc() {
 }
@@ -670,71 +751,5 @@ void CPU::push_de(){
 void CPU::sub_a_n(){
 }
 void CPU::rst_10h(){
-}
-
-void CPU::emulate_cycle() {
-    uint8_t opcode = romData[pc];
-    pc++; 
-
-    uint32_t cycleCount = opcode_cycles[opcode]; 
-}
-
-
-void CPU::step() {
-    const uint32_t timeSlice = 1000; 
-    const double cyclesPerMicrosecond = 4.194304; 
-    uint32_t cyclesToRun = timeSlice * cyclesPerMicrosecond;
-
-    while (cyclesToRun > 0) {
-        emulate_cycle(); 
-        // cyclesToRun -= cycles; 
-    }
-}
-
-void CPU::emulate_cycles(uint32_t cyclesToRun) {
-        uint8_t opcode ;
-        while (cyclesToRun > 0) {
-            // Fetch and decode opcode
-            opcode = romData[pc];
-            pc++;
-
-            // Execute instruction and get cycle count
-            uint32_t cycleCount = execute_opcode(opcode);
-
-            // Update global cycle counter
-            globalCycles += cycleCount;
-
-            // Decrement cycles to run
-            cyclesToRun -= cycleCount;
-
-            // Handle other components (GPU, APU) based on elapsed cycles
-            // updateComponents(cycleCount);
-        }
-}
-
-uint32_t CPU::execute_opcode(uint8_t opcode) {
-    uint32_t cycleCount = opcode_cycles[opcode]; 
-    opcode_table[opcode]();
-
-    return cycleCount;
-}
-
-
-std::vector<uint8_t> CPU::load_rom(const std::string &filename) {
-    std::ifstream file(filename, std::ios::binary | std::ios::ate);
-    if (!file.is_open()) {
-        std::cerr << "Error: Could not open ROM file." << std::endl;
-        exit(1);
-    }
-    std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    if (!file.read(reinterpret_cast<char*>(romData.data()), size)) {
-        std::cerr << "Error: Could not read ROM file." << std::endl;
-        exit(1);
-    }
-
-    file.close();
-    return romData;
 }
 

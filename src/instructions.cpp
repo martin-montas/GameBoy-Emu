@@ -1,6 +1,66 @@
-
 #include "registers.hpp"
+#include <cstdint>
 #include "instructions.hpp"
+
+void CPU::load_bc_nn() {
+    pc += 1;
+    uint8_t tmp_1 = romData[pc];
+    pc += 1;
+    uint8_t tmp_2 = romData[pc];
+    registers->BC = (tmp_2 << 8) | tmp_1;
+}
+
+void CPU::load_b_n() {
+    uint8_t tmp = romData[pc++];
+    registers->B = tmp;
+}
+
+
+void CPU::load_bc_a() {
+    uint16_t tmp = registers->BC;
+
+    // video ram
+    if (tmp >= 0x8000 && tmp <= 0x9FFF) {
+        mmu->VRAM[tmp - 0x8000] = registers->A;
+    }
+
+    // external ram
+    else if (tmp >= 0xA000 && tmp <= 0xBFFF) {
+        mmu->EXTERNAL_RAM[tmp - 0xA000] = registers->A;
+    }
+
+    // working ram
+    else if (tmp >= 0xC000 && tmp <= 0xDFFF) {
+        mmu->WRAM[tmp - 0xC000] = registers->A;
+    }
+
+    // Echo ram
+    else if (tmp >= 0xE000 && tmp <= 0xFDFF) {
+        mmu->WRAM[tmp - 0xE000] = registers->A;
+    }
+
+    // oam memory
+    else if (tmp >= 0xFE00 && tmp <= 0xFE9F) {
+        mmu->OAM[tmp - 0xFE00] = registers->A;
+    }
+
+    // I/O registers
+    else if (tmp >= 0xFF00 && tmp <= 0xFF7F) {
+        mmu->IORegisters[tmp - 0xFF00] = registers->A;
+    }
+
+    // HRAM memory
+    else if (tmp >= 0xFF80 && tmp <= 0xFFFE) {
+        mmu->HRAM[tmp - 0xFF80] = registers->A;
+    }
+
+    // InterruptEnable registers
+    else if (tmp == 0xFFFF) {
+        mmu->InterruptEnabled = registers->A;
+    }
+}
+
+
 
 InstructionSet::InstructionSet(Registers *registers, MMU *mmu){
     this->registers = registers;
@@ -9,15 +69,26 @@ InstructionSet::InstructionSet(Registers *registers, MMU *mmu){
     // todo(martin-montas) create this later
     // this->interrupts = interrupts;
 }
-void execute(uint8_t opcode);
-
+void execute(uint8_t opcode) {
+}
 void ret(bool condition) {
 }
 void xor_(uint8_t value) {
 }
+
+void inc(uint16_t *value) {
+    value++;
+}
+
 void inc(uint8_t *value) {
+    value++;
 }
 void dec(uint8_t *value) {
+    value--;
+}
+
+void dec(uint16_t *value) {
+    value--;
 }
 void add(uint8_t *destination, uint8_t value) {
 }

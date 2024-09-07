@@ -4,6 +4,7 @@
 
 #include "./memory/MMU.hpp"
 #include "registers.hpp"
+#include <cstdint>
 
 class InstructionSet {
     private:
@@ -16,12 +17,20 @@ class InstructionSet {
 
         void ret(bool condition);
         void xor_(uint8_t value);
+
         void inc(uint8_t *value);
         void dec(uint8_t *value);
+
+        void inc(uint16_t *value);
+        void dec(uint16_t *value);
+
         void add(uint8_t *destination, uint8_t value);
         void add(uint16_t *destination, uint16_t value);
         void add(uint16_t *destination, int8_t value);
-        void ldhl(int8_t value);
+
+        void ldr(uint8_t *reg, uint8_t value);
+        void ldr(uint16_t *reg, uint16_t value);
+
         void adc(uint8_t value);
         void sbc(uint8_t value);
         void sub(uint8_t value);
@@ -53,4 +62,3 @@ class InstructionSet {
 };
 
 
-#endif // INSTRUCTIONS_HPP 

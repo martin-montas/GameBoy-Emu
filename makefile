@@ -17,7 +17,7 @@ main.o: main.cpp
 CPU.o: ./src/cpu/CPU.cpp ./src/cpu/CPU.hpp
 		g++ -c  ./src/cpu/CPU.cpp 
 
-registers.o: ./src/registers.cpp ./src/registers.hpp
+registers.o:./src/registers.cpp ./src/registers.hpp
 		g++ -c  src/registers.cpp 
 
 

@@ -50,8 +50,7 @@ int main(int argc, char **argv) {
     // pass the ROM file path to the gameboy constructor
 
     GameBoy *game = new GameBoy();
-    game->load_rom(argv[1]);
-    
-    game->run_emulation();
+    game->init(argv[1]);
+    game->run();
     return 0;
 }

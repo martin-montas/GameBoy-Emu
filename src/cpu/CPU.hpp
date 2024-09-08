@@ -14,11 +14,10 @@
 class CPU {
 
     public:
-        CPU(Registers *registers, MMU *mmu,InstructionSet *instructions);
+        CPU(Registers *registers, MMU *mmu);
         ~CPU();
 
         void step();
-        void read_rom();
         std::vector<uint8_t> load_rom(const std::string &filename);
         uint32_t execute_opcode(uint8_t opcode);
         void emulate_cycles(uint32_t cyclesToRun);
@@ -51,7 +50,6 @@ class CPU {
         MMU *mmu;
         InstructionSet *instructions;
 
-        std::vector<uint8_t> romData;
         uint32_t cycle;
         uint32_t cycle_count;
         uint32_t globalCycles;

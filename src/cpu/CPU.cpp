@@ -1,16 +1,15 @@
 #include <cstdint>
-#include <fstream>
-#include <iostream>
 
 #include "CPU.hpp"
+#include "../instructions.hpp"
 
 const double cyclesPerMicrosecond = 4.194304; 
 const uint32_t timeSlice = 1000; 
 
-CPU::CPU(Registers *registers, MMU *mmu,  InstructionSet *instructions) {
+CPU::CPU(Registers *registers, MMU *mmu) {
     this->registers = registers;
     this->mmu = mmu;
-    this->instructions = instructions;
+    this->instructions = new InstructionSet(registers, mmu);
 }
 
 void CPU::step() {
@@ -26,7 +25,7 @@ void CPU::emulate_cycles(uint32_t cyclesToRun) {
         uint8_t opcode;
         while (cyclesToRun > 0) {
             // Fetch and decode opcode
-            opcode = romData[pc];
+            opcode = mmu->romData[pc];
             pc++;
 
             // Execute instruction and get cycle count
@@ -49,23 +48,3 @@ uint32_t CPU::execute_opcode(uint8_t opcode) {
 
     return cycleCount;
 }
-
-std::vector<uint8_t> CPU::load_rom(const std::string &filename) {
-    std::ifstream file(filename, std::ios::binary | std::ios::ate);
-    if (!file.is_open()) {
-        std::cerr << "Error: Could not open ROM file." << std::endl;
-        exit(1);
-    }
-    std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    if (!file.read(reinterpret_cast<char*>(romData.data()), size)) {
-        std::cerr << "Error: Could not read ROM file." << std::endl;
-        exit(1);
-    }
-
-    file.close();
-    return romData;
-}
-
-

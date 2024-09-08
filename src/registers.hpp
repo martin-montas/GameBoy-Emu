@@ -20,6 +20,8 @@ class Registers {
         uint16_t DE;
         uint16_t HL;
 
+        uint16_t SP;
+        uint16_t PC;
 
 };
 

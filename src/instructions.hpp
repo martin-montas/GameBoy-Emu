@@ -29,7 +29,7 @@ class InstructionSet {
         void add(uint16_t *destination, int8_t value);
 
         void ldr(uint8_t *reg, uint8_t value);
-        void ldr(uint16_t *reg, uint16_t value);
+        void ldr(uint16_t *reg, uint8_t value);
 
         void adc(uint8_t value);
         void sbc(uint8_t value);
@@ -61,4 +61,4 @@ class InstructionSet {
 
 };
 
-
+#endif

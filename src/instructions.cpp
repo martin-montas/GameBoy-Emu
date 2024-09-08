@@ -2,21 +2,32 @@
 #include <cstdint>
 #include "instructions.hpp"
 
-void CPU::load_bc_nn() {
-    pc += 1;
-    uint8_t tmp_1 = romData[pc];
+InstructionSet::InstructionSet(Registers *registers, MMU *mmu){
+    this->registers = registers;
+    this->mmu = mmu;
+
+    // todo(martin-montas) create this later
+    // this->interrupts = interrupts;
+}
+void InstructionSet::ldr(uint16_t *reg, uint8_t value) {
+    /*
+    registers->PC += 1;
+    uint8_t tmp_1 = romData[registers->PC];
     pc += 1;
     uint8_t tmp_2 = romData[pc];
     registers->BC = (tmp_2 << 8) | tmp_1;
+    */
 }
 
-void CPU::load_b_n() {
+void InstructionSet::ldr(uint8_t *reg, uint8_t value) {
+    /*
     uint8_t tmp = romData[pc++];
     registers->B = tmp;
+    */
 }
 
-
-void CPU::load_bc_a() {
+/*
+void InstructionSet::load_bc_a() {
     uint16_t tmp = registers->BC;
 
     // video ram
@@ -46,29 +57,21 @@ void CPU::load_bc_a() {
 
     // I/O registers
     else if (tmp >= 0xFF00 && tmp <= 0xFF7F) {
-        mmu->IORegisters[tmp - 0xFF00] = registers->A;
+        mmu->IO_REGISTERS[tmp - 0xFF00] = registers->A;
     }
 
     // HRAM memory
     else if (tmp >= 0xFF80 && tmp <= 0xFFFE) {
-        mmu->HRAM[tmp - 0xFF80] = registers->A;
-    }
+        mmu->HRAM[tmp - 0xFF80] = registers->A; }
 
     // InterruptEnable registers
     else if (tmp == 0xFFFF) {
         mmu->InterruptEnabled = registers->A;
     }
 }
+*/
 
 
-
-InstructionSet::InstructionSet(Registers *registers, MMU *mmu){
-    this->registers = registers;
-    this->mmu = mmu;
-
-    // todo(martin-montas) create this later
-    // this->interrupts = interrupts;
-}
 void execute(uint8_t opcode) {
 }
 void ret(bool condition) {

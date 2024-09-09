@@ -1,15 +1,11 @@
 #include <cstdint>
 
 #include "CPU.hpp"
-#include "../instructions.hpp"
 
 const double cyclesPerMicrosecond = 4.194304; 
 const uint32_t timeSlice = 1000; 
 
-CPU::CPU(Registers *registers, MMU *mmu) {
-    this->registers = registers;
-    this->mmu = mmu;
-    this->instructions = new InstructionSet(registers, mmu);
+CPU::CPU() {
 }
 
 void CPU::step() {

@@ -1,17 +1,18 @@
 
 #include "instructions.hpp"
+#include "./memory/MMU.hpp"
+#include "./cpu/CPU.hpp"
 
-InstructionSet::InstructionSet(MMU *mmu, CPU &cpu) : cpu(cpu) {
-    this->mmu = mmu;
-}
+InstructionSet::InstructionSet(CPU &cpu, MMU &mmu) : cpu(cpu), mmu(mmu){}
+
 void InstructionSet::ldr(uint16_t *reg) {
-    uint8_t tmp_1 = mmu->romData[cpu->PC++];
-    uint8_t tmp_2 = mmu->romData[cpu->PC++];
+    uint8_t tmp_1 = mmu->romData[cpu.PC++];
+    uint8_t tmp_2 = mmu>romData[cpu.PC++];
     *reg = (tmp_2 << 8) | tmp_1;
 }
 
 void InstructionSet::ldr(uint8_t *reg, uint8_t *address) {
-    uint8_t tmp = mmu->romData[cpu->PC];
+    uint8_t tmp = mmu->romData[cpu.PC];
     *reg = tmp;
 }
 

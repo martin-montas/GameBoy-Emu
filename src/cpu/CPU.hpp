@@ -7,12 +7,11 @@
 #include <array>
 #include <functional>
 
-#include "../memory/MMU.hpp"
 
 class CPU {
 
     public:
-        CPU(MMU *mmu);
+        CPU();
         ~CPU();
 
         void step();
@@ -42,20 +41,6 @@ class CPU {
             12, 12, 8, 4, 0, 16, 8, 16,  12, 8, 16, 4, 0, 0, 8, 16  // 0xf_
         };
         std::array<std::function<void()>, 256> opcode_table; 
-
-    private:
-        MMU *mmu;
-
-        uint32_t cycle;
-        uint32_t cycle_count;
-        uint32_t globalCycles;
-
-        // program counter
-        uint16_t pc;
-
-        // stack pointer
-        uint16_t sp;
-
         struct {
             union {
                 struct {
@@ -97,6 +82,19 @@ class CPU {
         };
         uint16_t SP;
         uint16_t PC;
+
+    private:
+
+        uint32_t cycle;
+        uint32_t cycle_count;
+        uint32_t globalCycles;
+
+        // program counter
+        uint16_t pc;
+
+        // stack pointer
+        uint16_t sp;
+
 };
 
 

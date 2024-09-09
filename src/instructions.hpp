@@ -12,7 +12,7 @@ class InstructionSet {
         CPU &cpu;
     public:
 
-        InstructionSet(MMU *mmu);
+        InstructionSet(CPU &cpu, MMU &mmu);
         void execute(uint8_t opcode);
 
         void ret(bool condition);

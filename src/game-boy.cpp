@@ -7,7 +7,7 @@ void GameBoy::init(std::string filename) {
     registers = new Registers();
     instructions = new InstructionSet(registers, mmu);
 
-    cpu = new CPU(registers, mmu, instructions);
+    cpu = new CPU(registers, mmu);
 
     emulationRunning = true;
 }
@@ -23,4 +23,6 @@ void GameBoy::run() {
         // Render frame, update audio, etc.
     }
 }
-
+uint32_t GameBoy::calculateCyclesForFrame(){
+    return 0;
+}

@@ -1,18 +1,18 @@
 #ifndef INSTRUCTIONS_HPP
 #define INSTRUCTIONS_HPP
 
+#include <cstdint>
 
 #include "./memory/MMU.hpp"
-#include "registers.hpp"
-#include <cstdint>
+#include "./cpu/CPU.hpp"
 
 class InstructionSet {
     private:
-        Registers *registers;
         MMU *mmu;
+        CPU &cpu;
     public:
 
-        InstructionSet(Registers *registers, MMU *mmu);
+        InstructionSet(MMU *mmu);
         void execute(uint8_t opcode);
 
         void ret(bool condition);
@@ -28,8 +28,9 @@ class InstructionSet {
         void add(uint16_t *destination, uint16_t value);
         void add(uint16_t *destination, int8_t value);
 
-        void ldr(uint8_t *reg, uint8_t value);
-        void ldr(uint16_t *reg, uint8_t value);
+        void ldr(uint16_t *reg);
+        void ldr(uint8_t *reg, uint8_t  *address);
+        void ldr_mem(uint16_t *reg,uint8_t  *address);
 
         void adc(uint8_t value);
         void sbc(uint8_t value);
@@ -58,7 +59,6 @@ class InstructionSet {
         void sra(uint8_t *value);
         void srl(uint8_t *value);
         void swap(uint8_t *value);
-
 };
 
 #endif

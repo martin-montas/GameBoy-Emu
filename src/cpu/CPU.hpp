@@ -7,14 +7,12 @@
 #include <array>
 #include <functional>
 
-#include "../registers.hpp" 
-#include "../instructions.hpp" 
 #include "../memory/MMU.hpp"
 
 class CPU {
 
     public:
-        CPU(Registers *registers, MMU *mmu);
+        CPU(MMU *mmu);
         ~CPU();
 
         void step();
@@ -46,9 +44,7 @@ class CPU {
         std::array<std::function<void()>, 256> opcode_table; 
 
     private:
-        Registers *registers;
         MMU *mmu;
-        InstructionSet *instructions;
 
         uint32_t cycle;
         uint32_t cycle_count;
@@ -60,6 +56,47 @@ class CPU {
         // stack pointer
         uint16_t sp;
 
+        struct {
+            union {
+                struct {
+                    uint8_t F;
+                    uint8_t A;
+                };
+                uint16_t AF;
+            };
+        };
+
+        struct {
+            union {
+                struct {
+                    uint8_t C;
+                    uint8_t B;
+                };
+                uint16_t BC;
+            };
+        };  
+
+        struct {
+            union {
+                struct {
+                    uint8_t E;
+                    uint8_t D;
+                };
+                uint16_t DE;
+            };
+        };
+
+        struct {
+            union {
+                struct {
+                    uint8_t L;
+                    uint8_t H;
+                };
+                uint16_t HL;
+            };
+        };
+        uint16_t SP;
+        uint16_t PC;
 };
 
 

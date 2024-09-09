@@ -6,9 +6,6 @@
 #include <vector>
 
 class MMU {
-
-
-
     public:
         std::vector<uint8_t> romData;
         MMU(std::string filename);
@@ -25,7 +22,8 @@ class MMU {
 
         uint8_t InterruptEnabled;
         uint8_t read(uint16_t address);
-        uint8_t write();
+        void write8(uint16_t address, uint8_t value);
+        void write16(uint16_t address, uint16_t value);
         void load_rom(const std::string &filename);
 };
 

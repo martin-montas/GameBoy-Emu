@@ -1,6 +1,7 @@
 #ifndef GAMEBOY_HPP
 #define GAMEBOY_HPP
 
+#include <cstdint>
 #include <string>
 
 #include "cpu/CPU.hpp"
@@ -21,6 +22,7 @@ class GameBoy {
         ~GameBoy();
         void run();
         void init(std::string filename);
+        uint32_t calculateCyclesForFrame();
 };
 
 #endif // GAMEBOY_HPP

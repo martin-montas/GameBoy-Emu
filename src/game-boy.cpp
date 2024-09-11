@@ -4,24 +4,30 @@
 
 void GameBoy::init(std::string filename) {
     mmu = new MMU(filename);
-    cpu = new CPU(mmu);
-    instructions = new InstructionSet(cpu,mmu);
+
+    cpu = new CPU(*mmu);
+    instructions = new InstructionSet(*cpu, *mmu);
 
     emulationRunning = true;
 }
 
-GameBoy::~GameBoy() {
-
-}
+GameBoy::~GameBoy() {}
 
 void GameBoy::run() {
+    uint8_t opcode;
+    int cycle_count = 0;
     while (emulationRunning) {
-        uint32_t cyclesToRun = calculateCyclesForFrame();
-        cpu->emulate_cycles(cyclesToRun);
+
+        opcode = mmu->romData[cpu->PC];
+        instructions->execute(opcode);
+        int current_cycle = cpu->opcode_cycles[opcode];
+
+        cpu->cycle_count += current_cycle;
 
         // Render frame, update audio, etc.
     }
 }
-uint32_t GameBoy::calculateCyclesForFrame(){
+
+uint32_t GameBoy::calculateCyclesForFrame() {
     return 0;
 }

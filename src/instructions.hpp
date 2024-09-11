@@ -1,14 +1,13 @@
 #ifndef INSTRUCTIONS_HPP
 #define INSTRUCTIONS_HPP
 
-#include <cstdint>
 
 #include "./memory/MMU.hpp"
 #include "./cpu/CPU.hpp"
 
 class InstructionSet {
     private:
-        MMU *mmu;
+        MMU &mmu;
         CPU &cpu;
     public:
 
@@ -59,6 +58,7 @@ class InstructionSet {
         void sra(uint8_t *value);
         void srl(uint8_t *value);
         void swap(uint8_t *value);
+
 };
 
 #endif

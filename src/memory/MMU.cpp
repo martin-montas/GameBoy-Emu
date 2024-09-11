@@ -86,8 +86,8 @@ void MMU::write8(uint16_t address, uint8_t value)  {
 }
 
 void MMU::write16(uint16_t address, uint16_t value) {
-    uint8_t low_byte = value & 0xFF;           
-    uint8_t high_byte = (value >> 8) & 0xFF;   
+    uint8_t low_byte = value & 0xFF;
+    uint8_t high_byte = (value >> 8) & 0xFF;
 
     write8(address, low_byte);
     write8(address + 1, high_byte);

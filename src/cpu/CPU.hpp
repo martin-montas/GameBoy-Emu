@@ -7,12 +7,23 @@
 #include <array>
 #include <functional>
 
+#include "../memory/MMU.hpp" 
+
+enum RegisterFlags { 
+    FLAG_ZERO = (1 << 7), FLAG_SUBTRACT = (1 << 6), FLAG_HALF_CARRY = (1 << 5), FLAG_CARRY = (1 << 4)
+};
 
 class CPU {
+    private:
+        MMU &mmu;
 
     public:
-        CPU();
+        CPU(MMU &mmu);
         ~CPU();
+
+        bool is_flag_set(uint8_t flag);
+        void set_flags(uint8_t flags, bool state);
+        void print_flags();
 
         void step();
         std::vector<uint8_t> load_rom(const std::string &filename);
@@ -20,7 +31,6 @@ class CPU {
         void emulate_cycles(uint32_t cyclesToRun);
 
         void init_opcode_table();
-
 
         const int opcode_cycles[256] = {
             4, 12, 8, 8, 4, 4, 8, 4, 20, 8, 8, 8, 4, 4, 8, 4,       // 0x0_
@@ -82,11 +92,11 @@ class CPU {
         };
         uint16_t SP;
         uint16_t PC;
+        uint32_t cycle_count;
 
     private:
 
         uint32_t cycle;
-        uint32_t cycle_count;
         uint32_t globalCycles;
 
         // program counter
@@ -96,6 +106,5 @@ class CPU {
         uint16_t sp;
 
 };
-
 
 #endif // CPU_HPP

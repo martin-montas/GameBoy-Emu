@@ -1,18 +1,16 @@
-
 #include "instructions.hpp"
-#include "./memory/MMU.hpp"
-#include "./cpu/CPU.hpp"
+
 
 InstructionSet::InstructionSet(CPU &cpu, MMU &mmu) : cpu(cpu), mmu(mmu){}
 
 void InstructionSet::ldr(uint16_t *reg) {
-    uint8_t tmp_1 = mmu->romData[cpu.PC++];
-    uint8_t tmp_2 = mmu>romData[cpu.PC++];
+    uint8_t tmp_1 = mmu.romData[cpu.PC++];
+    uint8_t tmp_2 = mmu.romData[cpu.PC++];
     *reg = (tmp_2 << 8) | tmp_1;
 }
 
 void InstructionSet::ldr(uint8_t *reg, uint8_t *address) {
-    uint8_t tmp = mmu->romData[cpu.PC];
+    uint8_t tmp = mmu.romData[cpu.PC];
     *reg = tmp;
 }
 
@@ -21,41 +19,41 @@ void InstructionSet::ldr_mem(uint16_t *reg, uint8_t *address) {
 
     // video ram
     if (tmp >= 0x8000 && tmp <= 0x9FFF) {
-        mmu->VRAM[tmp - 0x8000] = *address;
+        mmu.VRAM[tmp - 0x8000] = *address;
     }
 
     // external ram
     else if (tmp >= 0xA000 && tmp <= 0xBFFF) {
-        mmu->EXTERNAL_RAM[tmp - 0xA000] = *address;
+        mmu.EXTERNAL_RAM[tmp - 0xA000] = *address;
     }
 
     // working ram
     else if (tmp >= 0xC000 && tmp <= 0xDFFF) {
-        mmu->WRAM[tmp - 0xC000] = *address;
+        mmu.WRAM[tmp - 0xC000] = *address;
     }
 
     // Echo ram
     else if (tmp >= 0xE000 && tmp <= 0xFDFF) {
-        mmu->WRAM[tmp - 0xE000] = *address;
+        mmu.WRAM[tmp - 0xE000] = *address;
     }
 
     // oam memory
     else if (tmp >= 0xFE00 && tmp <= 0xFE9F) {
-        mmu->OAM[tmp - 0xFE00] = *address;
+        mmu.OAM[tmp - 0xFE00] = *address;
     }
 
     // I/O registers
     else if (tmp >= 0xFF00 && tmp <= 0xFF7F) {
-        mmu->IO_REGISTERS[tmp - 0xFF00] = *address;
+        mmu.IO_REGISTERS[tmp - 0xFF00] = *address;
     }
 
     // HRAM memory
     else if (tmp >= 0xFF80 && tmp <= 0xFFFE) {
-        mmu->HRAM[tmp - 0xFF80] = *address; 
+        mmu.HRAM[tmp - 0xFF80] = *address; 
     }
     // InterruptEnable registers
     else if (tmp == 0xFFFF) {
-        mmu->InterruptEnabled = *address;
+        mmu.InterruptEnabled = *address;
     }
 }
 
@@ -65,54 +63,54 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x01:  // LD BC, d16
-            ldr(&registers->BC);
+            ldr(&cpu.BC);
             break;
-    
+
         case 0x02: 
-            ldr_mem(&registers->BC, &registers->A);
+            ldr_mem(&cpu.BC, &cpu.A);
             break;
-    
+
         case 0x03: 
-            registers->BC++; 
+            cpu.BC++; 
             break;
-    
+
         case 0x04: 
-            registers->B++; 
+            cpu.B++; 
             break;
-    
+
         case 0x05: 
-            registers->B--; 
+            cpu.B--; 
             break;
-    
+
         case 0x06: 
-            registers->B = mmu->romData[registers->PC++];
+            cpu.B = mmu.romData[cpu.PC++];
             break;
-    
+
         case 0x07: 
             // TODO(martin-montas)
             break;
-    
+
         case 0x08: 
-            uint16_t address = mmu->romData[registers->PC + 1] | (mmu->romData[registers->PC + 2] << 8);
-            mmu->write16(address, registers->SP);
-            registers->PC += 3;
+            uint16_t address = mmu.romData[cpu.PC + 1] | (mmu.romData[cpu.PC + 2] << 8);
+            mmu.write16(address, cpu.SP);
+            cpu.PC += 3;
             break;
 
         case 0x09: 
             break;
-    
+
         case 0x0A: 
             break;
-    
+
         case 0x0B: 
             break;
-    
+
         case 0x0C: 
             break;
-    
+
         case 0x0D: 
             break;
-    
+
         case 0x0E: 
             break;
 
@@ -193,25 +191,25 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x28: 
             break;
-                
+
         case 0x29: 
             break;
-                
+
         case 0x2A: 
             break;
-                
+
         case 0x2B: 
             break;
-                
+
         case 0x2C: 
             break;
-                
+
         case 0x2D: 
             break;
-                
+
         case 0x2E: 
             break;
-                
+
         case 0x2F: 
             break;
 
@@ -439,7 +437,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x7A: 
             break;
-                
+
         case 0x7B: 
             break;
 
@@ -457,7 +455,6 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x80: 
             break;
-                
         case 0x81: 
             break;
 
@@ -475,7 +472,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x86: 
             break;
-                
+
         case 0x87: 
             break;
 
@@ -718,7 +715,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0xD7: 
             break;
-                
+
         case 0xD8: 
             break;
 
@@ -751,7 +748,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0xE2: 
             break;
-                
+
         case 0xE3: 
             break;
 

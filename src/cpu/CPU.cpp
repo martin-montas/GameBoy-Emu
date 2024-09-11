@@ -1,46 +1,21 @@
 #include <cstdint>
-
+#include <iostream>
 #include "CPU.hpp"
 
 const double cyclesPerMicrosecond = 4.194304; 
 const uint32_t timeSlice = 1000; 
+uint32_t cyclesToRun = timeSlice * cyclesPerMicrosecond;
 
-CPU::CPU() {
+CPU::CPU(MMU &mmu): mmu(mmu) {}
+
+bool CPU::is_flag_set(uint8_t flag) {
+    return this->F & flag;
 }
 
-void CPU::step() {
-    uint32_t cyclesToRun = timeSlice * cyclesPerMicrosecond;
-
-    while (cyclesToRun > 0) {
-        emulate_cycles(cyclesToRun); 
-        // cyclesToRun -= cycles; 
-    }
+void CPU::set_flags(uint8_t flags, bool state) {
+    this->F = state ? (this->F | flags) : (this->F & ~flags);
 }
 
-void CPU::emulate_cycles(uint32_t cyclesToRun) {
-        uint8_t opcode;
-        while (cyclesToRun > 0) {
-            // Fetch and decode opcode
-            opcode = mmu->romData[pc];
-            pc++;
-
-            // Execute instruction and get cycle count
-            uint32_t cycleCount = execute_opcode(opcode);
-
-            // Update global cycle counter
-            globalCycles += cycleCount;
-
-            // Decrement cycles to run
-            cyclesToRun -= cycleCount;
-
-            // Handle other components (GPU, APU) based on elapsed cycles
-            // updateComponents(cycleCount);
-        }
-}
-
-uint32_t CPU::execute_opcode(uint8_t opcode) {
-    uint32_t cycleCount = opcode_cycles[opcode]; 
-    opcode_table[opcode]();
-
-    return cycleCount;
+void CPU::print_flags(){
+    std::cout << "Z: " << std::hex << +is_flag_set(FLAG_ZERO) << " N: " << std::hex << +is_flag_set(FLAG_SUBTRACT) << " H: " << std::hex << +is_flag_set(FLAG_HALF_CARRY) << " C: " << std::hex << +is_flag_set(FLAG_CARRY) << std::endl;
 }

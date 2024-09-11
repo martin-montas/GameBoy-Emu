@@ -1,2 +1,2 @@
 # GameBoy-Emu
-Another game game emulator written in c++.
+Another GameBoy emulator written in c++.

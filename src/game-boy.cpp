@@ -4,7 +4,6 @@
 
 void GameBoy::init(std::string filename) {
     mmu = new MMU(filename);
-
     cpu = new CPU(*mmu);
     instructions = new InstructionSet(*cpu, *mmu);
 

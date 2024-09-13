@@ -10,7 +10,10 @@
 #include "../memory/MMU.hpp" 
 
 enum RegisterFlags { 
-    FLAG_ZERO = (1 << 7), FLAG_SUBTRACT = (1 << 6), FLAG_HALF_CARRY = (1 << 5), FLAG_CARRY = (1 << 4)
+    FLAG_ZERO = (1 << 7), 
+    FLAG_SUBTRACT = (1 << 6), 
+    FLAG_HALF_CARRY = (1 << 5), 
+    FLAG_CARRY = (1 << 4)
 };
 
 class CPU {
@@ -21,6 +24,7 @@ class CPU {
         CPU(MMU &mmu);
         ~CPU();
 
+        RegisterFlags *flags;
         bool is_flag_set(uint8_t flag);
         void set_flags(uint8_t flags, bool state);
         void print_flags();

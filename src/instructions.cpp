@@ -1,4 +1,5 @@
 #include "instructions.hpp"
+#include <iostream>
 
 
 InstructionSet::InstructionSet(CPU &cpu, MMU &mmu) : cpu(cpu), mmu(mmu){}
@@ -59,62 +60,120 @@ void InstructionSet::ldr_mem(uint16_t *reg, uint8_t *address) {
 
 void InstructionSet::execute(uint8_t opcode) {
     switch (opcode) {
-        case 0x00: 
+        case 0x00:  // NOP
+            std::cout << "NOP" << std::endl;
             break;
 
         case 0x01:  // LD BC, d16
+            std::cout << "LD BC, d16" << std::endl;
             ldr(&cpu.BC);
             break;
 
-        case 0x02: 
+        case 0x02:  // LD (BC), A 
+            std::cout << "LD (BC), A" << std::endl;
             ldr_mem(&cpu.BC, &cpu.A);
             break;
 
-        case 0x03: 
+        case 0x03: // INC BC 
+            std::cout << "INC BC" << std::endl;
             cpu.BC++; 
             break;
 
-        case 0x04: 
+        case 0x04: // INC B 
+            std::cout << "INC B" << std::endl;
             cpu.B++; 
             break;
 
-        case 0x05: 
+        case 0x05: // DEC B 
+            std::cout << "DEC B" << std::endl;
             cpu.B--; 
             break;
 
-        case 0x06: 
+        case 0x06: // LD B, d8 
+            std::cout << "LD B, d8" << std::endl;
             cpu.B = mmu.romData[cpu.PC++];
             break;
 
-        case 0x07: 
+        case 0x07: // RLCA 
             // TODO(martin-montas)
             break;
 
-        case 0x08: 
+        case 0x08: // LD (a16), SP 
+            std::cout << "LD (a16), SP" << std::endl;
             uint16_t address = mmu.romData[cpu.PC + 1] | (mmu.romData[cpu.PC + 2] << 8);
             mmu.write16(address, cpu.SP);
             cpu.PC += 3;
             break;
 
-        case 0x09: 
+        case 0x09:  // ADD HL, BC
+            std::cout << "ADD HL, BC" << std::endl;
+            uint32_t result = cpu.HL + cpu.BC;
+            cpu.F &= ~FLAG_SUBTRACT;
+
+            if (result > 0xFFFF) {
+                cpu.F |= FLAG_CARRY;
+            } else {
+                cpu.F &= ~FLAG_CARRY;
+            }
+
+            if ((cpu.HL & 0x0FFF) + (cpu.BC & 0x0FFF) > 0x0FFF) {
+                cpu.F |= FLAG_HALF_CARRY;
+            } else {
+                cpu.F &= ~FLAG_HALF_CARRY;
+            }
+
+            cpu.HL = result & 0xFFFF; 
             break;
 
-        case 0x0A: 
+        case 0x0A:  // LD A, (BC)
+            std::cout << "LD A, (BC)" << std::endl;
+            cpu.A = mmu.read(cpu.BC);
             break;
 
-        case 0x0B: 
+        case 0x0B:  // DEC BC
+            std::cout << "DEC BC" << std::endl;
+            cpu.BC--;
             break;
 
-        case 0x0C: 
+        case 0x0C: // INC C 
+            std::cout << "INC C" << std::endl;
+            cpu.C++;
             break;
 
-        case 0x0D: 
+        case 0x0D:  // DEC C
+            std::cout << "DEC C" << std::endl;
+            cpu.C--;
             break;
 
-        case 0x0E: 
+        case 0x0E: // LD C, d8
+            std::cout << "LD C, d8" << std::endl;
+            cpu.C = mmu.romData[cpu.PC++];
             break;
 
-        case 0x0F: 
+        case 0x0F: // RRCA
+            // TODO(martin-montas) save the current value of the carry flag
+
+            bool old_carry = cpu.F & FLAG_CARRY;
+            bool new_carry = cpu.A & 0x01;
+
+            cpu.A = cpu.A >> 1;
+
+            if (new_carry) {
+                cpu.F |= FLAG_CARRY;
+            } else {
+                cpu.F &= ~FLAG_CARRY;
+            }
+
+            if (old_carry) {
+                cpu.A |= 0x08;
+            } else {
+                cpu.A &= ~0x08;
+            }
+
+            cpu.F &= ~(FLAG_SUBTRACT | FLAG_HALF_CARRY);
+
+
+
             break;
 
         case 0x10: 

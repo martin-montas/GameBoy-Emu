@@ -10,9 +10,10 @@ class InstructionSet {
         MMU &mmu;
         CPU &cpu;
     public:
-
         InstructionSet(CPU &cpu, MMU &mmu);
         void execute(uint8_t opcode);
+
+        void rrca(uint8_t *reg);
 
         void ret(bool condition);
         void xor_(uint8_t value);
@@ -24,8 +25,8 @@ class InstructionSet {
         void dec(uint16_t *value);
 
         void add(uint8_t *destination, uint8_t value);
-        void add(uint16_t *destination, uint16_t value);
-        void add(uint16_t *destination, int8_t value);
+        void add(uint16_t *destination, uint16_t *value);
+        // void add(uint16_t *destination, int8_t value);
 
         void ldr(uint16_t *reg);
         void ldr(uint8_t *reg, uint8_t  *address);

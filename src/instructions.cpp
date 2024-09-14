@@ -1,5 +1,6 @@
 #include "instructions.hpp"
 #include "cpu/CPU.hpp"
+#include <cstdint>
 #include <iostream>
 
 
@@ -85,9 +86,9 @@ void InstructionSet::execute(uint8_t opcode) {
             inc(&cpu.B);
             break;
 
-        case 0x05: // DEC B 
+        case 0x05: // DEC B  TODO
             std::cout << "DEC B" << std::endl;
-            cpu.B--; 
+            dec(&cpu.B);
             break;
 
         case 0x06: // LD B, d8 
@@ -108,22 +109,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x09:  // ADD HL, BC
             std::cout << "ADD HL, BC" << std::endl;
-            uint32_t result = cpu.HL + cpu.BC;
-            cpu.F &= ~FLAG_SUBTRACT;
-
-            if (result > 0xFFFF) {
-                cpu.F |= FLAG_CARRY;
-            } else {
-                cpu.F &= ~FLAG_CARRY;
-            }
-
-            if ((cpu.HL & 0x0FFF) + (cpu.BC & 0x0FFF) > 0x0FFF) {
-                cpu.F |= FLAG_HALF_CARRY;
-            } else {
-                cpu.F &= ~FLAG_HALF_CARRY;
-            }
-
-            cpu.HL = result & 0xFFFF; 
+            add(&cpu.HL, &cpu.BC);
             break;
 
         case 0x0A:  // LD A, (BC)
@@ -152,27 +138,8 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x0F: // RRCA
-            // TODO(martin-montas) save the current value of the carry flag
-
-            bool old_carry = cpu.F & FLAG_CARRY;
-            bool new_carry = cpu.A & 0x01;
-
-            cpu.A = cpu.A >> 1;
-
-            if (new_carry) {
-                cpu.F |= FLAG_CARRY;
-            } else {
-                cpu.F &= ~FLAG_CARRY;
-            }
-
-            if (old_carry) {
-                cpu.A |= 0x08;
-            } else {
-                cpu.A &= ~0x08;
-            }
-
-            cpu.F &= ~(FLAG_SUBTRACT | FLAG_HALF_CARRY);
-
+            std::cout << "RRCA" << std::endl;
+            rrca(&cpu.A);
             break;
 
         case 0x10: 
@@ -919,7 +886,11 @@ void inc(uint8_t *value) {
     value++;
 }
 void dec(uint8_t *value) {
-    value--;
+    cpu.set_flag(FLAG_HALF_CARRY,(*value & 0x0F) == 0);
+    (*value)--;
+
+    cpu.set_flag(FLAG_ZERO, (*value == 0));
+    cpu.set_flag(FLAG_SUBTRACT, true);
 }
 
 void dec(uint16_t *value) {
@@ -927,10 +898,16 @@ void dec(uint16_t *value) {
 }
 void add(uint8_t *destination, uint8_t value) {
 }
-void add(uint16_t *destination, uint16_t value) {
+
+void add(uint16_t *destination, uint16_t *value) {
+    uint32_t result = *destination + *value;
+    cpu.F &= ~FLAG_SUBTRACT;
+    cpu.set_flag(FLAG_CARRY, result > 0xFFFF);
+
+    cpu.set_flag(FLAG_HALF_CARRY, ((*destination & 0x0FFF) + (*value & 0x0FFF)) > 0x0FFF);
+    *destination = result & 0xFFFF;
 }
-void add(uint16_t *destination, int8_t value) {
-}
+
 void ldhl(int8_t value) {
 }
 void adc(uint8_t value) {
@@ -953,6 +930,28 @@ void jump_add(bool condition) {
 }
 void cp_n(uint8_t value) {
 }
+void InstructionSet::rlca(uint8_t *reg){
+    bool least_sig_bit = *reg & 1;
+    cpu.A = *reg << 1;
+
+    cpu.set_flag(FLAG_CARRY, least_sig_bit);
+
+    cpu.clear_flag(FLAG_ZERO);
+    cpu.clear_flag(FLAG_SUBTRACT);
+    cpu.clear_flag(FLAG_HALF_CARRY);
+}
+void InstructionSet::rrca(uint8_t *reg){
+    bool least_sig_bit = *reg & 1;
+    cpu.A = *reg >> 1;
+
+    cpu.set_flag(FLAG_CARRY, least_sig_bit);
+
+    cpu.clear_flag(FLAG_ZERO);
+    cpu.clear_flag(FLAG_SUBTRACT);
+    cpu.clear_flag(FLAG_HALF_CARRY);
+}
+
+
 
 // Extended instructions
 void extended_execute(uint8_t opcode) {

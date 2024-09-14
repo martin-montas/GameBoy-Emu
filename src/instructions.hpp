@@ -58,7 +58,6 @@ class InstructionSet {
         void sra(uint8_t *value);
         void srl(uint8_t *value);
         void swap(uint8_t *value);
-
 };
 
 #endif

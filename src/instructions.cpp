@@ -1,4 +1,5 @@
 #include "instructions.hpp"
+#include "cpu/CPU.hpp"
 #include <iostream>
 
 
@@ -81,7 +82,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x04: // INC B 
             std::cout << "INC B" << std::endl;
-            cpu.B++; 
+            inc(&cpu.B);
             break;
 
         case 0x05: // DEC B 
@@ -137,7 +138,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x0C: // INC C 
             std::cout << "INC C" << std::endl;
-            cpu.C++;
+            inc(&cpu.C);
             break;
 
         case 0x0D:  // DEC C
@@ -171,8 +172,6 @@ void InstructionSet::execute(uint8_t opcode) {
             }
 
             cpu.F &= ~(FLAG_SUBTRACT | FLAG_HALF_CARRY);
-
-
 
             break;
 
@@ -905,8 +904,15 @@ void ret(bool condition) {
 void xor_(uint8_t value) {
 }
 
-void inc(uint16_t *value) {
-    value++;
+void inc(uint8_t *value) {
+
+    uint8_t nibble_carry = *value & 0x0F;
+
+    (*value)++;
+    set_flag(FLAG_HALF_CARRY,(nibble_carry == 0x0F));
+
+    cpu.set_flag(FLAG_ZERO, (*value == 0));
+    cpu.clear_flag(FLAG_SUBTRACT);
 }
 
 void inc(uint8_t *value) {

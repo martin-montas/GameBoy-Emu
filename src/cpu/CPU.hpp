@@ -26,7 +26,8 @@ class CPU {
 
         RegisterFlags *flags;
         bool is_flag_set(uint8_t flag);
-        void set_flags(uint8_t flags, bool state);
+        void set_flag(uint8_t flags, bool state);
+        void clear_flag(uint8_t flag);
         void print_flags();
 
         void step();

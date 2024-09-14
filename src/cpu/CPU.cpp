@@ -12,7 +12,11 @@ bool CPU::is_flag_set(uint8_t flag) {
     return this->F & flag;
 }
 
-void CPU::set_flags(uint8_t flags, bool state) {
+void CPU::clear_flag(uint8_t flag) {
+    this->F &= ~flag;
+}
+
+void CPU::set_flag(uint8_t flags, bool state) {
     this->F = state ? (this->F | flags) : (this->F & ~flags);
 }
 

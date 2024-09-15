@@ -86,7 +86,7 @@ void InstructionSet::execute(uint8_t opcode) {
             inc(&cpu.B);
             break;
 
-        case 0x05: // DEC B  TODO
+        case 0x05: // DEC B  
             std::cout << "DEC B" << std::endl;
             dec(&cpu.B);
             break;
@@ -97,7 +97,8 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x07: // RLCA 
-            // TODO(martin-montas)
+            std::cout << "RLCA" << std::endl;
+            rlc(&cpu.A);
             break;
 
         case 0x08: // LD (a16), SP 
@@ -930,13 +931,15 @@ void jump_add(bool condition) {
 }
 void cp_n(uint8_t value) {
 }
-void InstructionSet::rlca(uint8_t *reg){
-    bool least_sig_bit = *reg & 1;
-    cpu.A = *reg << 1;
+void rlc(uint8_t *reg) {
+    bool msb = *reg & 0x80;
 
-    cpu.set_flag(FLAG_CARRY, least_sig_bit);
+    *reg = (*reg << 1) | (msb >> 7);
 
-    cpu.clear_flag(FLAG_ZERO);
+    cpu.set_flag(FLAG_CARRY, msb);
+
+    cpu.set_flag(FLAG_ZERO, *reg == 0);
+
     cpu.clear_flag(FLAG_SUBTRACT);
     cpu.clear_flag(FLAG_HALF_CARRY);
 }
@@ -944,7 +947,7 @@ void InstructionSet::rrca(uint8_t *reg){
     bool least_sig_bit = *reg & 1;
     cpu.A = *reg >> 1;
 
-    cpu.set_flag(FLAG_CARRY, least_sig_bit);
+    //  cpu.set_flag(FLAG_CARRY, least_sig_bit);
 
     cpu.clear_flag(FLAG_ZERO);
     cpu.clear_flag(FLAG_SUBTRACT);

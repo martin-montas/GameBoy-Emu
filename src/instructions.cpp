@@ -143,28 +143,47 @@ void InstructionSet::execute(uint8_t opcode) {
             rrca(&cpu.A);
             break;
 
-        case 0x10: 
+        case 0x10:  // STOP
+            // TODO
             break;
 
-        case 0x11: 
+        case 0x11: // LD DE, d16
+            std::cout << "LD DE, d16" << std::endl;
+            ldr(&cpu.DE);
             break;
 
-        case 0x12: 
+        case 0x12: // LD (DE), A
+            std::cout << "LD (DE), A" << std::endl;
+            ldr_mem(&cpu.DE, &cpu.A);
             break;
 
-        case 0x13: 
+        case 0x13: // INC DE
+            std::cout << "INC DE" << std::endl;
+            cpu.DE++;
             break;
 
-        case 0x14: 
+        case 0x14: // INC D
+            std::cout << "INC D" << std::endl;
+            inc(&cpu.D);
             break;
 
-        case 0x15: 
+        case 0x15: // DEC D
+            std::cout << "DEC D" << std::endl;
+            dec(&cpu.D);
             break;
 
-        case 0x16: 
+        case 0x16: // LD D, d8
+            std::cout << "LD D, d8" << std::endl;
+            cpu.D = mmu.romData[cpu.PC++];
             break;
 
-        case 0x17: 
+        case 0x17: // RLA 
+            bool msb = cpu.A & 0x80;
+
+            cpu.A = (cpu.A << 1) | (msb >> 7);
+
+            cpu.set_flag(FLAG_CARRY, msb);
+
             break;
 
         case 0x18: 

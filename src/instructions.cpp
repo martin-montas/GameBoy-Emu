@@ -265,13 +265,16 @@ void InstructionSet::execute(uint8_t opcode) {
             dec(&cpu.H);
             break;
 
-        case 0x26: 
+        case 0x26:  // LD H, d8
+            std::cout << "LD H, d8" << std::endl;
             break;
 
-        case 0x27: 
+        case 0x27:  // DAA
+            std::cout << "DAA" << std::endl;
             break;
 
-        case 0x28: 
+        case 0x28:  // JR Z, r8
+            std::cout << "JR Z, r8" << std::endl;
             break;
 
         case 0x29: 

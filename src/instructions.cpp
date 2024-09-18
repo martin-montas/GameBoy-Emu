@@ -178,54 +178,86 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x17: // RLA 
-            bool msb = cpu.A & 0x80;
-
-            cpu.A = (cpu.A << 1) | (msb >> 7);
-
-            cpu.set_flag(FLAG_CARRY, msb);
-
+            std::cout << "RLA" << std::endl;
+            bool carry = cpu.F & FLAG_CARRY; 
+            cpu.set_flag(FLAG_CARRY, cpu.A & 0x80);
+            cpu.A = cpu.A << 1;
+            if (carry) {
+                cpu.A |= 0x01; 
+            }
             break;
 
-        case 0x18: 
+        case 0x18:  // JR r8
+                    // TODO
             break;
 
-        case 0x19: 
+        case 0x19:  // ADD HL, DE
+            std::cout << "ADD HL, DE" << std::endl;
+            add(&cpu.HL, &cpu.DE);
             break;
 
-        case 0x1A: 
+        case 0x1A:  // LD A, (DE)
+            std::cout << "LD A, (DE)" << std::endl;
+            cpu.A = mmu.read(cpu.DE);
             break;
 
-        case 0x1B: 
+        case 0x1B: // DEC DE
+            std::cout << "DEC DE" << std::endl;
+            cpu.DE--;
             break;
 
-        case 0x1C: 
+        case 0x1C: // INC E
+            std::cout << "INC E" << std::endl;
+            inc(&cpu.E);
             break;
 
-        case 0x1D: 
+        case 0x1D: // DEC E
+            std::cout << "DEC E" << std::endl;
+            dec(&cpu.E);
             break;
 
-        case 0x1E: 
+        case 0x1E: // LD E, d8 
+            std::cout << "LD E, d8" << std::endl;
+            cpu.E = mmu.romData[cpu.PC++];
             break;
 
-        case 0x1F: 
+        case 0x1F: // RRA
+                   // TODO
+            std::cout << "RRA" << std::endl;
             break;
 
         case 0x20: 
+            std::cout << "JR NZ, r8" << std::endl;
+            if (!(cpu.F & FLAG_ZERO)) {
+                int8_t offset = static_cast<int8_t>(mmu.romData[cpu.PC]); 
+                cpu.PC += offset; 
+            }
+            cpu.PC += 1; 
             break;
 
-        case 0x21: 
+        case 0x21: // LD HL, d16
+            std::cout << "LD HL, d16" << std::endl;
+            ldr(&cpu.HL);
             break;
 
-        case 0x22: 
+        case 0x22:  // LD (DE), A
+            std::cout << "LD (DE), A" << std::endl;
+            ldr_mem(&cpu.DE, &cpu.A);
             break;
 
-        case 0x23: 
+        case 0x23: // INC HL
+            std::cout << "INC HL" << std::endl;
+            cpu.HL++;
             break;
 
-        case 0x24: 
+        case 0x24: // INC H
+            std::cout << "INC H" << std::endl;
+            inc(&cpu.H);
             break;
 
-        case 0x25: 
+        case 0x25: // DEC H 
+            std::cout << "DEC H" << std::endl;
+            dec(&cpu.H);
             break;
 
         case 0x26: 
@@ -905,6 +937,7 @@ void inc(uint8_t *value) {
 void inc(uint8_t *value) {
     value++;
 }
+
 void dec(uint8_t *value) {
     cpu.set_flag(FLAG_HALF_CARRY,(*value & 0x0F) == 0);
     (*value)--;
@@ -916,6 +949,7 @@ void dec(uint8_t *value) {
 void dec(uint16_t *value) {
     value--;
 }
+
 void add(uint8_t *destination, uint8_t value) {
 }
 
@@ -962,6 +996,7 @@ void rlc(uint8_t *reg) {
     cpu.clear_flag(FLAG_SUBTRACT);
     cpu.clear_flag(FLAG_HALF_CARRY);
 }
+
 void InstructionSet::rrca(uint8_t *reg){
     bool least_sig_bit = *reg & 1;
     cpu.A = *reg >> 1;

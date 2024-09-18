@@ -188,7 +188,12 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x18:  // JR r8
-                    // TODO
+            std::cout << "JR r8" << std::endl;
+            if (!(cpu.F & FLAG_ZERO)) {
+                int8_t offset = static_cast<int8_t>(mmu.romData[cpu.PC]); 
+                cpu.PC += offset; 
+            }
+            cpu.PC += 1; 
             break;
 
         case 0x19:  // ADD HL, DE
@@ -226,7 +231,7 @@ void InstructionSet::execute(uint8_t opcode) {
             std::cout << "RRA" << std::endl;
             break;
 
-        case 0x20: 
+        case 0x20:  // JR NZ, r8
             std::cout << "JR NZ, r8" << std::endl;
             if (!(cpu.F & FLAG_ZERO)) {
                 int8_t offset = static_cast<int8_t>(mmu.romData[cpu.PC]); 

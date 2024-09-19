@@ -267,14 +267,21 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x26:  // LD H, d8
             std::cout << "LD H, d8" << std::endl;
+            cpu.H = mmu.romData[cpu.PC++];
             break;
 
         case 0x27:  // DAA
+                    // TODO
             std::cout << "DAA" << std::endl;
             break;
 
         case 0x28:  // JR Z, r8
             std::cout << "JR Z, r8" << std::endl;
+            if (cpu.F & FLAG_ZERO) {
+                int8_t offset = static_cast<int8_t>(mmu.romData[cpu.PC]); 
+                cpu.PC += offset; 
+            }
+            cpu.PC += 1; 
             break;
 
         case 0x29: 
@@ -932,7 +939,6 @@ void xor_(uint8_t value) {
 }
 
 void inc(uint8_t *value) {
-
     uint8_t nibble_carry = *value & 0x0F;
 
     (*value)++;
@@ -952,10 +958,6 @@ void dec(uint8_t *value) {
 
     cpu.set_flag(FLAG_ZERO, (*value == 0));
     cpu.set_flag(FLAG_SUBTRACT, true);
-}
-
-void dec(uint16_t *value) {
-    value--;
 }
 
 void add(uint8_t *destination, uint8_t value) {
@@ -994,7 +996,6 @@ void cp_n(uint8_t value) {
 }
 void rlc(uint8_t *reg) {
     bool msb = *reg & 0x80;
-
     *reg = (*reg << 1) | (msb >> 7);
 
     cpu.set_flag(FLAG_CARRY, msb);
@@ -1008,15 +1009,12 @@ void rlc(uint8_t *reg) {
 void InstructionSet::rrca(uint8_t *reg){
     bool least_sig_bit = *reg & 1;
     cpu.A = *reg >> 1;
-
     //  cpu.set_flag(FLAG_CARRY, least_sig_bit);
 
     cpu.clear_flag(FLAG_ZERO);
     cpu.clear_flag(FLAG_SUBTRACT);
     cpu.clear_flag(FLAG_HALF_CARRY);
 }
-
-
 
 // Extended instructions
 void extended_execute(uint8_t opcode) {
@@ -1049,4 +1047,3 @@ void srl(uint8_t *value) {
 }
 void swap(uint8_t *value) {
 }
-

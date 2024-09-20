@@ -22,7 +22,6 @@ void GameBoy::run() {
         int current_cycle = cpu->opcode_cycles[opcode];
 
         cpu->cycle_count += current_cycle;
-
         // Render frame, update audio, etc.
     }
 }

@@ -284,25 +284,38 @@ void InstructionSet::execute(uint8_t opcode) {
             cpu.PC += 1; 
             break;
 
-        case 0x29: 
+        case 0x29: // ADD HL, HL
+            std::cout << "ADD HL, HL" << std::endl;
+            add(&cpu.HL, &cpu.HL);
             break;
 
-        case 0x2A: 
+        case 0x2A: // LD A, (HL+)
+            std::cout << "LD A, (HL+)" << std::endl;
+            cpu.A = mmu.read(cpu.HL);
             break;
 
-        case 0x2B: 
+        case 0x2B: // DEC HL
+            std::cout << "DEC HL" << std::endl;
+            cpu.HL--;
             break;
 
-        case 0x2C: 
+        case 0x2C: // INC L
+            std::cout << "INC L" << std::endl;
+            inc(&cpu.L);
             break;
 
-        case 0x2D: 
+        case 0x2D: // DEC L
+            std::cout << "DEC L" << std::endl;
+            dec(&cpu.L);
             break;
 
-        case 0x2E: 
+        case 0x2E: // LD L, d8
+            std::cout << "LD L, d8" << std::endl;
+            cpu.L = mmu.romData[cpu.PC++];
             break;
 
-        case 0x2F: 
+        case 0x2F: // CPL
+                   // TODO
             break;
 
         case 0x30: 

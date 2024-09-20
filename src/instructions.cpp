@@ -318,7 +318,13 @@ void InstructionSet::execute(uint8_t opcode) {
                    // TODO
             break;
 
-        case 0x30: 
+        case 0x30: // JR NC, r8
+            std::cout << "JR NC, r8" << std::endl;
+            if (!(cpu.F & FLAG_CARRY)) {
+
+                int8_t signed_offset = static_cast<int8_t>(mmu.romData[cpu.PC++]);
+                cpu.PC += signed_offset;
+            }
             break;
 
         case 0x31: 

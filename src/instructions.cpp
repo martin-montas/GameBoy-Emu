@@ -144,7 +144,7 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x10:  // STOP
-            // TODO
+                    // TODO
             break;
 
         case 0x11: // LD DE, d16
@@ -321,25 +321,29 @@ void InstructionSet::execute(uint8_t opcode) {
         case 0x30: // JR NC, r8
             std::cout << "JR NC, r8" << std::endl;
             if (!(cpu.F & FLAG_CARRY)) {
-
                 int8_t signed_offset = static_cast<int8_t>(mmu.romData[cpu.PC++]);
                 cpu.PC += signed_offset;
             }
             break;
 
-        case 0x31: 
+        case 0x31: // LD SP, d16
+            std::cout << "LD SP, d16" << std::endl;
             break;
 
-        case 0x32: 
+        case 0x32: // LD (HL-), A
+            std::cout << "LD (HL-), A" << std::endl;
             break;
 
-        case 0x33: 
+        case 0x33:  // INC SP
+            std::cout << "INC SP" << std::endl;
             break;
 
-        case 0x34: 
+        case 0x34: // INC (HL)
+            std::cout << "INC (HL)" << std::endl;
             break;
 
-        case 0x35: 
+        case 0x35: // DEC (HL)
+            std::cout << "DEC (HL)" << std::endl;
             break;
 
         case 0x36: 

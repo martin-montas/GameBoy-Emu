@@ -336,6 +336,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x33:  // INC SP
             std::cout << "INC SP" << std::endl;
+            cpu.SP++;
             break;
 
         case 0x34: // INC (HL)
@@ -346,7 +347,8 @@ void InstructionSet::execute(uint8_t opcode) {
             std::cout << "DEC (HL)" << std::endl;
             break;
 
-        case 0x36: 
+        case 0x36:  // LD (HL), d8
+            std::cout << "LD (HL), d8" << std::endl;
             break;
 
         case 0x37: 
@@ -952,6 +954,7 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         default:
+            std::cout << "Invalid Instruction: " << opcode << std::endl;
             break;
     }
 }

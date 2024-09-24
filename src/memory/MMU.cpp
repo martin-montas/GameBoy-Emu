@@ -5,7 +5,6 @@
 
 #include "MMU.hpp"
 
-
 MMU::MMU(std::string filename) {
     load_rom(filename);
 
@@ -27,7 +26,6 @@ void MMU::load_rom(const std::string &filename) {
 
     file.close();
 }
-
 
 uint8_t MMU::read(uint16_t address) {
     if ( address >= 0x8000 && address <= 0x9FFF){
@@ -92,4 +90,3 @@ void MMU::write16(uint16_t address, uint16_t value) {
     write8(address, low_byte);
     write8(address + 1, high_byte);
 }
-

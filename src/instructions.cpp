@@ -19,45 +19,7 @@ void InstructionSet::ldr(uint8_t *reg, uint8_t *address) {
 
 void InstructionSet::ldr_mem(uint16_t *reg, uint8_t *address) {
     uint16_t tmp = *reg;
-
-    // video ram
-    if (tmp >= 0x8000 && tmp <= 0x9FFF) {
-        mmu.VRAM[tmp - 0x8000] = *address;
-    }
-
-    // external ram
-    else if (tmp >= 0xA000 && tmp <= 0xBFFF) {
-        mmu.EXTERNAL_RAM[tmp - 0xA000] = *address;
-    }
-
-    // working ram
-    else if (tmp >= 0xC000 && tmp <= 0xDFFF) {
-        mmu.WRAM[tmp - 0xC000] = *address;
-    }
-
-    // Echo ram
-    else if (tmp >= 0xE000 && tmp <= 0xFDFF) {
-        mmu.WRAM[tmp - 0xE000] = *address;
-    }
-
-    // oam memory
-    else if (tmp >= 0xFE00 && tmp <= 0xFE9F) {
-        mmu.OAM[tmp - 0xFE00] = *address;
-    }
-
-    // I/O registers
-    else if (tmp >= 0xFF00 && tmp <= 0xFF7F) {
-        mmu.IO_REGISTERS[tmp - 0xFF00] = *address;
-    }
-
-    // HRAM memory
-    else if (tmp >= 0xFF80 && tmp <= 0xFFFE) {
-        mmu.HRAM[tmp - 0xFF80] = *address; 
-    }
-    // InterruptEnable registers
-    else if (tmp == 0xFFFF) {
-        mmu.InterruptEnabled = *address;
-    }
+    mmu.write8(*address, tmp); 
 }
 
 void InstructionSet::execute(uint8_t opcode) {
@@ -245,9 +207,10 @@ void InstructionSet::execute(uint8_t opcode) {
             ldr(&cpu.HL);
             break;
 
-        case 0x22:  // LD (DE), A
-            std::cout << "LD (DE), A" << std::endl;
-            ldr_mem(&cpu.DE, &cpu.A);
+        case 0x22:  // LD (HL+), A
+            std::cout << "LD (HL+), A" << std::endl;
+            ldr_mem(&cpu.HL, &cpu.A);
+            cpu.HL++;
             break;
 
         case 0x23: // INC HL
@@ -328,10 +291,13 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x31: // LD SP, d16
             std::cout << "LD SP, d16" << std::endl;
+            ldr(&cpu.SP);
             break;
 
         case 0x32: // LD (HL-), A
             std::cout << "LD (HL-), A" << std::endl;
+            ldr_mem(&cpu.HL, &cpu.A);
+            cpu.HL--;
             break;
 
         case 0x33:  // INC SP
@@ -341,14 +307,15 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x34: // INC (HL)
             std::cout << "INC (HL)" << std::endl;
+            inc_mem(&cpu.HL);
             break;
 
         case 0x35: // DEC (HL)
             std::cout << "DEC (HL)" << std::endl;
+            dec_mem(&cpu.HL);
             break;
 
         case 0x36:  // LD (HL), d8
-            std::cout << "LD (HL), d8" << std::endl;
             break;
 
         case 0x37: 
@@ -963,26 +930,46 @@ void ret(bool condition) {
 }
 void xor_(uint8_t value) {
 }
+void inc_mem(uint8_t *value) {
+    return  
+}
 
-void inc(uint8_t *value) {
-    uint8_t nibble_carry = *value & 0x0F;
+void inc_mem(uint16_t *reg) {
+    uint_8_t tmp = mmu.read(*reg); 
+    uint8_t nibble_carry = *tmp & 0x0F;
+    tmp++;
+    mmu.write8(*reg,tmp);
 
-    (*value)++;
     set_flag(FLAG_HALF_CARRY,(nibble_carry == 0x0F));
-
-    cpu.set_flag(FLAG_ZERO, (*value == 0));
+    cpu.set_flag(FLAG_ZERO, (*_register == 0));
     cpu.clear_flag(FLAG_SUBTRACT);
 }
 
-void inc(uint8_t *value) {
-    value++;
+void inc(uint8_t *reg) {
+    uint8_t nibble_carry = *reg & 0x0F;
+
+    (*reg)++;
+    set_flag(FLAG_HALF_CARRY,(nibble_carry == 0x0F));
+
+    cpu.set_flag(FLAG_ZERO, (*reg == 0));
+    cpu.clear_flag(FLAG_SUBTRACT);
 }
 
-void dec(uint8_t *value) {
-    cpu.set_flag(FLAG_HALF_CARRY,(*value & 0x0F) == 0);
-    (*value)--;
+void inc(uint16_t *reg) {
+    uint8_t nibble_carry = *reg & 0x0F;
 
-    cpu.set_flag(FLAG_ZERO, (*value == 0));
+    (*reg)++;
+    set_flag(FLAG_HALF_CARRY,(nibble_carry == 0x0F));
+
+    cpu.set_flag(FLAG_ZERO, (*reg == 0));
+    cpu.clear_flag(FLAG_SUBTRACT);
+}
+
+void dec(uint8_t *reg) {
+    cpu.set_flag(FLAG_HALF_CARRY,(*reg & 0x0F) == 0);
+    (*reg)--;
+
+    cpu.set_flag(FLAG_ZERO, (*reg == 0));
     cpu.set_flag(FLAG_SUBTRACT, true);
 }
 
@@ -1042,7 +1029,21 @@ void InstructionSet::rrca(uint8_t *reg){
     cpu.clear_flag(FLAG_HALF_CARRY);
 }
 
-// Extended instructions
+void dec_mem(uint16_t *reg) {
+
+    uint8_t  tmp = mmu.read(*reg); 
+    uint8_t nibble_carry = tmp & 0x0F;
+    tmp--;
+    mmu.write8(*reg,tmp);
+
+    cpu.set_flag(FLAG_HALF_CARRY, nibble_carry == 0);
+    cpu.set_flag(FLAG_ZERO, nibble_carry == 0);
+    cpu.set_flag(FLAG_SUBTRACT, true);
+}
+
+void dec_mem(uint8_t *value) {
+    return;
+}
 void extended_execute(uint8_t opcode) {
 }
 void bit(uint8_t bit, uint8_t value) {
@@ -1072,4 +1073,3 @@ void sra(uint8_t *value) {
 void srl(uint8_t *value) {
 }
 void swap(uint8_t *value) {
-}

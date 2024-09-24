@@ -598,49 +598,77 @@ void InstructionSet::execute(uint8_t opcode) {
             mmu.romData[cpu.HL] = cpu.B;
             break;
 
-        case 0x71: 
+        case 0x71:  // LD (HL), C
+            std::cout << "LD (HL), C" << std::endl;
+            mmu.romData[cpu.HL] = cpu.C; 
             break;
 
-        case 0x72: 
+        case 0x72:  // LD (HL), D
+            std::cout << "LD (HL), D" << std::endl;
+            mmu.romData[cpu.HL] = cpu.D;
             break;
 
-        case 0x73: 
+        case 0x73:  // LD (HL), E
+            std::cout << "LD (HL), E" << std::endl;
+            mmu.romData[cpu.HL] = cpu.E; 
             break;
 
-        case 0x74: 
+        case 0x74:  // LD (HL), H
+            std::cout << "LD (HL), H" << std::endl;
+            mmu.romData[cpu.HL] = cpu.H;
             break;
 
-        case 0x75: 
+        case 0x75:  // LD (HL), L
+            std::cout << "LD (HL), L" << std::endl;
+            mmu.romData[cpu.HL] = cpu.L;
             break;
 
-        case 0x76: 
+        case 0x76:  // HALT
             break;
 
-        case 0x77: 
+        case 0x77:  // LD (HL), A
+            std::cout << "LD (HL), A" << std::endl;
+            mmu.romData[cpu.HL] = cpu.A;
             break;
 
-        case 0x78: 
+        case 0x78:  // LD A, B
+            std::cout << "LD A, B" << std::endl;
+            cpu.A = cpu.B;
             break;
 
-        case 0x79: 
+        case 0x79: // LD A, C
+            std::cout << "LD A, C" << std::endl;
+            cpu.A = cpu.C;
             break;
 
-        case 0x7A: 
+        case 0x7A: // LD A, D
+            std::cout << "LD A, D" << std::endl;
+            cpu.A = cpu.D;
             break;
 
-        case 0x7B: 
+        case 0x7B: // LD A, E
+            std::cout << "LD A, E" << std::endl;
+            cpu.A = cpu.E;
             break;
 
-        case 0x7C: 
+        case 0x7C: // LD A, H
+            std::cout << "LD A, H" << std::endl;
+            cpu.A = cpu.H;
             break;
 
-        case 0x7D: 
+        case 0x7D: // LD A, L
+            std::cout << "LD A, L" << std::endl;
+            cpu.A = cpu.L;
             break;
 
-        case 0x7E: 
+        case 0x7E: // LD A, (HL)
+            std::cout << "LD A, (HL)" << std::endl;
+            cpu.A = mmu.romData[cpu.HL];
             break;
 
-        case 0x7F: 
+        case 0x7F:  // LD A, A
+            std::cout << "LD A, A" << std::endl;
+            cpu.A = cpu.A;
             break;
 
         case 0x80: 

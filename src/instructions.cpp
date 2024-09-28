@@ -317,22 +317,32 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x36: // LD (HL), d8
             std::cout << "LD (HL), d8" << std::endl;
+            mmu.write8(cpu.HL, mmu.romData[cpu.PC++]);
             break;
 
         case 0x37: // SCF
+                   // TODO
             std::cout << "SCF" << std::endl;
             break;
 
         case 0x38: // JR C, r8
             std::cout << "JR C, r8" << std::endl;
+            int8_t offset = static_cast<int8_t>(mmu.romData[cpu.PC++]);
+
+            if ((cpu.F & FLAG_CARRY)) {
+                cpu.PC += offset;
+            }
             break;
 
         case 0x39: // ADD HL, SP
             std::cout << "ADD HL, SP" << std::endl;
+            add(&cpu.HL, &cpu.SP);
             break;
 
         case 0x3A: // LD A, (HL-)
             std::cout << "LD A, (HL-)" << std::endl;
+            cpu.A = mmu.read(cpu.HL);
+            cpu.HL--;
             break;
 
         case 0x3B: // DEC SP
@@ -345,13 +355,19 @@ void InstructionSet::execute(uint8_t opcode) {
             inc(&cpu.A);
             break;
 
-        case 0x3D: 
+        case 0x3D:  // DEC A
+            std::cout << "DEC A" << std::endl;
+            dec(&cpu.A);
             break;
 
-        case 0x3E: 
+        case 0x3E:  // LD A, d8
+            std::cout << "LD A, d8" << std::endl;
+            cpu.A = mmu.romData[cpu.PC];
+            cpu.PC++;
             break;
 
-        case 0x3F: 
+        case 0x3F:  // CPL
+            std::cout << "CPL" << std::endl;
             break;
 
         case 0x40: // LD B, B

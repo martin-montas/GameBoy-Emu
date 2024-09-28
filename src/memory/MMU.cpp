@@ -72,7 +72,7 @@ void MMU::write8(uint16_t address, uint8_t value)  {
         IO_REGISTERS[address - 0XFF00] = value;
     }
     else if ( address >= 0XE000 && address <= 0XFDFF){
-        WRAM[address - 0X2000] = value;
+        WRAM[address - 0XE000] = value;
     }
     else if (address >= 0xFF80 && address <= 0xFFFE) {
         HRAM[address - 0xFF80] = value;

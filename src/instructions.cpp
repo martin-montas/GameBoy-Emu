@@ -72,7 +72,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x09:  // ADD HL, BC
             std::cout << "ADD HL, BC" << std::endl;
-            add(&cpu.HL, &cpu.BC);
+            add16(&cpu.HL, &cpu.BC);
             break;
 
         case 0x0A:  // LD A, (BC)
@@ -687,33 +687,53 @@ void InstructionSet::execute(uint8_t opcode) {
             cpu.A = cpu.A;
             break;
 
-        case 0x80: 
+        case 0x80: // ADD A, B
+            std::cout << "ADD A, B" << std::endl;
+            add8(&cpu.A, cpu.B);
             break;
-        case 0x81: 
-            break;
-
-        case 0x82: 
-            break;
-
-        case 0x83: 
+        case 0x81:  // ADD A, C
+            std::cout << "ADD A, C" << std::endl;
+            add8(&cpu.A, cpu.C);
             break;
 
-        case 0x84: 
+        case 0x82:  // ADD A, D
+            std::cout << "ADD A, D" << std::endl;
+            add8(&cpu.A, cpu.D);
             break;
 
-        case 0x85: 
+        case 0x83:  // ADD A, E
+            std::cout << "ADD A, E" << std::endl; 
+            add8(&cpu.A, cpu.E);
             break;
 
-        case 0x86: 
+        case 0x84:  // ADD A, H
+            std::cout << "ADD A, H" << std::endl;
+            add8(&cpu.A, cpu.H);
             break;
 
-        case 0x87: 
+        case 0x85:  // ADD A, L
+            std::cout << "ADD A, L" << std::endl;
+            add8(&cpu.A, cpu.L);
             break;
 
-        case 0x88: 
+        case 0x86:  // ADD A, (HL)
+                    // TODO
+            std::cout << "ADD A, (HL)" << std::endl;
             break;
 
-        case 0x89: 
+        case 0x87:  // ADD A, A
+            std::cout << "ADD A, A" << std::endl;
+            add8(&cpu.A, cpu.A);
+            break;
+
+        case 0x88:  // ADC A, B
+                    // TODO
+            std::cout << "ADC A, B" << std::endl;
+            // adc(cpu.B);
+            break;
+
+        case 0x89: // ADC A, C
+                   // TODO
             break;
 
         case 0x8A: 
@@ -1123,10 +1143,16 @@ void dec(uint8_t *reg) {
     cpu.set_flag(FLAG_SUBTRACT, true);
 }
 
-void add(uint8_t *destination, uint8_t value) {
+void add8(uint8_t *reg_1, uint8_t *reg_2) {
+    uint8_t tmp = *reg_1 + *reg_2;
+
+    cpu.set_flag(FLAG_CARRY, tmp > 0xFF);
+    cpu.set_flag(FLAG_ZERO, (tmp == 0));
+    cpu.set_flag(FLAG_HALF_CARRY, ((*reg_1 & 0x0F) + (*reg_2 & 0x0F)) > 0x0F);
+    *reg_1 = tmp & 0xFF;
 }
 
-void add(uint16_t *destination, uint16_t *value) {
+void add16(uint16_t *destination, uint16_t *value) {
     uint32_t result = *destination + *value;
     cpu.F &= ~FLAG_SUBTRACT;
     cpu.set_flag(FLAG_CARRY, result > 0xFFFF);

@@ -160,7 +160,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x19:  // ADD HL, DE
             std::cout << "ADD HL, DE" << std::endl;
-            add(&cpu.HL, &cpu.DE);
+            add16(&cpu.HL, &cpu.DE);
             break;
 
         case 0x1A:  // LD A, (DE)
@@ -249,7 +249,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x29: // ADD HL, HL
             std::cout << "ADD HL, HL" << std::endl;
-            add(&cpu.HL, &cpu.HL);
+            add16(&cpu.HL, &cpu.HL);
             break;
 
         case 0x2A: // LD A, (HL+)
@@ -336,7 +336,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x39: // ADD HL, SP
             std::cout << "ADD HL, SP" << std::endl;
-            add(&cpu.HL, &cpu.SP);
+            add16(&cpu.HL, &cpu.SP);
             break;
 
         case 0x3A: // LD A, (HL-)
@@ -727,106 +727,166 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x88:  // ADC A, B
-                    // TODO
             std::cout << "ADC A, B" << std::endl;
-            // adc(cpu.B);
+            adc(cpu.A,cpu.B);
             break;
 
         case 0x89: // ADC A, C
-                   // TODO
+            std::cout << "ADC A, C" << std::endl;
+            adc(cpu.A,cpu.C);
             break;
 
-        case 0x8A: 
+        case 0x8A: // ADC A, D
+            std::cout << "ADC A, D" << std::endl;
+            adc(cpu.A,cpu.D);
             break;
 
-        case 0x8B: 
+        case 0x8B:  // ADC A, E
+            std::cout << "ADC A, E" << std::endl;
+            adc(cpu.A,cpu.E);
             break;
 
-        case 0x8C: 
+        case 0x8C: // ADC A, H
+            std::cout << "ADC A, H" << std::endl;
+            adc(cpu.A,cpu.H);
             break;
 
-        case 0x8D: 
+        case 0x8D:  // ADC A, L
+            std::cout << "ADC A, L" << std::endl;
+            adc(cpu.A,cpu.L);
             break;
 
-        case 0x8E: 
+        case 0x8E:  // ADC A, (HL)
+            std::cout << "ADC A, (HL)" << std::endl;
+            adc(cpu.A,mmu.romData[cpu.HL]);
             break;
 
-        case 0x8F: 
+        case 0x8F:  // ADC A, A
+            std::cout << "ADC A, A" << std::endl;
+            adc(cpu.A,cpu.A);
             break;
 
-        case 0x90: 
+        case 0x90:  // SUB B
+            std::cout << "SUB B" << std::endl;
+            sub(cpu.A,cpu.B);
             break;
 
-        case 0x91: 
+        case 0x91:  // SUB C
+            std::cout << "SUB C" << std::endl;
+            sub(cpu.A,cpu.C);
             break;
 
-        case 0x92: 
+        case 0x92:  // SUB D
+            std::cout << "SUB D" << std::endl;
+            sub(cpu.A,cpu.D);
             break;
 
-        case 0x93: 
+        case 0x93:  // SUB E
+            std::cout << "SUB E" << std::endl;
+            sub(cpu.A,cpu.E);
             break;
 
-        case 0x94: 
+        case 0x94:  // SUB H
+            std::cout << "SUB H" << std::endl;
+            sub(cpu.A,cpu.H);
             break;
 
-        case 0x95: 
+        case 0x95:  // SUB L
+            std::cout << "SUB L" << std::endl;
+            sub(cpu.A,cpu.L);
             break;
 
-        case 0x96: 
+        case 0x96:  // SUB (HL)
+            std::cout << "SUB (HL)" << std::endl;
+            sub(cpu.A,mmu.romData[cpu.HL]);
             break;
 
-        case 0x97: 
+        case 0x97:  // SUB A
+            std::cout << "SUB A" << std::endl;
+            sub(cpu.A,cpu.A);
             break;
 
-        case 0x98: 
+        case 0x98:  // SBC A, B
+            std::cout << "SBC A, B" << std::endl;
+            sbc(cpu.A,cpu.B);
             break;
 
-        case 0x99: 
+        case 0x99: // SBC A, C
+            std::cout << "SBC A, C" << std::endl;
+            sbc(cpu.A,cpu.C);
             break;
 
-        case 0x9A: 
+        case 0x9A: // SBC A, D
+            std::cout << "SBC A, D" << std::endl;
+            sbc(cpu.A,cpu.D);
             break;
 
-        case 0x9B: 
+        case 0x9B:  // SBC A, E
+            std::cout << "SBC A, E" << std::endl;
+            sbc(cpu.A,cpu.E);
             break;
 
-        case 0x9C: 
+        case 0x9C: // SBC A, H
+            std::cout << "SBC A, H" << std::endl;
+            sbc(cpu.A,cpu.H);
             break;
 
-        case 0x9D: 
+        case 0x9D:  // SBC A, L
+            std::cout << "SBC A, L" << std::endl;
+            sbc(cpu.A,cpu.L);
             break;
 
-        case 0x9E: 
+        case 0x9E: // SBC A, (HL)
+            std::cout << "SBC A, (HL)" << std::endl;
+            sbc(cpu.A,mmu.romData[cpu.HL]);
             break;
 
-        case 0x9F: 
+        case 0x9F:  // SBC A, A
+            std::cout << "SBC A, A" << std::endl;
+            sbc(cpu.A,cpu.A);
             break;
 
-        case 0xA0: 
+        case 0xA0:  // AND B
+            std::cout << "AND B" << std::endl;
+            and_(cpu.A,cpu.B);
             break;
 
-        case 0xA1: 
+        case 0xA1:  // AND C
+            std::cout << "AND C" << std::endl;
+            and_(cpu.A,cpu.C);
             break;
 
-        case 0xA2: 
+        case 0xA2: // AND D
+            std::cout << "AND D" << std::endl;
+            and_(cpu.A,cpu.D);
             break;
 
-        case 0xA3: 
+        case 0xA3:  // AND E
+            std::cout << "AND E" << std::endl;
+            and_(cpu.A,cpu.E);
             break;
 
-        case 0xA4: 
+        case 0xA4:  // AND H
+            std::cout << "AND H" << std::endl;
+            and_(cpu.A,cpu.H);
             break;
 
-        case 0xA5: 
+        case 0xA5:  // AND L
+            std::cout << "AND L" << std::endl;
+            and_(cpu.A,cpu.L);
             break;
 
-        case 0xA6: 
+        case 0xA6:  // AND (HL)
+            std::cout << "AND (HL)" << std::endl;
+            and_(cpu.A,mmu.romData[cpu.HL]);
             break;
 
-        case 0xA7: 
+        case 0xA7:  // AND A
+            std::cout << "AND A" << std::endl;
+            and_(cpu.A,cpu.A);
             break;
 
-        case 0xA8: 
+        case 0xA8:  
             break;
 
         case 0xA9: 
@@ -1104,7 +1164,7 @@ void inc_mem(uint8_t *value) {
     return  
 }
 
-void inc_mem(uint16_t *reg) {
+void InstructionSet::inc_mem(uint16_t *reg) {
     uint_8_t tmp = mmu.read(*reg); 
     uint8_t nibble_carry = *tmp & 0x0F;
     tmp++;
@@ -1115,7 +1175,7 @@ void inc_mem(uint16_t *reg) {
     cpu.clear_flag(FLAG_SUBTRACT);
 }
 
-void inc(uint8_t *reg) {
+void InstructionSet::inc(uint8_t *reg) {
     uint8_t nibble_carry = *reg & 0x0F;
 
     (*reg)++;
@@ -1125,7 +1185,7 @@ void inc(uint8_t *reg) {
     cpu.clear_flag(FLAG_SUBTRACT);
 }
 
-void inc(uint16_t *reg) {
+void InstructionSet::inc(uint16_t *reg) {
     uint8_t nibble_carry = *reg & 0x0F;
 
     (*reg)++;
@@ -1135,7 +1195,7 @@ void inc(uint16_t *reg) {
     cpu.clear_flag(FLAG_SUBTRACT);
 }
 
-void dec(uint8_t *reg) {
+void InstructionSet::dec(uint8_t *reg) {
     cpu.set_flag(FLAG_HALF_CARRY,(*reg & 0x0F) == 0);
     (*reg)--;
 
@@ -1143,7 +1203,7 @@ void dec(uint8_t *reg) {
     cpu.set_flag(FLAG_SUBTRACT, true);
 }
 
-void add8(uint8_t *reg_1, uint8_t *reg_2) {
+void InstructionSet::add8(uint8_t *reg_1, uint8_t *reg_2) {
     uint8_t tmp = *reg_1 + *reg_2;
 
     cpu.set_flag(FLAG_CARRY, tmp > 0xFF);
@@ -1152,7 +1212,7 @@ void add8(uint8_t *reg_1, uint8_t *reg_2) {
     *reg_1 = tmp & 0xFF;
 }
 
-void add16(uint16_t *destination, uint16_t *value) {
+void InstructionSet::add16(uint16_t *destination, uint16_t *value) {
     uint32_t result = *destination + *value;
     cpu.F &= ~FLAG_SUBTRACT;
     cpu.set_flag(FLAG_CARRY, result > 0xFFFF);
@@ -1163,27 +1223,43 @@ void add16(uint16_t *destination, uint16_t *value) {
 
 void ldhl(int8_t value) {
 }
-void adc(uint8_t value) {
+
+void InstructionSet::adc(uint8_t& reg_1, uint8_t reg_2) {
+    uint8_t carry = cpu.get_flag(FLAG_CARRY) ? 1 : 0;
+
+    uint16_t result = reg_1 + reg_2 + carry;
+
+    reg_1 = result & 0xFF;
+
+    cpu.set_flag(FLAG_ZERO, (reg_1 == 0));
+    cpu.set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) + (reg_2 & 0x0F) + carry) > 0x0F);
+    cpu.set_flag(FLAG_CARRY, (result > 0xFF));
+    cpu.clear_flag(FLAG_SUBTRACT);
 }
-void sbc(uint8_t value) {
+void sbc(uint8_t reg_1, uint8_t reg_2) {
+    uint8_t carry = cpu.get_flag(FLAG_CARRY) ? 1 : 0;
+
+    uint16_t result = reg_1 - reg_2 - carry;
+    reg_1 = result & 0xFF;
+
+    cpu.set_flag(FLAG_ZERO, (reg_1 == 0));
+    cpu.set_flag(FLAG_SUBTRACT, 1);
+    cpu.set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) < (reg_2 & 0x0F) + carry));  
+    cpu.set_flag(FLAG_CARRY, (result > 0xFF));
 }
-void sub(uint8_t value) {
+
+void InstructionSet::sub(uint8_t reg_1, uint8_t reg_2) {
+    uint16_t result = reg_1 - reg_2;
+
+    reg_1 = result & 0xFF;
+
+    cpu.set_flag(FLAG_ZERO, (reg_1 == 0));
+    cpu.set_flag(FLAG_SUBTRACT, 1);
+    cpu.set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) < (value & 0x0F)));
+    cpu.set_flag(FLAG_CARRY, (result > 0xFF));
 }
-void and_(uint8_t value) {
-}
-void or_(uint8_t value) {
-}
-void cp(uint8_t value) {
-}
-void call(bool condition) {
-}
-void jump(bool condition) {
-}
-void jump_add(bool condition) {
-}
-void cp_n(uint8_t value) {
-}
-void rlc(uint8_t *reg) {
+
+void InstructionSet::rlc(uint8_t *reg) {
     bool msb = *reg & 0x80;
     *reg = (*reg << 1) | (msb >> 7);
 
@@ -1205,8 +1281,7 @@ void InstructionSet::rrca(uint8_t *reg){
     cpu.clear_flag(FLAG_HALF_CARRY);
 }
 
-void dec_mem(uint16_t *reg) {
-
+void InstructionSet::dec_mem(uint16_t *reg) {
     uint8_t  tmp = mmu.read(*reg); 
     uint8_t nibble_carry = tmp & 0x0F;
     tmp--;
@@ -1249,3 +1324,25 @@ void sra(uint8_t *value) {
 void srl(uint8_t *value) {
 }
 void swap(uint8_t *value) {
+
+void and_(uint8_t &reg_1, uint8_t reg_2) {
+
+    reg_1 = reg_1 & reg_2;
+
+    cpu.set_flag(FLAG_ZERO, reg_1 == 0);
+    cpu.clear_flag(FLAG_SUBTRACT);
+    cpu.set_flag(FLAG_HALF_CARRY, 1);
+    cpu.clear_flag(FLAG_CARRY);
+}
+void or_(uint8_t value) {
+}
+void cp(uint8_t value) {
+}
+void call(bool condition) {
+}
+void jump(bool condition) {
+}
+void jump_add(bool condition) {
+}
+void cp_n(uint8_t value) {
+}

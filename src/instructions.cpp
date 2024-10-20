@@ -106,7 +106,6 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x10:  // STOP
-                    // TODO
             break;
 
         case 0x11: // LD DE, d16
@@ -141,12 +140,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x17: // RLA 
             std::cout << "RLA" << std::endl;
-            bool carry = cpu.F & FLAG_CARRY; 
-            cpu.set_flag(FLAG_CARRY, cpu.A & 0x80);
-            cpu.A = cpu.A << 1;
-            if (carry) {
-                cpu.A |= 0x01; 
-            }
+            rla();
             break;
 
         case 0x18:  // JR r8
@@ -189,8 +183,8 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x1F: // RRA
-                   // TODO
             std::cout << "RRA" << std::endl;
+            rra();
             break;
 
         case 0x20:  // JR NZ, r8
@@ -234,7 +228,6 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x27:  // DAA
-                    // TODO
             std::cout << "DAA" << std::endl;
             break;
 
@@ -828,8 +821,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x9C: // SBC A, H
             std::cout << "SBC A, H" << std::endl;
-            sbc(cpu.A,cpu.H);
-            break;
+            sbc(cpu.A,cpu.H); break;
 
         case 0x9D:  // SBC A, L
             std::cout << "SBC A, L" << std::endl;
@@ -1280,6 +1272,14 @@ void InstructionSet::rrca(uint8_t *reg){
     cpu.clear_flag(FLAG_SUBTRACT);
     cpu.clear_flag(FLAG_HALF_CARRY);
 }
+void and_(uint8_t &reg_1, uint8_t reg_2) {
+    reg_1 = reg_1 & reg_2;
+
+    cpu.set_flag(FLAG_ZERO, reg_1 == 0);
+    cpu.clear_flag(FLAG_SUBTRACT);
+    cpu.set_flag(FLAG_HALF_CARRY, 1);
+    cpu.clear_flag(FLAG_CARRY);
+}
 
 void InstructionSet::dec_mem(uint16_t *reg) {
     uint8_t  tmp = mmu.read(*reg); 
@@ -1291,6 +1291,32 @@ void InstructionSet::dec_mem(uint16_t *reg) {
     cpu.set_flag(FLAG_ZERO, nibble_carry == 0);
     cpu.set_flag(FLAG_SUBTRACT, true);
 }
+
+void InstructionSet::rla() {
+    std::cout << "RLA" << std::endl;
+    bool carry = cpu.F & FLAG_CARRY; 
+    cpu.set_flag(FLAG_CARRY, cpu.A & 0x80);
+    cpu.A = cpu.A << 1;
+    if (carry) {
+        cpu.A |= 0x01; 
+    }
+}
+
+void InstructionSet::rra() {
+
+    bool msb = cpu.A & 0x01;
+    cpu.A = cpu.A >> 1;
+    if (msb) {
+        cpu.A |= 0x80;
+    }
+
+    cpu.clear_flag(FLAG_ZERO);
+    cpu.clear_flag(FLAG_SUBTRACT);
+    cpu.clear_flag(FLAG_HALF_CARRY);
+    cpu.set_flag(FLAG_CARRY, msb);
+}
+
+
 
 void dec_mem(uint8_t *value) {
     return;
@@ -1313,8 +1339,6 @@ void rrc(uint8_t *value) {
 }
 void rra() {
 }
-void rla() {
-}
 void rlca() {
 }
 void sla(uint8_t *value) {
@@ -1325,15 +1349,6 @@ void srl(uint8_t *value) {
 }
 void swap(uint8_t *value) {
 
-void and_(uint8_t &reg_1, uint8_t reg_2) {
-
-    reg_1 = reg_1 & reg_2;
-
-    cpu.set_flag(FLAG_ZERO, reg_1 == 0);
-    cpu.clear_flag(FLAG_SUBTRACT);
-    cpu.set_flag(FLAG_HALF_CARRY, 1);
-    cpu.clear_flag(FLAG_CARRY);
-}
 void or_(uint8_t value) {
 }
 void cp(uint8_t value) {

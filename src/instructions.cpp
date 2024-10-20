@@ -228,7 +228,25 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x27:  // DAA
-            std::cout << "DAA" << std::endl;
+            uint8_t correction = 0;
+            if (!FLAG_SUBTRACT) {
+                if ((cpu.A & 0x0F) > 9 || FLAG_HALF_CARRY) {
+                    correction |= 0x06; 
+                }
+
+                if ((cpu.A > 0x99) || FLAG_HALF_CARRY) {
+                    correction |= 0x60;
+                    cpu.set_flag(FLAG_HALF_CARRY, true);
+                }
+            } else {
+                if (FLAG_HALF_CARRY) correction |= 0x06;
+                if (FLAG_CARRY) correction |= 0x60;
+            }
+
+            
+            cpu.A += FLAG_SUBTRACT ? -correction : correction;
+            cpu.set_flag(FLAG_ZERO, cpu.A == 0);
+            cpu.set_flag(FLAG_HALF_CARRY, false);
             break;
 
         case 0x28:  // JR Z, r8

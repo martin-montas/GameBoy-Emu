@@ -14,6 +14,8 @@ class InstructionSet {
         void execute(uint8_t opcode);
 
         void rrca(uint8_t *reg);
+        void rra();
+        void rla();
         void ret(bool condition);
         void xor_(uint8_t value);
 
@@ -50,5 +52,6 @@ class InstructionSet {
         void cp_n(uint8_t value);
 
         void cpl(uint8_t *reg);
+        void rlc(uint8_t *reg);
 };
 #endif

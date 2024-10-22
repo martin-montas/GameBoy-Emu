@@ -243,7 +243,7 @@ void InstructionSet::execute(uint8_t opcode) {
                 if (FLAG_CARRY) correction |= 0x60;
             }
 
-            
+
             cpu.A += FLAG_SUBTRACT ? -correction : correction;
             cpu.set_flag(FLAG_ZERO, cpu.A == 0);
             cpu.set_flag(FLAG_HALF_CARRY, false);
@@ -290,7 +290,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x2F: // CPL
             std::cout << "CPL" << std::endl;
-            cpl();
+            cpl(&cpu.A);
             break;
 
         case 0x30: // JR NC, r8
@@ -1161,9 +1161,6 @@ void InstructionSet::execute(uint8_t opcode) {
         case 0xFF: 
             break;
 
-        default:
-            std::cout << "Invalid Instruction: " << opcode << std::endl;
-            break;
     }
 }
 

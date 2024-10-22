@@ -289,7 +289,8 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x2F: // CPL
-                   // TODO
+            std::cout << "CPL" << std::endl;
+            cpl();
             break;
 
         case 0x30: // JR NC, r8
@@ -1171,7 +1172,13 @@ void ret(bool condition) {
 void xor_(uint8_t value) {
 }
 void inc_mem(uint8_t *value) {
-    return  
+    return;
+}
+void InstructionSet::cpl(uint8_t *reg) {
+    reg = ~reg;
+
+    cpu.set_flag(FLAG_SUBTRACT, true);
+    cpu.set_flag(FLAG_HALF_CARRY, true);
 }
 
 void InstructionSet::inc_mem(uint16_t *reg) {
@@ -1334,48 +1341,6 @@ void InstructionSet::rra() {
     cpu.set_flag(FLAG_CARRY, msb);
 }
 
-
-
 void dec_mem(uint8_t *value) {
     return;
-}
-void extended_execute(uint8_t opcode) {
-}
-void bit(uint8_t bit, uint8_t value) {
-}
-void res(uint8_t bit, uint8_t *rgst) {
-}
-void set(uint8_t bit, uint8_t *rgst) {
-}
-void rl(uint8_t *value) {
-}
-void rlc(uint8_t *value) {
-}
-void rr(uint8_t *value) {
-}
-void rrc(uint8_t *value) {
-}
-void rra() {
-}
-void rlca() {
-}
-void sla(uint8_t *value) {
-}
-void sra(uint8_t *value) {
-}
-void srl(uint8_t *value) {
-}
-void swap(uint8_t *value) {
-
-void or_(uint8_t value) {
-}
-void cp(uint8_t value) {
-}
-void call(bool condition) {
-}
-void jump(bool condition) {
-}
-void jump_add(bool condition) {
-}
-void cp_n(uint8_t value) {
 }

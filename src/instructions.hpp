@@ -42,8 +42,6 @@ class InstructionSet {
 
         void and_(uint8_t reg_1, uint8_t reg_2);
 
-
-
         void or_(uint8_t value);
         void cp(uint8_t value);
         void call(bool condition);
@@ -51,22 +49,6 @@ class InstructionSet {
         void jump_add(bool condition);
         void cp_n(uint8_t value);
 
-        // Extended instructions
-        void extended_execute(uint8_t opcode);
-        void bit(uint8_t bit, uint8_t value);
-        void res(uint8_t bit, uint8_t *rgst);
-        void set(uint8_t bit, uint8_t *rgst);
-        void rl(uint8_t *value);
-        void rlc(uint8_t *value);
-        void rr(uint8_t *value);
-        void rrc(uint8_t *value);
-        void rra();
-        void rla();
-        void rlca();
-        void sla(uint8_t *value);
-        void sra(uint8_t *value);
-        void srl(uint8_t *value);
-        void swap(uint8_t *value);
+        void cpl(uint8_t *reg);
 };
-
 #endif

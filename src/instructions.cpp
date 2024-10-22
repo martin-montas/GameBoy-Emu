@@ -333,8 +333,8 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x37: // SCF
-                   // TODO
             std::cout << "SCF" << std::endl;
+            cpu.set_flag(FLAG_CARRY, true);
             break;
 
         case 0x38: // JR C, r8
@@ -613,7 +613,8 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x6E: // LD L, (HL)
-                   // TODO: Add support for 16-bit load
+            std::cout << "LD L, (HL)" << std::endl;
+            cpu.L = mmu.romData[cpu.HL];
             break;
 
         case 0x6F: // LD L, A
@@ -729,8 +730,8 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0x86:  // ADD A, (HL)
-                    // TODO
             std::cout << "ADD A, (HL)" << std::endl;
+            add8_mem(&cpu.A, mmu.romData[cpu.HL]);
             break;
 
         case 0x87:  // ADD A, A
@@ -1323,6 +1324,17 @@ void InstructionSet::rla() {
         cpu.A |= 0x01; 
     }
 }
+
+void InstructionSet::add8_mem(uint8_t *destination, uint8_t value) {
+    mmu.write8(*destination, *destination + value);
+
+    cpu.set_flag(FLAG_ZERO, (*destination + value) == 0);
+    cpu.clear_flag(FLAG_SUBTRACT);
+    cpu.set_flag(FLAG_HALF_CARRY, ((*destination & 0x0F) + (value & 0x0F)) > 0x0F);
+    cpu.set_flag(FLAG_CARRY, (*destination + value) > 0xFF);
+}
+
+
 
 void InstructionSet::rra() {
 

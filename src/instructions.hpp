@@ -45,7 +45,7 @@ class InstructionSet {
 
         void and_(uint8_t reg_1, uint8_t reg_2);
 
-        void or_(uint8_t value);
+        void xor_(uint8_t reg_1, uint8_t reg_2);
         void cp(uint8_t value);
         void call(bool condition);
         void jump(bool condition);
@@ -54,5 +54,8 @@ class InstructionSet {
 
         void cpl(uint8_t *reg);
         void rlc(uint8_t *reg);
+
+
+
 };
 #endif

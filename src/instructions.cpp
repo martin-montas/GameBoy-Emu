@@ -898,28 +898,44 @@ void InstructionSet::execute(uint8_t opcode) {
             and_(cpu.A,cpu.A);
             break;
 
-        case 0xA8:  
+        case 0xA8: // XOR B
+            std::cout << "XOR B" << std::endl;
+            xor_(cpu.A,cpu.B);
             break;
 
-        case 0xA9: 
+        case 0xA9:  // XOR C
+            std::cout << "XOR C" << std::endl; 
+            xor_(cpu.A,cpu.C);
             break;
 
-        case 0xAA: 
+        case 0xAA: // XOR D
+            std::cout << "XOR D" << std::endl;
+            xor_(cpu.A,cpu.D);
             break;
 
-        case 0xAB: 
+        case 0xAB: // XOR E
+            std::cout << "XOR E" << std::endl; 
+            xor_(cpu.A,cpu.E);
             break;
 
-        case 0xAC: 
+        case 0xAC: // XOR H
+            std::cout << "XOR H" << std::endl;
+            xor_(cpu.A,cpu.H);
             break;
 
-        case 0xAD: 
+        case 0xAD:  // XOR L
+            std::cout << "XOR L" << std::endl;
+            xor_(cpu.A,cpu.L);
             break;
 
-        case 0xAE: 
+        case 0xAE: // XOR (HL)
+            std::cout << "XOR (HL)" << std::endl;
+            xor_(cpu.A,mmu.romData[cpu.HL]);
             break;
 
-        case 0xAF: 
+        case 0xAF: // XOR A
+            std::cout << "XOR A" << std::endl;
+            xor_(cpu.A,cpu.A);
             break;
 
         case 0xB0: 
@@ -1167,7 +1183,16 @@ void InstructionSet::execute(uint8_t opcode) {
 
 void ret(bool condition) {
 }
-void xor_(uint8_t value) {
+void InstructionSet::or_(uint8_t reg_1, uint8_t reg_2) {
+
+    uint8_t tmp = reg_1 | reg_2;
+    cpu.set_flag(FLAG_ZERO, (tmp == 0));
+    cpu.clear_flag(FLAG_SUBTRACT);
+    cpu.clear_flag(FLAG_HALF_CARRY);
+    cpu.clear_flag(FLAG_CARRY);
+    *reg_1 = tmp;
+
+
 }
 void inc_mem(uint8_t *value) {
     return;

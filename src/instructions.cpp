@@ -938,55 +938,88 @@ void InstructionSet::execute(uint8_t opcode) {
             xor_(cpu.A,cpu.A);
             break;
 
-        case 0xB0: 
+        case 0xB0: // OR B
+            std::cout << "OR B" << std::endl;
+            or_(cpu.A,cpu.B);
             break;
 
-        case 0xB1: 
+        case 0xB1:  // OR C
+            std::cout << "OR C" << std::endl;
+            or_(cpu.A,cpu.C);
             break;
 
-        case 0xB2: 
+        case 0xB2:  // OR D
+            std::cout << "OR D" << std::endl;
+            or_(cpu.A,cpu.D);
             break;
 
-        case 0xB3: 
+        case 0xB3:  // OR E
+            std::cout << "OR E" << std::endl;
+            or_(cpu.A,cpu.E);
             break;
 
-        case 0xB4: 
+        case 0xB4:  // OR H
+            std::cout << "OR H" << std::endl;
+            or_(cpu.A,cpu.H);
             break;
 
-        case 0xB5: 
+        case 0xB5:  // OR L
+            std::cout << "OR L" << std::endl;
+            or_(cpu.A,cpu.L);
             break;
 
-        case 0xB6: 
+        case 0xB6:  // OR (HL)
+            std::cout << "OR (HL)" << std::endl;
+            or_(cpu.A,mmu.romData[cpu.HL]);
             break;
 
-        case 0xB7: 
+        case 0xB7:  // OR A
+            std::cout << "OR A" << std::endl;
+            or_(cpu.A,cpu.A);
             break;
 
-        case 0xB8: 
+        case 0xB8:  // CP B
+            std::cout << "CP B" << std::endl;
+            cp(cpu.A, cpu.B);
             break;
 
-        case 0xB9: 
+        case 0xB9: // CP C
+            std::cout << "CP C" << std::endl;
+            cp(cpu.A, cpu.C);
             break;
 
-        case 0xBA: 
+        case 0xBA: // CP D
+            std::cout << "CP D" << std::endl;
+            cp(cpu.A, cpu.D);
             break;
 
-        case 0xBB: 
+        case 0xBB:  // CP E
+            std::cout << "CP E" << std::endl;
+            cp(cpu.A, cpu.E);
             break;
 
-        case 0xBC: 
+        case 0xBC:  // CP H
+            std::cout << "CP H" << std::endl;
+            cp(cpu.A, cpu.H);
             break;
 
-        case 0xBD: 
+        case 0xBD:  // CP L
+            std::cout << "CP L" << std::endl;
+            cp(cpu.A, cpu.L);
             break;
 
-        case 0xBE: 
+        case 0xBE:  // CP (HL)
+            std::cout << "CP (HL)" << std::endl;
+            cp(cpu.A, mmu.romData[cpu.HL]);
             break;
 
-        case 0xBF: 
+        case 0xBF:  // CP A
+            std::cout << "CP A" << std::endl;
+            cp(cpu.A, cpu.A);
             break;
 
-        case 0xC0: 
+        case 0xC0:  // RET NZ
+                    // TODO
             break;
 
         case 0xC1: 
@@ -1359,10 +1392,16 @@ void InstructionSet::add8_mem(uint8_t *destination, uint8_t value) {
     cpu.set_flag(FLAG_CARRY, (*destination + value) > 0xFF);
 }
 
+void InstructionSet::or_(uint8_t &reg_1, uint8_t &reg_2) {
+    uint8_t  tmp = reg_1 | reg_2;
 
+    cpu.set_flag(FLAG_ZERO, tmp == 0);
+    cpu.clear_flag(FLAG_CARRY);
+    cpu.clear_flag(FLAG_SUBTRACT);
+    cpu.clear_flag(FLAG_HALF_CARRY);
+}
 
 void InstructionSet::rra() {
-
     bool msb = cpu.A & 0x01;
     cpu.A = cpu.A >> 1;
     if (msb) {
@@ -1374,7 +1413,15 @@ void InstructionSet::rra() {
     cpu.clear_flag(FLAG_HALF_CARRY);
     cpu.set_flag(FLAG_CARRY, msb);
 }
-
 void dec_mem(uint8_t *value) {
     return;
+}
+
+void InstructionSet::cp(uint8_t reg_1, uint8_t reg_2) {
+    uint16_t tmp = reg_1 - reg_2;
+
+    cpu.set_flag(FLAG_ZERO, (reg_1 == reg_2));
+    cpu.set_flag(FLAG_SUBTRACT, 1);
+    cpu.set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) < (reg_2 & 0x0F)));
+    cpu.set_flag(FLAG_CARRY, (tmp > 0xFF));
 }

@@ -229,7 +229,8 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x27:  // DAA
             uint8_t correction = 0;
-            if (!FLAG_SUBTRACT) {
+            if (!(cpu.F & FLAG_SUBTRACT)) {
+
                 if ((cpu.A & 0x0F) > 9 || FLAG_HALF_CARRY) {
                     correction |= 0x06; 
                 }
@@ -1019,7 +1020,10 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0xC0:  // RET NZ
-                    // TODO
+            std::cout << "RET NZ" << std::endl;
+            if (!(cpu.F & FLAG_ZERO)) {
+                ret(true);
+            }
             break;
 
         case 0xC1:  // POP BC
@@ -1214,23 +1218,27 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0xFF: 
             break;
-
     }
 }
 
-void ret(bool condition) {
-}
-void InstructionSet::or_(uint8_t reg_1, uint8_t reg_2) {
+void InstructionSet::ret(bool condition) {
+    if (condition) {
+        uint16_t address = mmu.read16(cpu.SP);
 
+        cpu.SP += 2;
+        cpu.PC = address;
+    }
+}
+
+void InstructionSet::or_(uint8_t reg_1, uint8_t reg_2) {
     uint8_t tmp = reg_1 | reg_2;
     cpu.set_flag(FLAG_ZERO, (tmp == 0));
     cpu.clear_flag(FLAG_SUBTRACT);
     cpu.clear_flag(FLAG_HALF_CARRY);
     cpu.clear_flag(FLAG_CARRY);
     *reg_1 = tmp;
-
-
 }
+
 void inc_mem(uint8_t *value) {
     return;
 }

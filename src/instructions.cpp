@@ -1034,189 +1034,51 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0xC2:  // JP NZ, nn
+            std::cout << "JP NZ, nn" << std::endl;
             break;
 
         case 0xC3:  // JP nn
+            std::cout << "JP nn" << std::endl;
             break;
 
         case 0xC4:  // CALL NZ, nn
+            std::cout << "CALL NZ, nn" << std::endl;
+            break;
+ 
+        case 0xC5:  // PUSH BC
+            std::cout << "PUSH BC" << std::endl;
             break;
 
-        case 0xC5: 
+        case 0xC6:  // ADD A, d8
+            std::cout << "ADD A, d8" << std::endl;
             break;
 
-        case 0xC6: 
+        case 0xC7:  // RST 00h
+            std::cout << "RST 00h" << std::endl;
             break;
 
-        case 0xC7: 
+        case 0xC8:  // RET Z
+            std::cout << "RET Z" << std::endl;
             break;
 
-        case 0xC8: 
+        case 0xC9:  // RET
+            std::cout << "RET" << std::endl;
             break;
 
-        case 0xC9: 
+        case 0xCA:  // JP Z, nn
+            std::cout << "JP Z, nn" << std::endl;
             break;
 
-        case 0xCA: 
+        case 0xCB:  // PREFIX CB
+            std::cout << "PREFIX CB" << std::endl;
             break;
 
-        case 0xCB: 
+        case 0xCC:  // CALL Z, nn
+            std::cout << "PREFIX CB" << std::endl;
             break;
 
-        case 0xCC: 
-            break;
-
-        case 0xCD: 
-            break;
-
-        case 0xCE: 
-            break;
-
-        case 0xCF: 
-            break;
-
-        case 0xD0: 
-            break;
-
-        case 0xD1: 
-            break;
-
-        case 0xD2: 
-            break;
-
-        case 0xD3: 
-            break;
-
-        case 0xD4: 
-            break;
-
-        case 0xD5: 
-            break;
-
-        case 0xD6: 
-            break;
-
-        case 0xD7: 
-            break;
-
-        case 0xD8: 
-            break;
-
-        case 0xD9: 
-            break;
-
-        case 0xDA: 
-            break;
-
-        case 0xDB: 
-            break;
-
-        case 0xDC: 
-            break;
-
-        case 0xDD: 
-            break;
-
-        case 0xDE: 
-            break;
-
-        case 0xDF: 
-            break;
-
-        case 0xE0: 
-            break;
-
-        case 0xE1: 
-            break;
-
-        case 0xE2: 
-            break;
-
-        case 0xE3: 
-            break;
-
-        case 0xE4: 
-            break;
-
-        case 0xE5: 
-            break;
-
-        case 0xE6: 
-            break;
-
-        case 0xE7: 
-            break;
-
-        case 0xE8: 
-            break;
-
-        case 0xE9: 
-            break;
-
-        case 0xEA: 
-            break;
-
-        case 0xEB: 
-            break;
-
-        case 0xEC: 
-            break;
-
-        case 0xED: 
-            break;
-
-        case 0xEE: 
-            break;
-
-        case 0xEF: 
-            break;
-
-        case 0xF0: 
-            break;
-
-        case 0xF1: 
-            break;
-
-        case 0xF2: 
-            break;
-
-        case 0xF3: 
-            break;
-
-        case 0xF4: 
-            break;
-
-        case 0xF5: 
-            break;
-
-        case 0xF6: 
-            break;
-
-        case 0xF7: 
-            break;
-
-        case 0xF8: 
-            break;
-
-        case 0xF9: 
-            break;
-
-        case 0xFA: 
-            break;
-
-        case 0xFB: 
-            break;
-
-        case 0xFC: 
-            break;
-
-        case 0xFD: 
-            break;
-
-        case 0xFE: 
-            break;
-
-        case 0xFF: 
+        case 0xCD:  // CALL nn
+            std::cout << "CALL nn" << std::endl;
             break;
     }
 }

@@ -95,7 +95,11 @@ class CPU {
                 uint16_t HL;
             };
         };
+
+        // stack pointer
         uint16_t SP;
+
+        // program counter
         uint16_t PC;
         uint32_t cycle_count;
 
@@ -103,12 +107,6 @@ class CPU {
 
         uint32_t cycle;
         uint32_t globalCycles;
-
-        // program counter
-        uint16_t pc;
-
-        // stack pointer
-        uint16_t sp;
 
 };
 

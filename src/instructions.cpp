@@ -1022,16 +1022,20 @@ void InstructionSet::execute(uint8_t opcode) {
                     // TODO
             break;
 
-        case 0xC1: 
+        case 0xC1:  // POP BC
+            std::cout << "POP BC" << std::endl;
+            cpu.C = mmu.read(cpu.SP);
+            cpu.B = mmu.read(cpu.SP + 1);
+            cpu.SP += 2;
             break;
 
-        case 0xC2: 
+        case 0xC2:  // JP NZ, nn
             break;
 
-        case 0xC3: 
+        case 0xC3:  // JP nn
             break;
 
-        case 0xC4: 
+        case 0xC4:  // CALL NZ, nn
             break;
 
         case 0xC5: 

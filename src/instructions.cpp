@@ -1101,7 +1101,6 @@ void InstructionSet::execute(uint8_t opcode) {
 void InstructionSet::ret(bool condition) {
     if (condition) {
         uint16_t address = mmu.read16(cpu.SP);
-
         cpu.SP += 2;
         cpu.PC = address;
     }

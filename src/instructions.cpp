@@ -981,42 +981,42 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0xB8:  // CP B
             std::cout << "CP B" << std::endl;
-            cp(cpu.A, cpu.B);
+            cp_(cpu.A, cpu.B);
             break;
 
         case 0xB9: // CP C
             std::cout << "CP C" << std::endl;
-            cp(cpu.A, cpu.C);
+            cp_(cpu.A, cpu.C);
             break;
 
         case 0xBA: // CP D
             std::cout << "CP D" << std::endl;
-            cp(cpu.A, cpu.D);
+            cp_(cpu.A, cpu.D);
             break;
 
         case 0xBB:  // CP E
             std::cout << "CP E" << std::endl;
-            cp(cpu.A, cpu.E);
+            cp_(cpu.A, cpu.E);
             break;
 
         case 0xBC:  // CP H
             std::cout << "CP H" << std::endl;
-            cp(cpu.A, cpu.H);
+            cp_(cpu.A, cpu.H);
             break;
 
         case 0xBD:  // CP L
             std::cout << "CP L" << std::endl;
-            cp(cpu.A, cpu.L);
+            cp_(cpu.A, cpu.L);
             break;
 
         case 0xBE:  // CP (HL)
             std::cout << "CP (HL)" << std::endl;
-            cp(cpu.A, mmu.romData[cpu.HL]);
+            cp_(cpu.A, mmu.romData[cpu.HL]);
             break;
 
         case 0xBF:  // CP A
             std::cout << "CP A" << std::endl;
-            cp(cpu.A, cpu.A);
+            cp_(cpu.A, cpu.A);
             break;
 
         case 0xC0:  // RET NZ
@@ -1035,18 +1035,33 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0xC2:  // JP NZ, nn
             std::cout << "JP NZ, nn" << std::endl;
+            if (!(cpu.F & FLAG_ZERO)) {
+                cpu.PC = mmu.read(cpu.PC) | mmu.read(cpu.PC + 1) << 8;
+            } else {
+                cpu.PC += 2;
+            }
             break;
 
         case 0xC3:  // JP nn
             std::cout << "JP nn" << std::endl;
+            cpu.PC = mmu.read(cpu.PC) | (mmu.read(cpu.PC + 1) << 8);
             break;
 
-        case 0xC4:  // CALL NZ, nn
-            std::cout << "CALL NZ, nn" << std::endl;
+        case 0xCD:  // CALL nn
+            std::cout << "CALL nn" << std::endl;
+            uint16_t nn = mmu.read(cpu.PC) | (mmu.read(cpu.PC + 1) << 8);
+            cpu.PC += 2;
+            cpu.SP -= 2;
+            mmu.write8(cpu.SP, cpu.PC & 0xFF);          
+            mmu.write8(cpu.SP + 1, (cpu.PC >> 8) & 0xFF); 
+            cpu.PC = nn;
             break;
- 
+
         case 0xC5:  // PUSH BC
             std::cout << "PUSH BC" << std::endl;
+            cpu.SP -= 2;
+            mmu.write8(cpu.SP + 1, cpu.B); 
+            mmu.write8(cpu.SP, cpu.C);
             break;
 
         case 0xC6:  // ADD A, d8

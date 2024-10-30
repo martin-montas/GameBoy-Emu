@@ -43,7 +43,7 @@ class InstructionSet {
         void xor_(uint8_t reg_1, uint8_t reg_2);
         void or_(uint8_t reg_1, uint8_t reg_2); 
 
-        void cp(uint8_t reg_1, uint8_t reg_2);
+        void cp_(uint8_t reg_1, uint8_t reg_2);
         void call(bool condition);
         void jump(bool condition);
         void jump_add(bool condition);

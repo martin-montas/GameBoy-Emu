@@ -21,12 +21,14 @@ class MMU {
         uint8_t EXTERNAL_RAM[8192];
 
         uint8_t InterruptEnabled;
-        uint8_t read(uint16_t address);
+        uint8_t read8(uint16_t address);
+        uint16_t read16(uint16_t address);
+
         void write8(uint16_t address, uint8_t  value);
+        void write16(uint16_t address, uint16_t value);
+
         void load_rom(const std::string &filename);
 
-        // TODO(martin-montas) implement read16() method
-        void write16(uint16_t address, uint16_t value);
 };
 
 #endif // MMU_HPP

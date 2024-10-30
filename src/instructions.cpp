@@ -77,7 +77,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x0A:  // LD A, (BC)
             std::cout << "LD A, (BC)" << std::endl;
-            cpu.A = mmu.read(cpu.BC);
+            cpu.A = mmu.read8(cpu.BC);
             break;
 
         case 0x0B:  // DEC BC
@@ -159,7 +159,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x1A:  // LD A, (DE)
             std::cout << "LD A, (DE)" << std::endl;
-            cpu.A = mmu.read(cpu.DE);
+            cpu.A = mmu.read8(cpu.DE);
             break;
 
         case 0x1B: // DEC DE
@@ -266,7 +266,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x2A: // LD A, (HL+)
             std::cout << "LD A, (HL+)" << std::endl;
-            cpu.A = mmu.read(cpu.HL);
+            cpu.A = mmu.read8(cpu.HL);
             break;
 
         case 0x2B: // DEC HL
@@ -354,7 +354,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x3A: // LD A, (HL-)
             std::cout << "LD A, (HL-)" << std::endl;
-            cpu.A = mmu.read(cpu.HL);
+            cpu.A = mmu.read8(cpu.HL);
             cpu.HL--;
             break;
 
@@ -1028,15 +1028,15 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0xC1:  // POP BC
             std::cout << "POP BC" << std::endl;
-            cpu.C = mmu.read(cpu.SP);
-            cpu.B = mmu.read(cpu.SP + 1);
+            cpu.C = mmu.read8(cpu.SP);
+            cpu.B = mmu.read8(cpu.SP + 1);
             cpu.SP += 2;
             break;
 
         case 0xC2:  // JP NZ, nn
             std::cout << "JP NZ, nn" << std::endl;
             if (!(cpu.F & FLAG_ZERO)) {
-                cpu.PC = mmu.read(cpu.PC) | mmu.read(cpu.PC + 1) << 8;
+                cpu.PC = mmu.read8(cpu.PC) | mmu.read8(cpu.PC + 1) << 8;
             } else {
                 cpu.PC += 2;
             }
@@ -1044,19 +1044,15 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0xC3:  // JP nn
             std::cout << "JP nn" << std::endl;
-            cpu.PC = mmu.read(cpu.PC) | (mmu.read(cpu.PC + 1) << 8);
+            cpu.PC = mmu.read8(cpu.PC) | (mmu.read8(cpu.PC + 1) << 8);
             break;
 
-        case 0xCD:  // CALL nn
+        case 0xC4:  // CALL NZ, nn
             std::cout << "CALL nn" << std::endl;
-            uint16_t nn = mmu.read(cpu.PC) | (mmu.read(cpu.PC + 1) << 8);
-            cpu.PC += 2;
-            cpu.SP -= 2;
-            mmu.write8(cpu.SP, cpu.PC & 0xFF);          
-            mmu.write8(cpu.SP + 1, (cpu.PC >> 8) & 0xFF); 
-            cpu.PC = nn;
+            if (!(cpu.F & FLAG_ZERO)) {
+                call(true);
+            }
             break;
-
         case 0xC5:  // PUSH BC
             std::cout << "PUSH BC" << std::endl;
             cpu.SP -= 2;
@@ -1312,4 +1308,17 @@ void InstructionSet::cp(uint8_t reg_1, uint8_t reg_2) {
     cpu.set_flag(FLAG_SUBTRACT, 1);
     cpu.set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) < (reg_2 & 0x0F)));
     cpu.set_flag(FLAG_CARRY, (tmp > 0xFF));
+}
+
+
+void InstructionSet::call(bool condition) {
+    if (condition) {
+        uint16_t address = mmu.read(cpu.PC + 1);
+        cpu.PC += 3;
+        cpu.SP -= 2;
+        mmu.write16(cpu.SP, cpu.PC);
+        cpu.PC = address;
+    } else {
+        cpu.PC += 3;
+    }
 }

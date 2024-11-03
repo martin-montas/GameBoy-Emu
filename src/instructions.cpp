@@ -995,7 +995,7 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0xBB:  // CP E
-            std::cout << "CP E" << std::endl;
+            std::cout << "CP D" << std::endl;
             cp_(cpu.A, cpu.E);
             break;
 
@@ -1309,7 +1309,6 @@ void InstructionSet::cp(uint8_t reg_1, uint8_t reg_2) {
     cpu.set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) < (reg_2 & 0x0F)));
     cpu.set_flag(FLAG_CARRY, (tmp > 0xFF));
 }
-
 
 void InstructionSet::call(bool condition) {
     if (condition) {

@@ -53,6 +53,5 @@ class InstructionSet {
         void rlc(uint8_t *reg);
 
 
-
 };
 #endif

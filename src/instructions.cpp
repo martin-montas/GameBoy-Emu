@@ -1062,14 +1062,20 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0xC6:  // ADD A, d8
             std::cout << "ADD A, d8" << std::endl;
+            add8(cpu.A, mmu.read8(cpu.PC + 1));
             break;
 
         case 0xC7:  // RST 00h
             std::cout << "RST 00h" << std::endl;
+            cpu.SP -= 2;  
+            mmu.write8(cpu.SP, (cpu.PC >> 8) & 0xFF);
+            mmu.write8(cpu.SP + 1, cpu.PC & 0xFF);
             break;
 
         case 0xC8:  // RET Z
+                    // TODO 
             std::cout << "RET Z" << std::endl;
+            ret(false);
             break;
 
         case 0xC9:  // RET
@@ -1166,6 +1172,7 @@ void InstructionSet::add8(uint8_t *reg_1, uint8_t *reg_2) {
     cpu.set_flag(FLAG_CARRY, tmp > 0xFF);
     cpu.set_flag(FLAG_ZERO, (tmp == 0));
     cpu.set_flag(FLAG_HALF_CARRY, ((*reg_1 & 0x0F) + (*reg_2 & 0x0F)) > 0x0F);
+    cpu.clear_flag(FLAG_SUBTRACT);
     *reg_1 = tmp & 0xFF;
 }
 
@@ -1321,3 +1328,5 @@ void InstructionSet::call(bool condition) {
         cpu.PC += 3;
     }
 }
+
+

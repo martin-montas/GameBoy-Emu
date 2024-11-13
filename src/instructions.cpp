@@ -1073,13 +1073,15 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
 
         case 0xC8:  // RET Z
-                    // TODO 
             std::cout << "RET Z" << std::endl;
-            ret(false);
+            if (cpu.F & FLAG_ZERO) {
+                ret(true); 
+            }
             break;
 
         case 0xC9:  // RET
             std::cout << "RET" << std::endl;
+            ret(true);
             break;
 
         case 0xCA:  // JP Z, nn
@@ -1102,8 +1104,8 @@ void InstructionSet::execute(uint8_t opcode) {
 
 void InstructionSet::ret(bool condition) {
     if (condition) {
-        uint16_t address = mmu.read16(cpu.SP);
         cpu.SP += 2;
+        uint16_t address = mmu.read16(cpu.SP);
         cpu.PC = address;
     }
 }

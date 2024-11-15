@@ -1681,7 +1681,8 @@ void InstructionSet::execute(uint8_t opcode) {
                     std::cerr << "Unknown opcode: 0x" << std::hex << (int)mmu.read8(cpu.PC + 1) << std::endl;
                     break;
             };
-            break;
+                    // Breaks out of the switch block:
+                     break;
             }
         case 0xCC:  // CALL Z, nn
             {
@@ -1693,6 +1694,246 @@ void InstructionSet::execute(uint8_t opcode) {
             std::cout << "CALL nn" << std::endl;
             break;
             }
+        case 0xCE:  // ADC nn
+            {
+                std::cout <<  "ADC nn" << std::endl;
+            break;
+            }
+        case 0xCF:  // RST 08H
+            {
+                std::cout << "RST 08H" << std::endl;
+            break;
+            }
+        case 0xD0:  // RET NC
+        {
+            std::cout << " RET NC" << std::endl;
+            break;
+        }
+        case 0xD1:  // POP DE
+        {
+            std::cout << " POP DE" << std::endl;
+            break;
+        }
+        case 0xD2:  // JP NC, nn
+        {
+            std::cout << "  JPNC, nn" << std::endl;
+            break;
+        }
+        case 0xD3:  // OUT (n), A
+        {
+            std::cout << "  OUT(n), A" << std::endl;
+            break;
+        }
+        case 0xD4:  // CALL NC, nn
+        {
+            std::cout << "  CALLNC, nn" << std::endl;
+            break;
+        }
+        case 0xD5:  // PUSH DE
+        {
+            std::cout << " PUSH DE" << std::endl;
+            break;
+        }
+        case 0xD6:  // SUB nn
+        {
+            std::cout << " SUB nn" << std::endl;
+            break;
+        }
+        case 0xD7:  // RST 10H
+        {
+            std::cout << " RST 10H" << std::endl;
+            break;
+        }
+        case 0xD8:  // RET C
+        {
+            std::cout << " RET C" << std::endl;
+            break;
+        }
+        case 0xD9: // RETI
+        {
+            std::cout << " RETI" << std::endl;
+            break;
+        }
+        case 0xDA:  // JP C, nn
+        {
+            std::cout << "  JPC, nn" << std::endl;
+            break;
+        }
+        case 0xDB:  //  IN A, (n)
+        {
+            std::cout << "   INA, (n)" << std::endl;
+            break;
+        }
+        case 0xDD:  // CALL C, nn
+        {
+            std::cout << "  CALLC, nn" << std::endl;
+            break;
+        }
+        case 0xDE:  // SBC nn
+        {
+            std::cout << " SBC nn" << std::endl;
+            break;
+        }
+        case 0xDF:  // RST 18H
+        {
+            std::cout << " RST 18H" << std::endl;
+            break;
+        }
+        case 0xE0:  // LDH (n), A
+        {
+            std::cout << "  LDH(n), A" << std::endl;
+            break;
+        }
+        case 0xE1:  // POP HL
+        {
+            std::cout << " POP HL" << std::endl;
+            break;
+        }
+        case 0xE2:  // LD (C), A
+        {
+            std::cout << "  LD(C), A" << std::endl;
+            break;
+        }
+        case 0xE3:  // XOR nn
+        {
+            std::cout << " XOR nn" << std::endl;
+            break;
+        }
+        case 0xE4:  // PUSH HL
+        {
+            std::cout << " PUSH HL" << std::endl;
+            break;
+        }
+        case 0xE5:  // AND nn
+        {
+            std::cout << " AND nn" << std::endl;
+            break;
+        }
+        case 0xE6:  // XOR nn
+        {
+            std::cout << " XOR nn" << std::endl;
+            break;
+        }
+        case 0xE7:  // RST 20H
+        {
+            std::cout << " RST 20H" << std::endl;
+            break;
+        }
+        case 0xE8:  // ADD SP, r8
+        {
+            std::cout << "  ADDSP, r8" << std::endl;
+            break;
+        }
+        case 0xE9:  // JP (HL)
+        {
+            std::cout << "  JP(HL)" << std::endl;
+            break;
+        }
+        case 0xEA:  // LD (nn), A
+        {
+            std::cout << "  LD(nn), A" << std::endl;
+            break;
+        }
+        case 0xEB:  // XOR nn
+        {
+            std::cout << " XOR nn" << std::endl;
+            break;
+        }
+        case 0xED:  // CALL nn
+        {
+            std::cout << " CALL nn" << std::endl;
+            break;
+        } 
+        case 0xEE:  // XOR nn
+        {
+            std::cout << " XOR nn" << std::endl;
+            break;
+        }
+        case 0xEF:  // RST 28H
+        {
+            std::cout << " RST 28H" << std::endl;
+            break;
+        }
+        case 0xF0:  // LDH A, (n)
+        {
+            std::cout << "  LDHA, (n)" << std::endl;
+            break;
+        }
+        case 0xF1:  // POP AF
+        {
+            std::cout << " POP AF" << std::endl;
+            break;
+        }
+        case 0xF2:  // LD A, (C)
+        {
+            std::cout << "  LDA, (C)" << std::endl;
+            break;
+        }
+        case 0xF3:  // DI
+        {
+            std::cout << " DI" << std::endl;
+            break;
+        }
+        case 0xF4:  // PUSH AF
+        {
+            std::cout << " PUSH AF" << std::endl;
+            break;
+        }
+        case 0xF5:  // OR nn
+        {
+            std::cout << " OR nn" << std::endl;
+            break;
+        }
+        case 0xF6:  // OR nn
+        {
+            std::cout << " OR nn" << std::endl;
+            break;
+        }
+        case 0xF7:  // RST 30H
+        {
+            std::cout << " RST 30H" << std::endl;
+            break;
+        }
+        case 0xF8:  // LD HL, SP + r8
+        {
+            std::cout << "  LD HL, SP+ r8" << std::endl;
+            break;
+        }
+        case 0xF9:  // LD SP, HL
+        {
+            std::cout << "  LDSP, HL" << std::endl;
+            break;
+        }
+        case 0xFA:  // LD A, (nn)
+        {
+            std::cout << "  LD A,(nn)" << std::endl;
+            break;
+        }
+        case 0xFB:  // EI
+        {
+            std::cout << " EI" << std::endl;
+            break;
+        }
+        case 0xFD:  // CALL nn
+        {
+            std::cout << " CALL nn" << std::endl;
+            break;
+        }
+        case 0xFE:  // CP nn
+        {
+            std::cout << " CP nn" << std::endl;
+            break;
+        }
+        case 0xFF:  // RST 38H
+        {
+            std::cout << " RST 38H" << std::endl;
+            break;
+        }
+        default: 
+        {
+            std::cerr << "Unknown opcode: 0x" << std::hex << (int)mmu.read8(cpu.PC + 1) << std::endl;
+            break;
+        }
         };
 }    
 

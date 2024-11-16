@@ -7,7 +7,8 @@
 
 #// On linux compile with:
 #// g++ -std=c++17 main.cpp -o prog -lSDL2 
-#
+SRC_DIR := ./src
+CPP_FILES := $(shell find $(SRC_DIR) -name '*.cpp' -or -name '*.hpp')
 gameboy: main.o CPU.o registers.o instructions.o
 		g++  main.o  -lsfml-graphics -lsfml-window -lsfml-system
 
@@ -20,4 +21,6 @@ CPU.o: ./src/cpu/CPU.cpp ./src/cpu/CPU.hpp
 registers.o:./src/registers.cpp ./src/registers.hpp
 		g++ -c  src/registers.cpp 
 
-
+lint:
+	@cpplint $(CPP_FILES)
+	

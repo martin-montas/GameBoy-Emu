@@ -1,3 +1,7 @@
+// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
+// All components of this software are licensed under the GNU License.
+// Programmer: Martin Montas, martinmontas1@gmail.com
+//
 #ifndef MMU_HPP
 #define MMU_HPP
 
@@ -6,7 +10,7 @@
 #include <vector>
 
 class MMU {
-    public:
+ public:
         std::vector<uint8_t> romData;
         MMU(std::string filename);
         ~MMU();
@@ -28,7 +32,6 @@ class MMU {
         void write16(uint16_t address, uint16_t value);
 
         void load_rom(const std::string &filename);
-
 };
 
-#endif // MMU_HPP
+#endif // MMU_HPP_

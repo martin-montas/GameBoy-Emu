@@ -1,3 +1,7 @@
+// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
+// All components of this software are licensed under the GNU License.
+// Programmer: Martin Montas, martinmontas1@gmail.com
+//
 #ifndef INSTRUCTIONS_HPP
 #define INSTRUCTIONS_HPP
 
@@ -52,6 +56,7 @@ class InstructionSet {
         void rlc(uint8_t reg);
 
         void rlc_extended(uint8_t reg);
+        void rcc_extended(uint8_t reg);
 
 };
 #endif

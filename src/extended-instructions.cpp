@@ -1,3 +1,7 @@
+// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
+// All components of this software are licensed under the GNU License.
+// Programmer: Martin Montas, martinmontas1@gmail.com
+//
 #include <cstdint>
 #include <sys/types.h>
 
@@ -17,4 +21,14 @@ void InstructionSet::rlc_extended(uint8_t reg) {
      cpu.set_flag(FLAG_ZERO, reg == 0);
      cpu.clear_flag(FLAG_HALF_CARRY);
      cpu.clear_flag(FLAG_SUBTRACT);
+}
+void InstructionSet::rcc_extended(uint8_t reg) {
+     bool bit0 = reg & 1;
+     cpu.F &= ~FLAG_CARRY;
+     cpu.F |= (bit0 << 4);
+     reg >>= 1;
+
+     if (bit0) {
+          reg |=  0x08;
+    }
 }

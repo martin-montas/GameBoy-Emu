@@ -1,8 +1,13 @@
-#include "cpu/CPU.hpp"
-#include "instructions.hpp"
 #include <cstdint>
 #include <sys/types.h>
 
+#include "cpu/CPU.hpp"
+#include "instructions.hpp"
+
+//             TODO:
+//
+//        Finish the extended methods()
+//
 void InstructionSet::rlc_extended(uint8_t reg) {
      uint8_t bit7 = (reg & 0x80) >> 7; 
      reg = (reg << 1);
@@ -13,4 +18,3 @@ void InstructionSet::rlc_extended(uint8_t reg) {
      cpu.clear_flag(FLAG_HALF_CARRY);
      cpu.clear_flag(FLAG_SUBTRACT);
 }
-

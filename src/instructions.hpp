@@ -48,10 +48,10 @@ class InstructionSet {
         void jump(bool condition);
         void jump_add(bool condition);
         void cp_n(uint8_t value);
-
         void cpl(uint8_t reg);
         void rlc(uint8_t reg);
 
+        void rlc_extended(uint8_t reg);
 
 };
 #endif

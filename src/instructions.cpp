@@ -1495,28 +1495,35 @@ void InstructionSet::execute(uint8_t opcode) {
             std::cout << "PREFIX CB" << std::endl;
             switch (mmu.read8(cpu.PC + 1)) {
                 case 0x00: // RLC B
-                    std::cout << "RLC B" << std::endl;
+                     rlc_extended(cpu.B);
                     break;
                 case 0x01: // RLC C
                     std::cout << "RLC C" << std::endl;
+                     rlc_extended(cpu.C);
                     break;
                 case 0x02: // RLC D
                     std::cout << "RLC D" << std::endl;
+                     rlc_extended(cpu.D);
                     break;
                 case 0x03: // RLC E
                     std::cout << "RLC E" << std::endl;
+                     rlc_extended(cpu.E);
                     break;
                 case 0x04: // RLC H
                     std::cout << "RLC H" << std::endl;
+                     rlc_extended(cpu.H);
                     break;
                 case 0x05: // RLC L
                     std::cout << "RLC L" << std::endl;
+                     rlc_extended(cpu.L);
                     break;
                 case 0x06: // RLC (HL)
                     std::cout << "RLC (HL)" << std::endl;
+                     rlc_extended(cpu.L);
                     break;
                 case 0x07: // RLC A
                     std::cout << "RLC A" << std::endl;
+                     rlc_extended(cpu.A);
                     break;
                 case 0x08: // RRC B
                     std::cout << "RRC B" << std::endl;
@@ -1934,9 +1941,8 @@ void InstructionSet::execute(uint8_t opcode) {
             std::cerr << "Unknown opcode: 0x" << std::hex << (int)mmu.read8(cpu.PC + 1) << std::endl;
             break;
         }
-        };
-}    
-
+    };
+}
 
 void InstructionSet::ret(bool condition) {
     if (condition) {

@@ -8,6 +8,7 @@
 
 #include "./memory/MMU.hpp"
 #include "./cpu/CPU.hpp"
+#include <cstdint>
 
 class InstructionSet {
     private:
@@ -55,8 +56,10 @@ class InstructionSet {
         void cpl(uint8_t reg);
         void rlc(uint8_t reg);
 
-        void rlc_extended(uint8_t reg);
-        void rcc_extended(uint8_t reg);
-
+        void rlc_extended(uint8_t &reg);
+        void sla_extended(uint8_t &reg);
+        void rcc_extended(uint8_t &reg);
+        void rr_extended(uint8_t &reg);
+        void rl_extended(uint8_t &reg);
 };
 #endif

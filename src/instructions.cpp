@@ -1160,57 +1160,74 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x0F:  // RRC A
                     std::cout << "RRC A" << std::endl;
+                    rcc_extended(cpu.A);
                     break;
                 case 0x10:  // RL B
                     std::cout << "RL B " << std::endl;
+                    rl_extended(cpu.B);
                     break;
                 case 0x11:  // RL C
                     std::cout << "RL C" << std::endl;
+                    rl_extended(cpu.A);
                     break;
                 case 0x12:  // RL D
                     std::cout << "RL D" << std::endl;
+                    rl_extended(cpu.A);
                     break;
                 case 0x13:  // RL E
                     std::cout << "RL E" << std::endl;
+                    rl_extended(cpu.A);
                     break;
                 case 0x14:  // RL H
                     std::cout << "RL H" << std::endl;
+                    rl_extended(cpu.A);
                     break;
                 case 0x15:  //  RL L
                     std::cout << "RL L " << std::endl;
+                    rl_extended(cpu.A);
                     break;
                 case 0x16:  // RL (HL)
                     std::cout << "RL (HL)" << std::endl;
                     break;
                 case 0x17:  // RL A
+                    rl_extended(cpu.A);
                     std::cout << "RL A" << std::endl;
                     break;
                 case 0x19:  // RR B
+                    rr_extended(cpu.B);
                     std::cout << "RR B" << std::endl;
                     break;
                 case 0x1A:  // RR C
+                    rr_extended(cpu.C);
                     std::cout << "RR C" << std::endl;
                     break;
                 case 0x1B:  // RR D
+                    rr_extended(cpu.D);
                     std::cout << "RR D" << std::endl;
                     break;
                 case 0x1C:  // RR E
+                    rr_extended(cpu.E);
                     std::cout << "RR E" << std::endl;
                     break;
                 case 0x1D:  // RR H
+                    rr_extended(cpu.H);
                     std::cout << "RR H" << std::endl;
                     break;
                 case 0x1E:  // RR L
+                    rr_extended(cpu.L);
                     std::cout << "RR L" << std::endl;
                     break;
                 case 0x1F:  // RR A
                     std::cout << "RR A" << std::endl;
+                    rr_extended(cpu.A);
                     break;
                 case 0x20:  // SLA B
                     std::cout << "SLA B" << std::endl;
+                    sla_extended(cpu.B);
                     break;
                 case 0x21:  // SLA C
                     std::cout << "SLA C" << std::endl;
+                    sla_extended(cpu.C);
                     break;
                 case 0x22:  // SLA D
                     std::cout << "SLA D" << std::endl;

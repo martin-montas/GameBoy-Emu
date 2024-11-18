@@ -11,10 +11,10 @@
 #include <cstdint>
 
 class InstructionSet {
-    private:
+ private:
         MMU &mmu;
         CPU &cpu;
-    public:
+ public:
         InstructionSet(CPU &cpu, MMU &mmu);
         void execute(uint8_t opcode);
 

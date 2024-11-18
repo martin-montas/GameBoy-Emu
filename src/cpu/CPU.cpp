@@ -4,7 +4,7 @@
 //
 #include <cstdint>
 #include <iostream>
-#include "CPU.hpp"
+#include "./CPU.hpp"
 
 const double cyclesPerMicrosecond = 4.194304; 
 const uint32_t timeSlice = 1000; 

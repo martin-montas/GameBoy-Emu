@@ -8,10 +8,6 @@
 #include "cpu/CPU.hpp"
 #include "instructions.hpp"
 
-//             TODO:
-//
-//        Finish the extended methods()
-//
 void InstructionSet::rlc_extended(uint8_t &reg) {
     uint8_t bit7 = (reg & 0x80) >> 7; 
     reg = (reg << 1);
@@ -33,15 +29,15 @@ void InstructionSet::rcc_extended(uint8_t &reg) {
 }
 
 void InstructionSet::rl_extended(uint8_t &reg) {
+    bool bit7 = reg & 0x80;
     //  Suppose reg initially holds the value 0b00001110 (decimal 14) and 
     //  the FLAG_CARRY bit is set. Left Shift: reg becomes 0b00011100 
     //  (decimal 28). 
     //  Carry Flag Check: The expression evaluates to 1.
     //  Bitwise OR: 0b00011100 | 0b00000001 results in 0b00011101 (decimal 29).
     //  Assignment: The value 0b00011101 is assigned back to reg.
-    
-    bool bit7 = reg & 0x80;
     reg = (reg << 1) | (cpu.F & FLAG_CARRY ? 1 : 0);
+
     if (bit7) {
         cpu.F |= FLAG_CARRY;    // Sets a bit on the carry flag 
     } else {
@@ -50,9 +46,19 @@ void InstructionSet::rl_extended(uint8_t &reg) {
 }
 
 void InstructionSet::rr_extended(uint8_t &reg) {
-    return;
+    uint8_t lsb = reg & 0x01;
+    if (lsb) {
+        cpu.F |= FLAG_CARRY;  
+    } else {
+        cpu.F &= ~FLAG_CARRY; 
+    }
+    reg >>= 1;
+    if (cpu.F & FLAG_CARRY) {
+        reg |= 0x80; 
+    }
 }
 
 void InstructionSet::sla_extended(uint8_t &reg) {
     return;
 }
+

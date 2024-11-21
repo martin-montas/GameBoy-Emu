@@ -1231,21 +1231,27 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x22:  // SLA D
                     std::cout << "SLA D" << std::endl;
+                    sla_extended(cpu.D);
                     break;
                 case 0x23:  // SLA E
                     std::cout << "SLA E" << std::endl;
+                    sla_extended(cpu.E);
                     break;
                 case 0x24:  // SLA H
                     std::cout << "SLA H" << std::endl;
+                    sla_extended(cpu.H);
                     break;
                 case 0x25:  // SLA L
                     std::cout << "SLA L" << std::endl;
+                    sla_extended(cpu.L);
                     break;
                 case 0x26:  // SLA (HL)
                     std::cout << "SLA (HL)" << std::endl;
+                    // sla_extended(cpu.HL);
                     break;
                 case 0x27:  // SLA A
                     std::cout << "SLA A" << std::endl;
+                    sla_extended(cpu.A);
                     break;
                 case 0x29:  // SRA B
                     std::cout << "SRA B" << std::endl;

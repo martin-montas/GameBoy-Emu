@@ -59,6 +59,19 @@ void InstructionSet::rr_extended(uint8_t &reg) {
 }
 
 void InstructionSet::sla_extended(uint8_t &reg) {
-    return;
+    bool bit7 = reg & 0x80;
+    if ( bit7){
+        cpu.F |= FLAG_CARRY;  
+    } else {
+        cpu.F &= ~FLAG_CARRY; 
+    }
+    reg <<= 1;
+    if (reg == 0) {
+        cpu.F |= FLAG_ZERO; 
+    } else {
+        cpu.F &= ~FLAG_ZERO; 
+    }
+    cpu.F &= ~FLAG_SUBTRACT; 
+    cpu.F &= ~FLAG_HALF_CARRY; 
 }
 

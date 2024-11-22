@@ -1255,24 +1255,31 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x29:  // SRA B
                     std::cout << "SRA B" << std::endl;
+                    sra_extended(cpu.B);
                     break;
                 case 0x2A:  // SRA C
                     std::cout << "SRA C" << std::endl;
+                    sra_extended(cpu.C);
                     break;
                 case 0x2B:  // SRA D
                     std::cout << "SRA D" << std::endl;
+                    sra_extended(cpu.D);
                     break;
                 case 0x2C:  // SRA E
                     std::cout << "SRA E" << std::endl;
+                    sra_extended(spu.E);
                     break;
                 case 0x2D:  // SRA H
                     std::cout << "SRA H" << std::endl;
+                    sra_extended(cpu.H);
                     break;
                 case 0x2E:  // SRA L
                     std::cout << "SRA L" << std::endl;
+                    sra_extended(cpu.L);
                     break;
                 case 0x2F:  // SRA A
                     std::cout << "SRA A" << std::endl;
+                    sra_extended(cpu.A);
                     break;
                 case 0x30:  // SWAP B
                     std::cout << "SWAP B" << std::endl;
@@ -1291,7 +1298,6 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x35:  // SWAP L
                     std::cout << "SWAP L" << std::endl;
-                    break;
                 case 0x36:  // SWAP (HL)
                     std::cout << "SWAP (HL)" << std::endl;
                     break;

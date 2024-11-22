@@ -2,10 +2,11 @@
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
-#ifndef MMU_HPP
-#define MMU_HPP
+#ifndef SRC_MEMORY_MMU_HPP_
+#define SRC_MEMORY_MMU_HPP_
 
 #include <cstdint>
+
 #include <string>
 #include <vector>
 
@@ -34,4 +35,4 @@ class MMU {
         void load_rom(const std::string &filename);
 };
 
-#endif // MMU_HPP_
+#endif // SRC_MEMORY_MMU_HPP_

@@ -2,13 +2,13 @@
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
-#include <iostream>
 #include <cstdint>
+#include <iostream>
 
 #include "./instructions.hpp"
 #include "./cpu/CPU.hpp"
 
-InstructionSet::InstructionSet(CPU &cpu, MMU &mmu) : cpu(cpu), mmu(mmu){
+InstructionSet::InstructionSet(CPU *cpu, MMU *mmu) : cpu(cpu), mmu(mmu) {
 }
 
 void InstructionSet::ldr(uint16_t reg) {
@@ -1554,7 +1554,7 @@ void InstructionSet::ret(bool condition) {
     }
 }
 
-void InstructionSet::or_(uint8_t reg_1, uint8_t reg_2) {
+void InstructionSet::or_(uint8_t &reg_1, uint8_t &reg_2) {
     uint8_t tmp = reg_1 | reg_2;
     cpu.set_flag(FLAG_ZERO, (tmp == 0));
     cpu.clear_flag(FLAG_SUBTRACT);
@@ -1658,7 +1658,7 @@ void ldhl(int8_t value) {
     // cpu.set_flag(FLAG_CARRY, (result > 0xFF));
 // }
 
-void InstructionSet::sub(uint8_t reg_1, uint8_t reg_2) {
+void InstructionSet::sub(uint8_t &reg_1, uint8_t &reg_2) {
     uint16_t result = reg_1 - reg_2;
 
     reg_1 = result & 0xFF;
@@ -1681,7 +1681,7 @@ void InstructionSet::rlc(uint8_t reg) {
     cpu.clear_flag(FLAG_HALF_CARRY);
 }
 
-void InstructionSet::rrca(uint8_t reg){
+void InstructionSet::rrca(uint8_t reg) {
     bool least_sig_bit = reg & 1;
     cpu.A = reg >> 1;
      cpu.set_flag(FLAG_CARRY, least_sig_bit);
@@ -1746,7 +1746,7 @@ void dec_mem(uint8_t *value) {
     return;
 }
 
-void InstructionSet::cp_(uint8_t reg_1, uint8_t reg_2) {
+void InstructionSet::cp_(uint8_t &reg_1, uint8_t &reg_2) {
     uint16_t tmp = reg_1 - reg_2;
     cpu.set_flag(FLAG_ZERO, (reg_1 == reg_2));
     cpu.set_flag(FLAG_SUBTRACT, 1);
@@ -1765,5 +1765,3 @@ void InstructionSet::call(bool condition) {
         cpu.PC += 3;
     }
 }
-
-

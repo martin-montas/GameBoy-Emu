@@ -4,7 +4,7 @@
 //
 #include <cstdint>
 
-#include "game-boy.hpp"
+#include "./game-boy.hpp"
 
 void GameBoy::init(std::string filename) {
     mmu = new MMU(filename);

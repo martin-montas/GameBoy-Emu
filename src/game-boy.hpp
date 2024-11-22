@@ -10,7 +10,7 @@
 
 #include "cpu/CPU.hpp"
 #include "memory/MMU.hpp"
-#include "instructions.hpp"
+#include "./instructions.hpp"
 
 class GameBoy {
  private:

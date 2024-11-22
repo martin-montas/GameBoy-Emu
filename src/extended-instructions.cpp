@@ -3,6 +3,7 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 
 #include <cstdint>
+#include <functional>
 #include <sys/types.h>
 
 #include "cpu/CPU.hpp"
@@ -89,4 +90,23 @@ void InstructionSet::sra_extended(uint8_t &reg) {
     cpu.set_flag(FLAG_ZERO, reg == 0);
     cpu.clear_flag(FLAG_SUBTRACT);
     cpu.clear_flag(FLAG_HALF_CARRY);
+}
+
+void InstructionSet::swap_extended(uint8_t &reg) {
+    //  after isolating this part shifts the higher nibbles down 
+    //  towards the lower nibbles:
+    //  uint8_t higher_nibble = (reg & 0xF0) >> 4;
+    //
+    //  the lower nibbles are then shift to the new place
+    //  for the proper SWAP:
+    //  reg = (lower_nibble << 4) | (higher_nibble);
+
+    uint8_t lower_nibble = reg & 0x0F;          // isolates the lower nibbles 
+
+    uint8_t higher_nibble = (reg & 0xF0) >> 4;  // isolates the higher nibbles
+    reg =  (lower_nibble << 4) | (higher_nibble);
+}
+
+void InstructionSet::srl_extended(uint8_t &reg) {
+    return;
 }

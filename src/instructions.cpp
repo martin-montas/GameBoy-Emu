@@ -1125,6 +1125,7 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x06:  // RLC (HL)
                     std::cout << "RLC (HL)" << std::endl;
+                    // TODO
                      rlc_extended(cpu.L);
                     break;
                 case 0x07:  // RLC A
@@ -1157,6 +1158,7 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x0E:  // RRC (HL)
                     std::cout << "RRC (HL)" << std::endl;
+                    // TODO
                     break;
                 case 0x0F:  // RRC A
                     std::cout << "RRC A" << std::endl;
@@ -1188,6 +1190,7 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x16:  // RL (HL)
                     std::cout << "RL (HL)" << std::endl;
+                    // todo
                     break;
                 case 0x17:  // RL A
                     rl_extended(cpu.A);
@@ -1247,7 +1250,7 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x26:  // SLA (HL)
                     std::cout << "SLA (HL)" << std::endl;
-                    // sla_extended(cpu.HL);
+                    // TODO
                     break;
                 case 0x27:  // SLA A
                     std::cout << "SLA A" << std::endl;
@@ -1267,7 +1270,7 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x2C:  // SRA E
                     std::cout << "SRA E" << std::endl;
-                    sra_extended(spu.E);
+                    sra_extended(cpu.E);
                     break;
                 case 0x2D:  // SRA H
                     std::cout << "SRA H" << std::endl;
@@ -1283,26 +1286,34 @@ void InstructionSet::execute(uint8_t opcode) {
                     break;
                 case 0x30:  // SWAP B
                     std::cout << "SWAP B" << std::endl;
+                    swap_extended(cpu.B);
                     break;
                 case 0x31:  // SWAP C
                     std::cout << "SWAP C" << std::endl;
+                    swap_extended(cpu.C);
                     break;
                 case 0x32:  // SWAP D
                     std::cout << "SWAP D" << std::endl;
+                    swap_extended(cpu.D);
                     break;
                 case 0x33:  // SWAP E
                     std::cout << "SWAP E" << std::endl;
+                    swap_extended(cpu.E);
                     break;
                 case 0x34:  // SWAP H
                     std::cout << "SWAP H" << std::endl;
+                    swap_extended(cpu.H);
                     break;
                 case 0x35:  // SWAP L
                     std::cout << "SWAP L" << std::endl;
+                    swap_extended(cpu.L);
                 case 0x36:  // SWAP (HL)
                     std::cout << "SWAP (HL)" << std::endl;
+                    // TODO
                     break;
                 case 0x37:  // SWAP A
                     std::cout << "SWAP A" << std::endl;
+                    swap_extended(cpu.A);
                     break;
                 case 0x39:  // SRL B
                     std::cout << "SRL B" << std::endl;

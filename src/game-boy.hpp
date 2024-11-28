@@ -8,13 +8,13 @@
 #include <cstdint>
 #include <string>
 
-#include "cpu/CPU.hpp"
+#include "cpu/cpu.hpp"
 #include "memory/MMU.hpp"
-#include "./instructions.hpp"
+#include "instructions.hpp"
 
 class GameBoy {
  private:
-        CPU *cpu;
+        Cpu *cpu;
         MMU *mmu;
         InstructionSet *instructions;
 

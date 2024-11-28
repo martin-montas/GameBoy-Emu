@@ -3,30 +3,25 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
 #include <cstdint>
-
-#include "./game-boy.hpp"
+#include "game-boy.hpp"
 
 void GameBoy::init(std::string filename) {
     mmu = new MMU(filename);
-    cpu = new CPU(*mmu);
-    instructions = new InstructionSet(*cpu, *mmu);
-
+    instructions = new InstructionSet(cpu, mmu);
     emulationRunning = true;
 }
 
 GameBoy::~GameBoy() {}
-
 void GameBoy::run() {
     uint8_t opcode;
     int cycle_count = 0;
     while (emulationRunning) {
-
         opcode = mmu->romData[cpu->PC];
+
         instructions->execute(opcode);
         int current_cycle = cpu->opcode_cycles[opcode];
 
         cpu->cycle_count += current_cycle;
-        //  TODO:
         // Render frame, update audio, etc.
     }
 }

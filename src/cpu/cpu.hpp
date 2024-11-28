@@ -20,14 +20,12 @@ enum RegisterFlags {
     FLAG_CARRY = (1 << 1)
 };
 
-class CPU {
+class Cpu {
  private:
-        MMU &mmu;
+        const MMU mmu;
 
  public:
-        *CPU(MMU &mmu);
-        ~CPU();
-
+        ~Cpu();
         RegisterFlags *flags;
         bool is_flag_set(uint8_t flag);
         void set_flag(uint8_t flags, bool state);
@@ -78,7 +76,7 @@ class CPU {
                 };
                 uint16_t BC;
             };
-        };  
+        };
 
         struct {
             union {
@@ -100,17 +98,16 @@ class CPU {
             };
         };
 
-        // stack pointer
+        // Stack pointer
         uint16_t SP;
 
-        // program counter
+        // Program counter
         uint16_t PC;
         uint32_t cycle_count;
 
  private:
         uint32_t cycle;
         uint32_t globalCycles;
-
 };
 
-#endif  // SRC_CPU_CPU_HPP_
+#endif  // SRC_Cpu_Cpu_HPP_

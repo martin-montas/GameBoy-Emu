@@ -9,18 +9,23 @@
 #// g++ -std=c++17 main.cpp -o prog -lSDL2 
 SRC_DIR := ./src
 CPP_FILES := $(shell find $(SRC_DIR) -name '*.cpp' -or -name '*.hpp')
-gameboy: main.o CPU.o registers.o instructions.o
+gameboy: main.o cpu.o game-boy.o instructions.o
 		g++  main.o  -lsfml-graphics -lsfml-window -lsfml-system
 
 main.o: main.cpp
 		g++ -c main.cpp
 
-CPU.o: ./src/cpu/CPU.cpp ./src/cpu/CPU.hpp
-		g++ -c  ./src/cpu/CPU.cpp 
+game-boy.o:./src/game-boy.cpp ./src/game-boy.hpp
+		g++ -I ./src/ -c  ./src/game-boy.cpp
 
-registers.o:./src/registers.cpp ./src/registers.hpp
-		g++ -c  src/registers.cpp 
+instructions.o:./src/instructions.cpp ./src/instructions.hpp
+		g++ -I ./src/ -c  ./src/instructions.cpp
+
+cpu.o: ./src/cpu/cpu.cpp ./src/cpu/cpu.hpp
+		g++ -I ./src/cpu/ -c  ./src/cpu/cpu.cpp
+
+clean:
+		rm *.o gameboy
 
 lint:
-	@cpplint $(CPP_FILES)
-	
+		@cpplint $(CPP_FILES)

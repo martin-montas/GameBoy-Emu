@@ -20,10 +20,10 @@ void InstructionSet::rl_extended(uint8_t *reg) {
     *reg = (*reg << 1) | (cpu.F & FLAG_CARRY ? 1 : 0);
 
     if (bit7) {
-        cpu.F |= FLAG_CARRY;    // Sets a bit on the carry flag
+        cpu.F |= FLAG_CARRY;
     } else {
-        cpu.F &= ~FLAG_CARRY;  // Clears the carry flag
-    }
+        cpu.F &= ~FLAG_CARRY;
+}
 }
 
 void InstructionSet::rlc_extended(uint8_t *reg) {
@@ -41,14 +41,15 @@ void InstructionSet::rcc_extended(uint8_t *reg) {
     cpu.F &= ~FLAG_CARRY;
     cpu.F |= (bit0 << 4);
     *reg >>= 1;
+
     if (bit0) {
         *reg |=  0x08;
     }
 }
 
 void InstructionSet::rr_extended(uint8_t *reg) {
-    uint8_t lsb = *reg & 0x01;
-    if (lsb) {
+    uint8_t bit0 = *reg & 0x01;
+    if (bit0) {
         cpu.F |= FLAG_CARRY;
     } else {
         cpu.F &= ~FLAG_CARRY;
@@ -93,6 +94,20 @@ void InstructionSet::sra_extended(uint8_t *reg) {
     cpu.clear_flag(FLAG_HALF_CARRY);
 }
 
+void InstructionSet::srl_extended(uint8_t *reg) {
+    bool bit0 = *reg & 0x01;
+    bool bit7 = *reg & 0x80;
+    if (bit0) {
+        cpu.F |= FLAG_CARRY;
+    } else {
+        cpu.F &= ~FLAG_CARRY;
+    }
+    *reg  = (*reg >> 1) & 0x7F;
+    cpu.set_flag(FLAG_ZERO, *reg == 0);
+    cpu.clear_flag(FLAG_SUBTRACT);
+    cpu.clear_flag(FLAG_HALF_CARRY);
+}
+
 void InstructionSet::swap_extended(uint8_t *reg) {
     //  After isolating this part shifts the higher nibbles down
     //  towards the lower nibbles:
@@ -102,12 +117,8 @@ void InstructionSet::swap_extended(uint8_t *reg) {
     //  for the proper SWAP:
     //  *reg = (lower_nibble << 4) | (higher_nibble);
 
-    uint8_t lower_nibble = *reg & 0x0F;          // Isolates the lower nibbles
-
-    uint8_t higher_nibble = (*reg & 0xF0) >> 4;  // Isolates the higher nibbles
+    uint8_t lower_nibble = *reg & 0x0Fl;
+    uint8_t higher_nibble = (*reg & 0xF0) >> 4;
     *reg =  (lower_nibble << 4) | (higher_nibble);
 }
 
-void InstructionSet::srl_extended(uint8_t *reg) {
-    return;
-}

@@ -7,14 +7,14 @@
 #include <cstdint>
 
 #include "./memory/MMU.hpp"
-#include "./cpu/CPU.hpp"
+#include "cpu/cpu.hpp"
 
 class InstructionSet {
  private:
         MMU &mmu;
-        CPU &cpu;
+        Cpu &cpu;
  public:
-        InstructionSet(CPU *cpu, MMU *mmu);
+        InstructionSet(Cpu *cpu, MMU *mmu);
         void execute(uint8_t opcode);
 
         void rrca(uint8_t reg);
@@ -40,7 +40,7 @@ class InstructionSet {
         void ldr(uint8_t reg, uint8_t  address);
         void ldr_mem(uint16_t reg, uint8_t address);
 
-        void adc(uint8_t  *reg_1, uint8_t  *reg_2);
+        void adc(uint8_t  reg_1, uint8_t  reg_2);
         void sbc(uint8_t  *reg_1, uint8_t  *reg_2);
         void sub(uint8_t  *reg_1, uint8_t  *reg_2);
         void and_(uint8_t *reg_1, uint8_t  *reg_2);

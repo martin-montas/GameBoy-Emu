@@ -7,11 +7,10 @@
 #include <cstdint>
 
 #include <string>
-#include "MMU.hpp"
+#include "mmu.hpp"
 
 MMU::MMU(std::string filename) {
     load_rom(filename);
-
 }
 
 void MMU::load_rom(const std::string &filename) {

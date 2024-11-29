@@ -11,7 +11,7 @@
 #include <array>
 #include <functional>
 
-#include "../memory/MMU.hpp"
+#include "../memory/mmu.hpp"
 
 enum RegisterFlags {
     FLAG_ZERO = (1 << 7),
@@ -110,4 +110,4 @@ class Cpu {
         uint32_t globalCycles;
 };
 
-#endif  // SRC_Cpu_Cpu_HPP_
+#endif  // SRC_CPU_CPU_HPP_

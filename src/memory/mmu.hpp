@@ -13,7 +13,7 @@
 class MMU {
  public:
         std::vector<uint8_t> romData;
-        MMU(std::string filename);
+        explicit MMU(std::string filename);
         ~MMU();
         uint8_t HRAM[0x7F];
         uint8_t IRAM[8192];
@@ -35,4 +35,4 @@ class MMU {
         void load_rom(const std::string &filename);
 };
 
-#endif // SRC_MEMORY_MMU_HPP_
+#endif  // SRC_MEMORY_MMU_HPP_

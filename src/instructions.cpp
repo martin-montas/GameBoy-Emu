@@ -5,10 +5,10 @@
 #include <cstdint>
 #include <iostream>
 
-#include "./instructions.hpp"
-#include "./cpu/cpu.hpp"
+#include "instructions.hpp"
+#include "cpu/cpu.hpp"
 
-InstructionSet::InstructionSet(Cpu *cpu, MMU *mmu) : cpu(*cpu), mmu(*mmu) {
+tnstructionSet::InstructionSet(Cpu *cpu, MMU *mmu) : cpu(*cpu), mmu(*mmu) {
 }
 
 void InstructionSet::ldr(uint16_t reg) {
@@ -70,7 +70,8 @@ void InstructionSet::execute(uint8_t opcode) {
         }
          case 0x08: {
             std::cout << "LD (a16), SP" << std::endl;
-            uint16_t address = mmu.romData[cpu.PC + 1] | (mmu.romData[cpu.PC + 2] << 8);
+            uint16_t address = mmu.romData[cpu.PC + 1]
+                | (mmu.romData[cpu.PC + 2] << 8);
             mmu.write16(address, cpu.SP);
             cpu.PC += 3;
             break;
@@ -300,7 +301,8 @@ void InstructionSet::execute(uint8_t opcode) {
         case 0x30: {
             std::cout << "JR NC, r8" << std::endl;
             if (!(cpu.F & FLAG_CARRY)) {
-                int8_t signed_offset = static_cast<int8_t>(mmu.romData[cpu.PC++]);
+                int8_t signed_offset =
+                    static_cast<int8_t>(mmu.romData[cpu.PC++]);
                 cpu.PC += signed_offset;
             }
             break;
@@ -384,7 +386,6 @@ void InstructionSet::execute(uint8_t opcode) {
         case 0x3F: {
             std::cout << "CPL" << std::endl;
             break;
-
         }
         case 0x40: {
             std::cout << "LD B, B" << std::endl;
@@ -936,7 +937,7 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xAE: {
             std::cout << "XOR (HL)" << std::endl;
-            xor_(&cpu.A ,&mmu.romData[cpu.HL]);
+            xor_(&cpu.A, &mmu.romData[cpu.HL]);
             break;
         }
         case 0xAF: {
@@ -946,7 +947,7 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xB0: {
             std::cout << "OR B" << std::endl;
-            or_(&cpu.A,&cpu.B);
+            or_(&cpu.A, &cpu.B);
             break;
         }
         case 0xB1: {
@@ -1125,7 +1126,7 @@ void InstructionSet::execute(uint8_t opcode) {
                             break;
                         case 0x06:  // RLC (HL)
                             std::cout << "RLC (HL)" << std::endl;
-                            // TODO
+                            // TODO(martin-montas)
                              rlc_extended(&cpu.L);
                             break;
                         case 0x07:  // RLC A
@@ -1158,7 +1159,7 @@ void InstructionSet::execute(uint8_t opcode) {
                             break;
                         case 0x0E:  // RRC (HL)
                             std::cout << "RRC (HL)" << std::endl;
-                            // TODO
+                            // TODO(martin-montas)
                             break;
                         case 0x0F:  // RRC A
                             std::cout << "RRC A" << std::endl;
@@ -1190,7 +1191,7 @@ void InstructionSet::execute(uint8_t opcode) {
                         break;
                     case 0x16:  // RL (HL)
                         std::cout << "RL (HL)" << std::endl;
-                        // todo
+                        // TODO(martin-montas)
                         break;
                     case 0x17:  // RL A
                         std::cout << "RL A" << std::endl;
@@ -1250,7 +1251,7 @@ void InstructionSet::execute(uint8_t opcode) {
                         break;
                     case 0x26:  // SLA (HL)
                         std::cout << "SLA (HL)" << std::endl;
-                        // TODO
+                        // TODO(martin-montas)
                         break;
                     case 0x27:  // SLA A
                         std::cout << "SLA A" << std::endl;
@@ -1309,7 +1310,7 @@ void InstructionSet::execute(uint8_t opcode) {
                         swap_extended(&cpu.L);
                     case 0x36:  // SWAP (HL)
                         std::cout << "SWAP (HL)" << std::endl;
-                        // TODO
+                        // TODO(martin-montas)
                         break;
                     case 0x37:  // SWAP A
                         std::cout << "SWAP A" << std::endl;
@@ -1337,7 +1338,9 @@ void InstructionSet::execute(uint8_t opcode) {
                         std::cout << "SRL A" << std::endl;
                         break;
                     default:
-                        std::cerr << "Unknown opcode: 0x" << std::hex << (int)mmu.read8(cpu.PC + 1) << std::endl;
+                        std::cerr << "Unknown opcode: 0x"
+                        << std::hex << static_cast<int>(mmu.read8(cpu.PC + 1))
+                        << std::endl;
                         break;
                 }
                         // Breaks out of the switch block:
@@ -1470,7 +1473,7 @@ void InstructionSet::execute(uint8_t opcode) {
         case 0xED: {
             std::cout << " CALL nn" << std::endl;
             break;
-        } 
+        }
         case 0xEE: {
             std::cout << " XOR nn" << std::endl;
             break;
@@ -1540,7 +1543,9 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         default: {
-            std::cerr << "Unknown opcode: 0x" << std::hex << (int)mmu.read8(cpu.PC + 1) << std::endl;
+            std::cerr << "Unknown opcode: 0x"
+            << std::hex << static_cast<int>(mmu.read8(cpu.PC + 1))
+            << std::endl;
             break;
         }
     }
@@ -1626,7 +1631,8 @@ void InstructionSet::add16(uint16_t destination, uint16_t value) {
     cpu.F &= ~FLAG_SUBTRACT;
     cpu.set_flag(FLAG_CARRY, result > 0xFFFF);
 
-    cpu.set_flag(FLAG_HALF_CARRY, ((destination & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF);
+    cpu.set_flag(FLAG_HALF_CARRY, ((destination & 0x0FFF)
+                + (value & 0x0FFF)) > 0x0FFF);
     destination = result & 0xFFFF;
 }
 
@@ -1634,28 +1640,28 @@ void ldhl(int8_t value) {
 }
 
 
-// TODO
+// TODO(martin-montas)
 // void InstructionSet::adc(uint8_t& reg_1, uint8_t reg_2) {
 //     uint8_t carry = cpu.get_flag(FLAG_CARRY) ? 1 : 0;
 //     uint16_t result = reg_1 + reg_2 + carry;
 //     reg_1 = result & 0xFF;
 //     cpu.set_flag(FLAG_ZERO, (reg_1 == 0));
-//     cpu.set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) + (reg_2 & 0x0F) + carry) > 0x0F);
+//     cpu.set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F)
+//     + (reg_2 & 0x0F) + carry) > 0x0F);
 //     cpu.set_flag(FLAG_CARRY, (result > 0xFF));
 //     cpu.clear_flag(FLAG_SUBTRACT);
 // }
 
-// TODO
+// TODO(martin-montas)
 // void sbc(uint8_t reg_1, uint8_t reg_2) {
 //     uint8_t carry = cpu.get_flag(FLAG_CARRY) ? 1 : 0;
-// 
 //     uint16_t result = reg_1 - reg_2 - carry;
 //     reg_1 = result & 0xFF;
-// 
 //     cpu.set_flag(FLAG_ZERO, (reg_1 == 0));
 //     cpu.set_flag(FLAG_SUBTRACT, 1);
-//     cpu.set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) < (reg_2 & 0x0F) + carry));
-    // cpu.set_flag(FLAG_CARRY, (result > 0xFF));
+//     cpu.set_flag(FLAG_HALF_CARRY,
+//     ((reg_1 & 0x0F) < (reg_2 & 0x0F) + carry));
+//     cpu.set_flag(FLAG_CARRY, (result > 0xFF));
 // }
 
 void InstructionSet::sub(uint8_t *reg_1, uint8_t *reg_2) {
@@ -1725,7 +1731,8 @@ void InstructionSet::add8_mem(uint8_t destination, uint8_t value) {
 
     cpu.set_flag(FLAG_ZERO, (destination + value) == 0);
     cpu.clear_flag(FLAG_SUBTRACT);
-    cpu.set_flag(FLAG_HALF_CARRY, ((destination & 0x0F) + (value & 0x0F)) > 0x0F);
+    cpu.set_flag(FLAG_HALF_CARRY,
+    ((destination & 0x0F) + (value & 0x0F)) > 0x0F);
     cpu.set_flag(FLAG_CARRY, (destination + value) > 0xFF);
 }
 

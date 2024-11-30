@@ -25,6 +25,7 @@ class Cpu {
         const MMU mmu;
 
  public:
+        Cpu();
         ~Cpu();
         RegisterFlags *flags;
         bool is_flag_set(uint8_t flag);

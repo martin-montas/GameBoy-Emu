@@ -7,7 +7,7 @@
 
 void GameBoy::init(std::string filename) {
     mmu = new MMU(filename);
-    instructions = new InstructionSet(cpu, mmu);
+    instructions = new InstructionSet(mmu);
     emulationRunning = true;
 }
 

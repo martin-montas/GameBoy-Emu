@@ -20,6 +20,7 @@ class GameBoy {
         bool emulationRunning;
 
  public:
+        GameBoy();
         ~GameBoy();
         void init(std::string filename);
         void run();

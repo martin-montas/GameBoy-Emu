@@ -11,7 +11,6 @@
 #include <array>
 #include <functional>
 
-#include "../memory/mmu.hpp"
 
 enum RegisterFlags {
     FLAG_ZERO = (1 << 7),
@@ -21,12 +20,12 @@ enum RegisterFlags {
 };
 
 class Cpu {
- private:
-        const MMU mmu;
 
  public:
         Cpu();
-        ~Cpu();
+        ~Cpu() {
+
+        }
         RegisterFlags *flags;
         bool is_flag_set(uint8_t flag);
         void set_flag(uint8_t flags, bool state);

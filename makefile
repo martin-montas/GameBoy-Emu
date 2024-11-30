@@ -25,15 +25,14 @@ game-boy.o: ./src/game-boy.cpp ./src/game-boy.hpp
 instructions.o: ./src/instructions.cpp ./src/instructions.hpp
 	$(CXX) $(CXXFLAGS) -c ./src/instructions.cpp
 
+cpu.o: ./src/cpu.cpp ./src/cpu.hpp
+	$(CXX) $(CXXFLAGS) -c ./src/cpu.cpp
+	
 extended-instructions.o: ./src/extended-instructions.cpp ./src/instructions.hpp
 	$(CXX) $(CXXFLAGS) -c ./src/extended-instructions.cpp
 
-cpu.o: ./src/cpu/cpu.cpp ./src/cpu/cpu.hpp
-	$(CXX) $(CXXFLAGS) -c ./src/cpu/cpu.cpp
-
-mmu.o: ./src/memory/mmu.cpp ./src/memory/mmu.hpp
-	$(CXX) $(CXXFLAGS) -c ./src/memory/mmu.cpp
-
+mmu.o: ./src/mmu.cpp ./src/mmu.hpp
+	$(CXX) $(CXXFLAGS) -c ./src/mmu.cpp
 
 # Clean rule
 clean:
@@ -43,21 +42,3 @@ clean:
 lint:
 	@cpplint $(CPP_FILES)
 
-# *****************************************************
-# Rules for Boost.Test
-# *****************************************************
-
-# Target for unit tests
-TEST_SRC := ./test/test_main.cpp ./test/test_cpu.cpp ./test/test_game-boy.cpp ./test/test_mmu.cpp ./test/test_instructions.cpp ./test/test_extended-instructions.cpp
-TEST_BIN := test_binary
-
-test: $(TEST_BIN)
-	./$(TEST_BIN) # Run tests after building
-
-$(TEST_BIN): $(TEST_SRC) cpu.o game-boy.o instructions.o mmu.o
-	$(CXX) $(CXXFLAGS) $(TEST_SRC) cpu.o game-boy.o instructions.o -o $(TEST_BIN) \
-		-lboost_unit_test_framework
-
-# Clean tests
-clean-test:
-	rm -f $(TEST_BIN)

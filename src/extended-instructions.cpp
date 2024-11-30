@@ -5,8 +5,8 @@
 #include <sys/types.h>
 #include <cstdint>
 
-#include "cpu/cpu.hpp"
-#include "./instructions.hpp"
+#include "cpu.hpp"
+#include "instructions.hpp"
 
 void InstructionSet::rl_extended(uint8_t *reg) {
     bool bit7 = *reg & 0x80;

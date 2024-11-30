@@ -4,11 +4,12 @@
 //
 #include <cstdint>
 #include <iostream>
-#include "cpu/cpu.hpp"
-#include "instructions.hpp"
 
-InstructionSet::InstructionSet(MMU* m) :  mmu(m) {
-    cpu = new Cpu();
+#include "./cpu.hpp"
+#include "./instructions.hpp"
+
+InstructionSet::InstructionSet(MMU* mmu) :  mmu(mmu) {
+    this->cpu = new Cpu();
 }
 
 void InstructionSet::ldr(uint16_t reg) {

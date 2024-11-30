@@ -8,9 +8,9 @@
 #include <cstdint>
 #include <string>
 
-#include "cpu/cpu.hpp"
-#include "memory/mmu.hpp"
-#include "./instructions.hpp"
+#include "cpu.hpp"
+#include "mmu.hpp"
+#include "instructions.hpp"
 
 class GameBoy {
  private:

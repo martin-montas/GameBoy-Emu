@@ -1,7 +1,7 @@
 #include <boost/test/included/unit_test.hpp>
 #include "../src/instructions.hpp"
-#include "../src/cpu/cpu.hpp"
-#include "../src/memory/mmu.hpp"
+#include "../src/cpu.hpp"
+#include "../src/mmu.hpp"
 #include <memory> // For smart pointers
 #include <filesystem> // For file existence check (C++17)
 

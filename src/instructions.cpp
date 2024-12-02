@@ -660,7 +660,6 @@ void InstructionSet::execute(uint8_t opcode) {
         case 0x76: {
             break;
         }
-
         case 0x77: {
             std::cout << "LD (HL), A" << std::endl;
             mmu->romData[cpu->HL] = cpu->A;
@@ -1127,7 +1126,7 @@ void InstructionSet::execute(uint8_t opcode) {
                         case 0x06:  // RLC (HL)
                             std::cout << "RLC (HL)" << std::endl;
                             // TODO(martin-montas)
-                             rlc_extended(&cpu->L);
+                             rlc_extended(&cpu->HL);
                             break;
                         case 0x07:  // RLC A
                             std::cout << "RLC A" << std::endl;

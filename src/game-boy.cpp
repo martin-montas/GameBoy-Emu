@@ -5,7 +5,7 @@
 #include <cstdint>
 #include "game-boy.hpp"
 
-void GameBoy::init(std::string filename) {
+GameBoy::GameBoy(std::string filename) {
     mmu = new MMU(filename);
     instructions = new InstructionSet(mmu);
     emulationRunning = true;

@@ -20,9 +20,8 @@ class GameBoy {
         bool emulationRunning;
 
  public:
-        GameBoy();
+        GameBoy(std::string filename);
         ~GameBoy();
-        void init(std::string filename);
         void run();
         uint32_t calculateCyclesForFrame();
 };

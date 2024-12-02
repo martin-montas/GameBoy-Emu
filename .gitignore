@@ -1,4 +1,5 @@
 .todo.md
 *.o
 ROM/
+test/a.out
 gameboy

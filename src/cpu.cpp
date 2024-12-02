@@ -9,6 +9,7 @@ const double cyclesPerMicrosecond = 4.194304;
 const uint32_t timeSlice = 1000;
 uint32_t cyclesToRun = timeSlice * cyclesPerMicrosecond;
 
+Cpu::Cpu() {}
 
 bool Cpu::is_flag_set(uint8_t flag) {
     return this->F & flag;

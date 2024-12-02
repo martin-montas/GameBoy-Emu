@@ -16,18 +16,18 @@ MMU::MMU(std::string filename) {
 void MMU::load_rom(const std::string &filename) {
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open ROM file." << std::endl;
-        exit(1);
+        throw std::runtime_error("Could not open ROM file: " + filename);
     }
+    
     std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    if (!file.read(reinterpret_cast<char*>(romData.data()), size)) {
-        std::cerr << "Error: Could not read ROM file." << std::endl;
-        exit(1);
+    if (size > romData.size()) {
+        throw std::runtime_error("ROM file too large for buffer");
     }
-
-    file.close();
+    
+    file.seekg(0, std::ios::beg);
+    if (!file.read(reinterpret_cast<char*>(romData.data()), size)) {
+        throw std::runtime_error("Could not read ROM file");
+    }
 }
 
 uint8_t MMU::read8(uint16_t address) {

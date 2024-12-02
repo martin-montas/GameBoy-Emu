@@ -1,31 +1,17 @@
+#define BOOST_TEST_MODULE isEq Test
 #include <boost/test/included/unit_test.hpp>
+
 #include "../src/instructions.hpp"
-#include "../src/cpu.hpp"
 #include "../src/mmu.hpp"
-#include <memory> // For smart pointers
-#include <filesystem> // For file existence check (C++17)
+#include "../src/mmu.hpp"
 
-BOOST_AUTO_TEST_SUITE(CPU_Test)
 
-BOOST_AUTO_TEST_CASE(ld_instruction_test) {
-    // Validate ROM path
-    BOOST_REQUIRE(std::filesystem::exists("../ROM/cpu_instrs.gb"));
+BOOST_AUTO_TEST_CASE( testA ) {
+    MMU *mmu = new MMU("../ROM/dummy_file.gb");
+    InstructionSet *instructions = new InstructionSet(mmu);
+    instructions->execute(0x3E);
+    Cpu *cpu = instructions->getCpu();
 
-    // Initialize MMU and InstructionSet
-    MMU mmu("../ROM/cpu_instrs.gb");
-    std::unique_ptr<InstructionSet> instruction = std::make_unique<InstructionSet>(&mmu);
-
-    // Define opcode and operand
-    uint8_t opcode = 0x3E;  
-    uint8_t operand = 0x42;
-
-    // Simulate fetching operand
-    mmu.write8(0x0100, operand); // Stub memory to fetch the operand
-    instruction->execute(opcode);
-
-    // Access CPU and verify
-    Cpu* cpu = instruction->getCpu();
-    BOOST_CHECK_EQUAL(cpu->A, operand);
+    BOOST_CHECK(cpu->A == 0x3E);
 }
 
-BOOST_AUTO_TEST_SUITE_END()

@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <iostream>
 
-#include "./cpu.hpp"
 #include "./instructions.hpp"
 
 InstructionSet::InstructionSet(MMU* mmu) :  mmu(mmu) {

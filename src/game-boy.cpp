@@ -7,11 +7,13 @@
 
 GameBoy::GameBoy(std::string filename) {
     mmu = new MMU(filename);
-    instructions = new InstructionSet(mmu);
+    cpu = new Cpu();
+    instructions = new InstructionSet(mmu, cpu);
     emulationRunning = true;
 }
 
 GameBoy::~GameBoy() {}
+
 void GameBoy::run() {
     uint8_t opcode;
     int cycle_count = 0;

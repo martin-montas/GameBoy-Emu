@@ -7,13 +7,13 @@
 
 #include "./instructions.hpp"
 
-InstructionSet::InstructionSet(MMU* mmu) :  mmu(mmu) {
-    this->cpu = new Cpu();
+InstructionSet::InstructionSet(MMU *mmu, Cpu* cpu) {
+    cpu = cpu;
+    mmu = mmu;
 }
 
 void InstructionSet::ldr(uint16_t reg) {
-    uint8_t tmp_1 = mmu->romData[cpu->PC++];
-    uint8_t tmp_2 = mmu->romData[cpu->PC++];
+    uint8_t tmp_1 = mmu->romData[cpu->PC++]; uint8_t tmp_2 = mmu->romData[cpu->PC++];
     reg = (tmp_2 << 8) | tmp_1;
 }
 
@@ -1126,7 +1126,7 @@ void InstructionSet::execute(uint8_t opcode) {
                         case 0x06:  // RLC (HL)
                             std::cout << "RLC (HL)" << std::endl;
                             // TODO(martin-montas)
-                             rlc_extended(&cpu->HL);
+                            rlc_extended_mem(&cpu->HL);
                             break;
                         case 0x07:  // RLC A
                             std::cout << "RLC A" << std::endl;
@@ -1317,24 +1317,31 @@ void InstructionSet::execute(uint8_t opcode) {
                         break;
                     case 0x39:  // SRL B
                         std::cout << "SRL B" << std::endl;
+                        srl_extended(&cpu->B);
                         break;
                     case 0x3A:  // SRL C
                         std::cout << "SRL C" << std::endl;
+                        srl_extended(&cpu->C);
                         break;
                     case 0x3B:  // SRL D
                         std::cout << "SRL D" << std::endl;
+                        srl_extended(&cpu->D);
                         break;
                     case 0x3C:  // SRL E
                         std::cout << "SRL E" << std::endl;
+                        srl_extended(&cpu->E);
                         break;
                     case 0x3D:  // SRL H
                         std::cout << "SRL H" << std::endl;
+                        srl_extended(&cpu->H);
                         break;
                     case 0x3E:  // SRL L
                         std::cout << "SRL L " << std::endl;
+                        srl_extended(&cpu->L);
                         break;
                     case 0x3F:  // SRL A
                         std::cout << "SRL A" << std::endl;
+                        srl_extended(&cpu->A);
                         break;
                     default:
                         std::cerr << "Unknown opcode: 0x"

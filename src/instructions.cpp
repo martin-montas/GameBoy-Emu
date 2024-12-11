@@ -1302,7 +1302,6 @@ void InstructionSet::execute(uint8_t opcode) {
                         break;
                     case 0x34:  // SWAP H
                         std::cout << "SWAP H" << std::endl;
-                        swap_extended(&cpu->H);
                         break;
                     case 0x35:  // SWAP L
                         std::cout << "SWAP L" << std::endl;
@@ -1349,23 +1348,31 @@ void InstructionSet::execute(uint8_t opcode) {
                         << std::endl;
                         break;
                 }
-                        // Breaks out of the switch block:
-                         break;
+                // Breaks out of the switch block:
+                break;
             }
+
         case 0xCC: {
-            std::cout << "PREFIX CB" << std::endl;
+            std::cout << "CALL nn" << std::endl;
+            if (cpu->F & FLAG_ZERO) {
+                execute_call();
+            }else {
+                cpu->PC += 2;
+            }
             break;
             }
         case 0xCD: {
-            std::cout << "CALL nn" << std::endl;
+            std::cout << "CALL a16" << std::endl;
+            uint16_t address =  mmu->read16(mmu->romData[cpu->PC +1]);
+            cpu->PC = address;
             break;
             }
         case 0xCE: {
-                std::cout <<  "ADC nn" << std::endl;
+            std::cout <<  "ADC nn" << std::endl;
             break;
             }
         case 0xCF: {
-                std::cout << "RST 08H" << std::endl;
+            std::cout << "RST 08H" << std::endl;
             break;
             }
         case 0xD0: {
@@ -1777,4 +1784,12 @@ void InstructionSet::call(bool condition) {
     } else {
         cpu->PC += 3;
     }
+}
+
+void InstructionSet::execute_call() {
+    uint16_t address = mmu->read16(cpu->PC);
+    cpu->PC += 2;
+    cpu->SP -= 2;
+    mmu->write16(cpu->SP, cpu->PC);
+    cpu->PC = address;
 }

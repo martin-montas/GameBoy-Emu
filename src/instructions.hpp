@@ -14,11 +14,7 @@ class InstructionSet {
      static Cpu *cpu;
      static MMU *mmu;
  public:
-     // Getter to access the Cpu object for testing
-    Cpu* getCpu() const {
-        return cpu;
-    }
-    ~InstructionSet() { delete cpu; }
+     ~InstructionSet() { delete cpu; }
      InstructionSet(MMU* mmu, Cpu *cpu);
      void execute(uint8_t opcode);
 
@@ -45,14 +41,17 @@ class InstructionSet {
      static void ldr(uint8_t reg, uint8_t  address);
      static void ldr_mem(uint16_t reg, uint8_t address);
 
-      // static void adc(uint8_t reg_1, uint8_t reg_2);
-      // static void sbc(uint8_t *reg_1, uint8_t *reg_2);
-      // static void and_(uint8_t *reg_1, uint8_t *reg_2);
-      // static void xor_(uint8_t *reg_1, uint8_t *reg_2);
+     // static void adc(uint8_t reg_1, uint8_t reg_2);
+     // static void sbc(uint8_t *reg_1, uint8_t *reg_2);
+     // static void and_(uint8_t *reg_1, uint8_t *reg_2);
+     // static void xor_(uint8_t *reg_1, uint8_t *reg_2);
      static void sub(uint8_t  *reg_1,  uint8_t  *reg_2);
      static void or_(uint8_t  *reg_1,  uint8_t  *reg_2);
      static void cp_(uint8_t  * reg_1, uint8_t  *reg_2);
      static void call(bool condition);
+
+
+     static void execute_call();
      static void jump(bool condition);
      static void jump_add(bool condition);
      static void cp_n(uint8_t value);

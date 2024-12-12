@@ -1368,428 +1368,436 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
             }
         case 0xCE: {
-            std::cout <<  "ADC nn" << std::endl;
+            std::cout <<  "ADC A,d8" << std::endl;
+            uint8_t d8 = mmu->romData[cpu->PC + 1];
+            bool current_carry = cpu->F & FLAG_CARRY;
+            uint16_t result = cpu->A + d8 + current_carry;
+            cpu->set_flag(FLAG_CARRY, result > 0xFF);
+            cpu->set_flag(FLAG_HALF_CARRY, 
+            ((cpu->A & 0xF) + (d8 & 0xF) + current_carry) > 0xF);
+            cpu->A = result & 0xFF;
+            cpu->set_flag(FLAG_ZERO, cpu->A == 0);
+            cpu->clear_flag(FLAG_SUBTRACT);
             break;
             }
-        case 0xCF: {
-            std::cout << "RST 08H" << std::endl;
-            break;
-            }
-        case 0xD0: {
-            std::cout << " RET NC" << std::endl;
-            break;
-        }
-        case 0xD1: {
-            std::cout << " POP DE" << std::endl;
-            break;
-        }
-        case 0xD2: {
-            std::cout << "  JPNC, nn" << std::endl;
-            break;
-        }
-        case 0xD3: {
-            std::cout << "  OUT(n), A" << std::endl;
-            break;
-        }
-        case 0xD4: {
-            std::cout << "  CALLNC, nn" << std::endl;
-            break;
-        }
-        case 0xD5: {
-            std::cout << " PUSH DE" << std::endl;
-            break;
-        }
-        case 0xD6: {
-            std::cout << " SUB nn" << std::endl;
-            break;
-        }
-        case 0xD7: {
-            std::cout << " RST 10H" << std::endl;
-            break;
-        }
-        case 0xD8: {
-            std::cout << " RET C" << std::endl;
-            break;
-        }
-        case 0xD9: {
-            std::cout << " RETI" << std::endl;
-            break;
-        }
-        case 0xDA: {
-            std::cout << "  JPC, nn" << std::endl;
-            break;
-        }
-        case 0xDB: {
-            std::cout << "   INA, (n)" << std::endl;
-            break;
-        }
-        case 0xDD: {
-            std::cout << "  CALLC, nn" << std::endl;
-            break;
-        }
-        case 0xDE: {
-            std::cout << " SBC nn" << std::endl;
-            break;
-        }
-        case 0xDF: {
-            std::cout << " RST 18H" << std::endl;
-            break;
-        }
-        case 0xE0: {
-            std::cout << "  LDH(n), A" << std::endl;
-            break;
-        }
-        case 0xE1: {
-            std::cout << " POP HL" << std::endl;
-            break;
-        }
-        case 0xE2: {
-            std::cout << "  LD(C), A" << std::endl;
-            break;
-        }
-        case 0xE3: {
-            std::cout << " XOR nn" << std::endl;
-            break;
-        }
-        case 0xE4: {
-            std::cout << " PUSH HL" << std::endl;
-            break;
-        }
-        case 0xE5: {
-            std::cout << " AND nn" << std::endl;
-            break;
-        }
-        case 0xE6: {
-            std::cout << " XOR nn" << std::endl;
-            break;
-        }
-        case 0xE7: {
-            std::cout << " RST 20H" << std::endl;
-            break;
-        }
-        case 0xE8: {
-            std::cout << "  ADDSP, r8" << std::endl;
-            break;
-        }
-        case 0xE9: {
-            std::cout << "  JP(HL)" << std::endl;
-            break;
-        }
-        case 0xEA: {
-            std::cout << "  LD(nn), A" << std::endl;
-            break;
-        }
-        case 0xEB: {
-            std::cout << " XOR nn" << std::endl;
-            break;
-        }
-        case 0xED: {
-            std::cout << " CALL nn" << std::endl;
-            break;
-        }
-        case 0xEE: {
-            std::cout << " XOR nn" << std::endl;
-            break;
-        }
-        case 0xEF: {
-            std::cout << " RST 28H" << std::endl;
-            break;
-        }
-        case 0xF0: {
-            std::cout << "  LDHA, (n)" << std::endl;
-            break;
-        }
-        case 0xF1: {
-            std::cout << " POP AF" << std::endl;
-            break;
-        }
-        case 0xF2: {
-            std::cout << "  LDA, (C)" << std::endl;
-            break;
-        }
-        case 0xF3: {
-            std::cout << " DI" << std::endl;
-            break;
-        }
-        case 0xF4: {
-            std::cout << " PUSH AF" << std::endl;
-            break;
-        }
-        case 0xF5: {
-            std::cout << " OR nn" << std::endl;
-            break;
-        }
-        case 0xF6: {
-            std::cout << " OR nn" << std::endl;
-            break;
-        }
-        case 0xF7: {
-            std::cout << " RST 30H" << std::endl;
-            break;
-        }
-        case 0xF8: {
-            std::cout << "  LD HL, SP+ r8" << std::endl;
-            break;
-        }
-        case 0xF9: {
-            std::cout << "  LDSP, HL" << std::endl;
-            break;
-        }
-        case 0xFA: {
-            std::cout << "  LD A, (nn)" << std::endl;
-            break;
-        }
-        case 0xFB: {
-            std::cout << " EI" << std::endl;
-            break;
-        }
-        case 0xFD: {
-            std::cout << " CALL nn" << std::endl;
-            break;
-        }
-        case 0xFE: {
-            std::cout << " CP nn" << std::endl;
-            break;
-        }
-        case 0xFF: {
-            std::cout << " RST 38H" << std::endl;
-            break;
-        }
+           case 0xCF: {
+                          std::cout << "RST 08H" << std::endl;
+                          break;
+                      }
+           case 0xD0: {
+                          std::cout << " RET NC" << std::endl;
+                          break;
+                      }
+           case 0xD1: {
+                          std::cout << " POP DE" << std::endl;
+                          break;
+                      }
+           case 0xD2: {
+                          std::cout << "  JPNC, nn" << std::endl;
+                          break;
+                      }
+           case 0xD3: {
+                          std::cout << "  OUT(n), A" << std::endl;
+                          break;
+                      }
+           case 0xD4: {
+                          std::cout << "  CALLNC, nn" << std::endl;
+                          break;
+                      }
+           case 0xD5: {
+                          std::cout << " PUSH DE" << std::endl;
+                          break;
+                      }
+           case 0xD6: {
+                          std::cout << " SUB nn" << std::endl;
+                          break;
+                      }
+           case 0xD7: {
+                          std::cout << " RST 10H" << std::endl;
+                          break;
+                      }
+           case 0xD8: {
+                          std::cout << " RET C" << std::endl;
+                          break;
+                      }
+           case 0xD9: {
+                          std::cout << " RETI" << std::endl;
+                          break;
+                      }
+           case 0xDA: {
+                          std::cout << "  JPC, nn" << std::endl;
+                          break;
+                      }
+           case 0xDB: {
+                          std::cout << "   INA, (n)" << std::endl;
+                          break;
+                      }
+           case 0xDD: {
+                          std::cout << "  CALLC, nn" << std::endl;
+                          break;
+                      }
+           case 0xDE: {
+                          std::cout << " SBC nn" << std::endl;
+                          break;
+                      }
+           case 0xDF: {
+                          std::cout << " RST 18H" << std::endl;
+                          break;
+                      }
+           case 0xE0: {
+                          std::cout << "  LDH(n), A" << std::endl;
+                          break;
+                      }
+           case 0xE1: {
+                          std::cout << " POP HL" << std::endl;
+                          break;
+                      }
+           case 0xE2: {
+                          std::cout << "  LD(C), A" << std::endl;
+                          break;
+                      }
+           case 0xE3: {
+                          std::cout << " XOR nn" << std::endl;
+                          break;
+                      }
+           case 0xE4: {
+                          std::cout << " PUSH HL" << std::endl;
+                          break;
+                      }
+           case 0xE5: {
+                          std::cout << " AND nn" << std::endl;
+                          break;
+                      }
+           case 0xE6: {
+                          std::cout << " XOR nn" << std::endl;
+                          break;
+                      }
+           case 0xE7: {
+                          std::cout << " RST 20H" << std::endl;
+                          break;
+                      }
+           case 0xE8: {
+                          std::cout << "  ADDSP, r8" << std::endl;
+                          break;
+                      }
+           case 0xE9: {
+                          std::cout << "  JP(HL)" << std::endl;
+                          break;
+                      }
+           case 0xEA: {
+                          std::cout << "  LD(nn), A" << std::endl;
+                          break;
+                      }
+           case 0xEB: {
+                          std::cout << " XOR nn" << std::endl;
+                          break;
+                      }
+           case 0xED: {
+                          std::cout << " CALL nn" << std::endl;
+                          break;
+                      }
+           case 0xEE: {
+                          std::cout << " XOR nn" << std::endl;
+                          break;
+                      }
+           case 0xEF: {
+                          std::cout << " RST 28H" << std::endl;
+                          break;
+                      }
+           case 0xF0: {
+                          std::cout << "  LDHA, (n)" << std::endl;
+                          break;
+                      }
+           case 0xF1: {
+                          std::cout << " POP AF" << std::endl;
+                          break;
+                      }
+           case 0xF2: {
+                          std::cout << "  LDA, (C)" << std::endl;
+                          break;
+                      }
+           case 0xF3: {
+                          std::cout << " DI" << std::endl;
+                          break;
+                      }
+           case 0xF4: {
+                          std::cout << " PUSH AF" << std::endl;
+                          break;
+                      }
+           case 0xF5: {
+                          std::cout << " OR nn" << std::endl;
+                          break;
+                      }
+           case 0xF6: {
+                          std::cout << " OR nn" << std::endl;
+                          break;
+                      }
+           case 0xF7: {
+                          std::cout << " RST 30H" << std::endl;
+                          break;
+                      }
+           case 0xF8: {
+                          std::cout << "  LD HL, SP+ r8" << std::endl;
+                          break;
+                      }
+           case 0xF9: {
+                          std::cout << "  LDSP, HL" << std::endl;
+                          break;
+                      }
+           case 0xFA: {
+                          std::cout << "  LD A, (nn)" << std::endl;
+                          break;
+                      }
+           case 0xFB: {
+                          std::cout << " EI" << std::endl;
+                          break;
+                      }
+           case 0xFD: {
+                          std::cout << " CALL nn" << std::endl;
+                          break;
+                      }
+           case 0xFE: {
+                          std::cout << " CP nn" << std::endl;
+                          break;
+                      }
+           case 0xFF: {
+                          std::cout << " RST 38H" << std::endl;
+                          break;
+                      }
         default: {
-            std::cerr << "Unknown opcode: 0x"
-            << std::hex << static_cast<int>(mmu->read8(cpu->PC + 1))
-            << std::endl;
-            break;
+        std::cerr << "Unknown opcode: 0x"
+        << std::hex << static_cast<int>(mmu->read8(cpu->PC + 1)) << std::endl;
+        break;
         }
     }
 }
 
-void InstructionSet::ret(bool condition) {
-    if (condition) {
-        cpu->SP += 2;
-        uint16_t address = mmu->read16(cpu->SP);
-        cpu->PC = address;
-    }
-}
-
-void InstructionSet::or_(uint8_t *reg_1, uint8_t *reg_2) {
-    uint8_t tmp = *reg_1 | *reg_2;
-    cpu->set_flag(FLAG_ZERO, (tmp == 0));
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
-    cpu->clear_flag(FLAG_CARRY);
-    *reg_1 = tmp;
-}
-
-void inc_mem(uint8_t value) {
-    return;
-}
-void InstructionSet::cpl(uint8_t reg) {
-    reg = ~reg;
-
-    cpu->set_flag(FLAG_SUBTRACT, true);
-    cpu->set_flag(FLAG_HALF_CARRY, true);
-}
-
-void InstructionSet::inc_mem(uint16_t reg) {
-    uint8_t tmp = mmu->read8(reg);
-    uint8_t nibble_carry = tmp & 0x0F;
-    tmp++;
-    mmu->write8(reg, tmp);
-
-    cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
-    cpu->set_flag(FLAG_ZERO, (reg == 0));
-    cpu->clear_flag(FLAG_SUBTRACT);
-}
-
-void InstructionSet::inc(uint8_t reg) {
-    uint8_t nibble_carry = reg & 0x0F;
-
-    (reg)++;
-    cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
-
-    cpu->set_flag(FLAG_ZERO, (reg == 0));
-    cpu->clear_flag(FLAG_SUBTRACT);
-}
-
-void InstructionSet::inc(uint16_t reg) {
-    uint8_t nibble_carry = reg & 0x0F;
-
-    (reg)++;
-    cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
-
-    cpu->set_flag(FLAG_ZERO, (reg == 0));
-    cpu->clear_flag(FLAG_SUBTRACT);
-}
-
-void InstructionSet::dec(uint8_t reg) {
-    cpu->set_flag(FLAG_HALF_CARRY, (reg & 0x0F) == 0);
-    (reg)--;
-
-    cpu->set_flag(FLAG_ZERO, (reg == 0));
-    cpu->set_flag(FLAG_SUBTRACT, true);
-}
-
-void InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
-    uint8_t tmp = reg_1 + reg_2;
-    cpu->set_flag(FLAG_CARRY, tmp > 0xFF);
-    cpu->set_flag(FLAG_ZERO, (tmp == 0));
-    cpu->set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) + (reg_2 & 0x0F)) > 0x0F);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    reg_1 = tmp & 0xFF;
-}
-
-void InstructionSet::add16(uint16_t destination, uint16_t value) {
-    uint32_t result = destination + value;
-    cpu->F &= ~FLAG_SUBTRACT;
-    cpu->set_flag(FLAG_CARRY, result > 0xFFFF);
-
-    cpu->set_flag(FLAG_HALF_CARRY, ((destination & 0x0FFF)
-                + (value & 0x0FFF)) > 0x0FFF);
-    destination = result & 0xFFFF;
-}
-
-void ldhl(int8_t value) {
-}
-
-
-// TODO(martin-montas)
-// void InstructionSet::adc(uint8_t& reg_1, uint8_t reg_2) {
-//     uint8_t carry = cpu->get_flag(FLAG_CARRY) ? 1 : 0;
-//     uint16_t result = reg_1 + reg_2 + carry;
-//     reg_1 = result & 0xFF;
-//     cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
-//     cpu->set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F)
-//     + (reg_2 & 0x0F) + carry) > 0x0F);
-//     cpu->set_flag(FLAG_CARRY, (result > 0xFF));
-//     cpu->clear_flag(FLAG_SUBTRACT);
-// }
-
-// TODO(martin-montas)
-// void sbc(uint8_t reg_1, uint8_t reg_2) {
-//     uint8_t carry = cpu->get_flag(FLAG_CARRY) ? 1 : 0;
-//     uint16_t result = reg_1 - reg_2 - carry;
-//     reg_1 = result & 0xFF;
-//     cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
-//     cpu->set_flag(FLAG_SUBTRACT, 1);
-//     cpu->set_flag(FLAG_HALF_CARRY,
-//     ((reg_1 & 0x0F) < (reg_2 & 0x0F) + carry));
-//     cpu->set_flag(FLAG_CARRY, (result > 0xFF));
-// }
-
-void InstructionSet::sub(uint8_t *reg_1, uint8_t *reg_2) {
-    uint16_t result = *reg_1 - *reg_2;
-
-    *reg_1 = result & 0xFF;
-
-    cpu->set_flag(FLAG_ZERO, (*reg_1 == 0));
-    cpu->set_flag(FLAG_SUBTRACT, 1);
-    cpu->set_flag(FLAG_HALF_CARRY, ((*reg_1 & 0x0F) < (result & 0x0F)));
-    cpu->set_flag(FLAG_CARRY, (result > 0xFF));
-}
-
-void InstructionSet::rlc(uint8_t reg) {
-    bool msb = reg & 0x80;
-    reg = (reg << 1) | (msb >> 7);
-
-    cpu->set_flag(FLAG_CARRY, msb);
-
-    cpu->set_flag(FLAG_ZERO, reg == 0);
-
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
-}
-
-void InstructionSet::rrca(uint8_t reg) {
-    bool least_sig_bit = reg & 1;
-    cpu->A = reg >> 1;
-     cpu->set_flag(FLAG_CARRY, least_sig_bit);
-
-    cpu->clear_flag(FLAG_ZERO);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
-}
-
-// void and_(uint8_t reg_1, uint8_t reg_2) {
-//     reg_1 = reg_1 & reg_2;
-//     cpu->set_flag(FLAG_ZERO, reg_1 == 0);
-//     cpu->clear_flag(FLAG_SUBTRACT);
-//     cpu->set_flag(FLAG_HALF_CARRY, 1);
-//     cpu->clear_flag(FLAG_CARRY);
-// }
-
-void InstructionSet::dec_mem(uint16_t reg) {
-    uint8_t  tmp = mmu->read8(reg);
-    uint8_t nibble_carry = tmp & 0x0F;
-    tmp--;
-    mmu->write8(reg, tmp);
-
-    cpu->set_flag(FLAG_HALF_CARRY, nibble_carry == 0);
-    cpu->set_flag(FLAG_ZERO, nibble_carry == 0);
-    cpu->set_flag(FLAG_SUBTRACT, true);
-}
-
-void InstructionSet::rla() {
-    std::cout << "RLA" << std::endl;
-    bool carry = cpu->F & FLAG_CARRY;
-    cpu->set_flag(FLAG_CARRY, cpu->A & 0x80);
-    cpu->A = cpu->A << 1;
-    if (carry) {
-        cpu->A |= 0x01;
-    }
-}
-
-void InstructionSet::add8_mem(uint8_t destination, uint8_t value) {
-    mmu->write8(destination, destination + value);
-
-    cpu->set_flag(FLAG_ZERO, (destination + value) == 0);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->set_flag(FLAG_HALF_CARRY,
-    ((destination & 0x0F) + (value & 0x0F)) > 0x0F);
-    cpu->set_flag(FLAG_CARRY, (destination + value) > 0xFF);
-}
-
-
-void InstructionSet::rra() {
-    bool msb = cpu->A & 0x01;
-    cpu->A = cpu->A >> 1;
-    if (msb) {
-        cpu->A |= 0x80;
+    void InstructionSet::ret(bool condition) {
+        if (condition) {
+            cpu->SP += 2;
+            uint16_t address = mmu->read16(cpu->SP);
+            cpu->PC = address;
+        }
     }
 
-    cpu->clear_flag(FLAG_ZERO);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
-    cpu->set_flag(FLAG_CARRY, msb);
-}
-void dec_mem(uint8_t *value) {
-    return;
-}
+    void InstructionSet::or_(uint8_t *reg_1, uint8_t *reg_2) {
+        uint8_t tmp = *reg_1 | *reg_2;
+        cpu->set_flag(FLAG_ZERO, (tmp == 0));
+        cpu->clear_flag(FLAG_SUBTRACT);
+        cpu->clear_flag(FLAG_HALF_CARRY);
+        cpu->clear_flag(FLAG_CARRY);
+        *reg_1 = tmp;
+    }
 
-void InstructionSet::cp_(uint8_t *reg_1, uint8_t *reg_2) {
-    uint16_t tmp = reg_1 - reg_2;
-    cpu->set_flag(FLAG_ZERO, (reg_1 == reg_2));
-    cpu->set_flag(FLAG_SUBTRACT, 1);
-    cpu->set_flag(FLAG_HALF_CARRY, ((*reg_1 & 0x0F) < (*reg_2 & 0x0F)));
-    cpu->set_flag(FLAG_CARRY, (tmp > 0xFF));
-}
+    void inc_mem(uint8_t value) {
+        return;
+    }
+    void InstructionSet::cpl(uint8_t reg) {
+        reg = ~reg;
 
-void InstructionSet::call(bool condition) {
-    if (condition) {
-        uint16_t address = mmu->read8(cpu->PC + 1);
-        cpu->PC += 3;
+        cpu->set_flag(FLAG_SUBTRACT, true);
+        cpu->set_flag(FLAG_HALF_CARRY, true);
+    }
+
+    void InstructionSet::inc_mem(uint16_t reg) {
+        uint8_t tmp = mmu->read8(reg);
+        uint8_t nibble_carry = tmp & 0x0F;
+        tmp++;
+        mmu->write8(reg, tmp);
+
+        cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
+        cpu->set_flag(FLAG_ZERO, (reg == 0));
+        cpu->clear_flag(FLAG_SUBTRACT);
+    }
+
+    void InstructionSet::inc(uint8_t reg) {
+        uint8_t nibble_carry = reg & 0x0F;
+
+        (reg)++;
+        cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
+
+        cpu->set_flag(FLAG_ZERO, (reg == 0));
+        cpu->clear_flag(FLAG_SUBTRACT);
+    }
+
+    void InstructionSet::inc(uint16_t reg) {
+        uint8_t nibble_carry = reg & 0x0F;
+
+        (reg)++;
+        cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
+
+        cpu->set_flag(FLAG_ZERO, (reg == 0));
+        cpu->clear_flag(FLAG_SUBTRACT);
+    }
+
+    void InstructionSet::dec(uint8_t reg) {
+        cpu->set_flag(FLAG_HALF_CARRY, (reg & 0x0F) == 0);
+        (reg)--;
+
+        cpu->set_flag(FLAG_ZERO, (reg == 0));
+        cpu->set_flag(FLAG_SUBTRACT, true);
+    }
+
+    void InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
+        uint8_t tmp = reg_1 + reg_2;
+        cpu->set_flag(FLAG_CARRY, tmp > 0xFF);
+        cpu->set_flag(FLAG_ZERO, (tmp == 0));
+        cpu->set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) + (reg_2 & 0x0F)) > 0x0F);
+        cpu->clear_flag(FLAG_SUBTRACT);
+        reg_1 = tmp & 0xFF;
+    }
+
+    void InstructionSet::add16(uint16_t destination, uint16_t value) {
+        uint32_t result = destination + value;
+        cpu->F &= ~FLAG_SUBTRACT;
+        cpu->set_flag(FLAG_CARRY, result > 0xFFFF);
+
+        cpu->set_flag(FLAG_HALF_CARRY, ((destination & 0x0FFF)
+                    + (value & 0x0FFF)) > 0x0FFF);
+        destination = result & 0xFFFF;
+    }
+
+    void ldhl(int8_t value) {
+    }
+
+
+    // TODO(martin-montas)
+    // void InstructionSet::adc(uint8_t& reg_1, uint8_t reg_2) {
+    //     uint8_t carry = cpu->get_flag(FLAG_CARRY) ? 1 : 0;
+    //     uint16_t result = reg_1 + reg_2 + carry;
+    //     reg_1 = result & 0xFF;
+    //     cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
+    //     cpu->set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F)
+    //     + (reg_2 & 0x0F) + carry) > 0x0F);
+    //     cpu->set_flag(FLAG_CARRY, (result > 0xFF));
+    //     cpu->clear_flag(FLAG_SUBTRACT);
+    // }
+
+    // TODO(martin-montas)
+    // void sbc(uint8_t reg_1, uint8_t reg_2) {
+    //     uint8_t carry = cpu->get_flag(FLAG_CARRY) ? 1 : 0;
+    //     uint16_t result = reg_1 - reg_2 - carry;
+    //     reg_1 = result & 0xFF;
+    //     cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
+    //     cpu->set_flag(FLAG_SUBTRACT, 1);
+    //     cpu->set_flag(FLAG_HALF_CARRY,
+    //     ((reg_1 & 0x0F) < (reg_2 & 0x0F) + carry));
+    //     cpu->set_flag(FLAG_CARRY, (result > 0xFF));
+    // }
+
+    void InstructionSet::sub(uint8_t *reg_1, uint8_t *reg_2) {
+        uint16_t result = *reg_1 - *reg_2;
+
+        *reg_1 = result & 0xFF;
+
+        cpu->set_flag(FLAG_ZERO, (*reg_1 == 0));
+        cpu->set_flag(FLAG_SUBTRACT, 1);
+        cpu->set_flag(FLAG_HALF_CARRY, ((*reg_1 & 0x0F) < (result & 0x0F)));
+        cpu->set_flag(FLAG_CARRY, (result > 0xFF));
+    }
+
+    void InstructionSet::rlc(uint8_t reg) {
+        bool msb = reg & 0x80;
+        reg = (reg << 1) | (msb >> 7);
+
+        cpu->set_flag(FLAG_CARRY, msb);
+
+        cpu->set_flag(FLAG_ZERO, reg == 0);
+
+        cpu->clear_flag(FLAG_SUBTRACT);
+        cpu->clear_flag(FLAG_HALF_CARRY);
+    }
+
+    void InstructionSet::rrca(uint8_t reg) {
+        bool least_sig_bit = reg & 1;
+        cpu->A = reg >> 1;
+        cpu->set_flag(FLAG_CARRY, least_sig_bit);
+
+        cpu->clear_flag(FLAG_ZERO);
+        cpu->clear_flag(FLAG_SUBTRACT);
+        cpu->clear_flag(FLAG_HALF_CARRY);
+    }
+
+    // void and_(uint8_t reg_1, uint8_t reg_2) {
+    //     reg_1 = reg_1 & reg_2;
+    //     cpu->set_flag(FLAG_ZERO, reg_1 == 0);
+    //     cpu->clear_flag(FLAG_SUBTRACT);
+    //     cpu->set_flag(FLAG_HALF_CARRY, 1);
+    //     cpu->clear_flag(FLAG_CARRY);
+    // }
+
+    void InstructionSet::dec_mem(uint16_t reg) {
+        uint8_t  tmp = mmu->read8(reg);
+        uint8_t nibble_carry = tmp & 0x0F;
+        tmp--;
+        mmu->write8(reg, tmp);
+
+        cpu->set_flag(FLAG_HALF_CARRY, nibble_carry == 0);
+        cpu->set_flag(FLAG_ZERO, nibble_carry == 0);
+        cpu->set_flag(FLAG_SUBTRACT, true);
+    }
+
+    void InstructionSet::rla() {
+        std::cout << "RLA" << std::endl;
+        bool carry = cpu->F & FLAG_CARRY;
+        cpu->set_flag(FLAG_CARRY, cpu->A & 0x80);
+        cpu->A = cpu->A << 1;
+        if (carry) {
+            cpu->A |= 0x01;
+        }
+    }
+
+    void InstructionSet::add8_mem(uint8_t destination, uint8_t value) {
+        mmu->write8(destination, destination + value);
+
+        cpu->set_flag(FLAG_ZERO, (destination + value) == 0);
+        cpu->clear_flag(FLAG_SUBTRACT);
+        cpu->set_flag(FLAG_HALF_CARRY,
+                ((destination & 0x0F) + (value & 0x0F)) > 0x0F);
+        cpu->set_flag(FLAG_CARRY, (destination + value) > 0xFF);
+    }
+
+
+    void InstructionSet::rra() {
+        bool msb = cpu->A & 0x01;
+        cpu->A = cpu->A >> 1;
+        if (msb) {
+            cpu->A |= 0x80;
+        }
+
+        cpu->clear_flag(FLAG_ZERO);
+        cpu->clear_flag(FLAG_SUBTRACT);
+        cpu->clear_flag(FLAG_HALF_CARRY);
+        cpu->set_flag(FLAG_CARRY, msb);
+    }
+    void dec_mem(uint8_t *value) {
+        return;
+    }
+
+    void InstructionSet::cp_(uint8_t *reg_1, uint8_t *reg_2) {
+        uint16_t tmp = reg_1 - reg_2;
+        cpu->set_flag(FLAG_ZERO, (reg_1 == reg_2));
+        cpu->set_flag(FLAG_SUBTRACT, 1);
+        cpu->set_flag(FLAG_HALF_CARRY, ((*reg_1 & 0x0F) < (*reg_2 & 0x0F)));
+        cpu->set_flag(FLAG_CARRY, (tmp > 0xFF));
+    }
+
+    void InstructionSet::call(bool condition) {
+        if (condition) {
+            uint16_t address = mmu->read8(cpu->PC + 1);
+            cpu->PC += 3;
+            cpu->SP -= 2;
+            mmu->write16(cpu->SP, cpu->PC);
+            cpu->PC = address;
+        } else {
+            cpu->PC += 3;
+        }
+    }
+
+    void InstructionSet::execute_call() {
+        uint16_t address = mmu->read16(cpu->PC);
+        cpu->PC += 2;
         cpu->SP -= 2;
         mmu->write16(cpu->SP, cpu->PC);
         cpu->PC = address;
-    } else {
-        cpu->PC += 3;
     }
-}
-
-void InstructionSet::execute_call() {
-    uint16_t address = mmu->read16(cpu->PC);
-    cpu->PC += 2;
-    cpu->SP -= 2;
-    mmu->write16(cpu->SP, cpu->PC);
-    cpu->PC = address;
-}

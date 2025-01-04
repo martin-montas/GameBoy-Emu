@@ -41,6 +41,7 @@ class InstructionSet {
      static void ldr(uint8_t reg, uint8_t  address);
      static void ldr_mem(uint16_t reg, uint8_t address);
 
+     // TODO(soon)
      // static void adc(uint8_t reg_1, uint8_t reg_2);
      // static void sbc(uint8_t *reg_1, uint8_t *reg_2);
      // static void and_(uint8_t *reg_1, uint8_t *reg_2);
@@ -50,7 +51,6 @@ class InstructionSet {
      static void cp_(uint8_t  * reg_1, uint8_t  *reg_2);
      static void call(bool condition);
 
-
      static void execute_call();
      static void jump(bool condition);
      static void jump_add(bool condition);
@@ -59,7 +59,7 @@ class InstructionSet {
      static void rlc(uint8_t reg);
 
      static void rlc_extended(uint8_t  *reg);
-     static void rlc_extended_mem(uint16_t  *reg); // todo(soon)
+     static void rlc_extended_mem(uint16_t  *reg); // TODO(soon)
      static void sla_extended(uint8_t  *reg);
      static void rcc_extended(uint8_t  *reg);
      static void rr_extended(uint8_t   *reg);

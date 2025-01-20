@@ -40,5 +40,5 @@ clean:
 
 # Lint rule
 lint:
-	@cpplint $(CPP_FILES)
+	@cppcheck  --enable=all --check-level=exhaustive $(CPP_FILES)
 

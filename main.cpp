@@ -3,8 +3,7 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
 #include <iostream>
-
-#include <SDL2/SDL.h>
+// #include <SDL2/SDL.h>
 #include "./src/game-boy.hpp"
 
 using namespace std;

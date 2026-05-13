@@ -23,9 +23,7 @@ class Cpu {
 
  public:
         Cpu();
-        ~Cpu() {
-
-        }
+        ~Cpu() {}
         RegisterFlags *flags;
         bool is_flag_set(uint8_t flag);
         void set_flag(uint8_t flags, bool state);

@@ -20,10 +20,11 @@ void GameBoy::run() {
     while (emulationRunning) {
         _opcode = mmu->romData[cpu->PC];
 
-        instructions->execute(opcode);
-        int current_cycle = cpu->opcode_cycles[opcode];
+        instructions->execute(_opcode);
+        int current_cycle = cpu->opcode_cycles[_opcode];
 
         cpu->cycle_count += current_cycle;
+        // TODO
         // Render frame, update audio, etc.
     }
 }

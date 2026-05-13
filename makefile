@@ -9,30 +9,30 @@ CPP_FILES := $(shell find $(SRC_DIR) -name '*.cpp' -or -name '*.hpp')
 # Compiler and flags
 CXX := g++
 CXXFLAGS := -I./src -std=c++17
-LDFLAGS := -lsfml-graphics -lsfml-window -lsfml-system
+#LDFLAGS := #-lsfml-graphics -lsfml-window -lsfml-system
 
 # Target for the main program
 gameboy: main.o cpu.o game-boy.o instructions.o extended-instructions.o mmu.o
-	$(CXX) main.o cpu.o game-boy.o instructions.o extended-instructions.o mmu.o -o gameboy $(LDFLAGS)
+	$(CXX) main.o cpu.o game-boy.o instructions.o extended-instructions.o mmu.o -o gameboy #$(LDFLAGS)
 
 # Object file rules
 main.o: main.cpp
-	$(CXX) $(CXXFLAGS) -c main.cpp
+	$(CXX)  -c main.cpp #$(CXXFLAGS)
 
 game-boy.o: ./src/game-boy.cpp ./src/game-boy.hpp
-	$(CXX) $(CXXFLAGS) -c ./src/game-boy.cpp
+	$(CXX)  -c ./src/game-boy.cpp #$(CXXFLAGS)
 
 instructions.o: ./src/instructions.cpp ./src/instructions.hpp
-	$(CXX) $(CXXFLAGS) -c ./src/instructions.cpp
+	$(CXX)  -c ./src/instructions.cpp #$(CXXFLAGS)
 
 cpu.o: ./src/cpu.cpp ./src/cpu.hpp
-	$(CXX) $(CXXFLAGS) -c ./src/cpu.cpp
+	$(CXX)  -c ./src/cpu.cpp #$(CXXFLAGS)
 	
 extended-instructions.o: ./src/extended-instructions.cpp ./src/instructions.hpp
-	$(CXX) $(CXXFLAGS) -c ./src/extended-instructions.cpp
+	$(CXX)  -c ./src/extended-instructions.cpp #$(CXXFLAGS)
 
 mmu.o: ./src/mmu.cpp ./src/mmu.hpp
-	$(CXX) $(CXXFLAGS) -c ./src/mmu.cpp
+	$(CXX)  -c ./src/mmu.cpp #$(CXXFLAGS)
 
 # Clean rule
 clean:

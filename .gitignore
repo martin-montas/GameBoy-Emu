@@ -1,5 +1,8 @@
 todo.md
+*.gb
 *.o
 ROM/
+.map
+.sym
 test/a.out
 gameboy

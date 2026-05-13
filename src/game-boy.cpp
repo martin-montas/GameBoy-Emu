@@ -15,10 +15,10 @@ GameBoy::GameBoy(std::string filename) {
 GameBoy::~GameBoy() {}
 
 void GameBoy::run() {
-    uint8_t opcode;
+    uint8_t _opcode;
     int cycle_count = 0;
     while (emulationRunning) {
-        opcode = mmu->romData[cpu->PC];
+        _opcode = mmu->romData[cpu->PC];
 
         instructions->execute(opcode);
         int current_cycle = cpu->opcode_cycles[opcode];

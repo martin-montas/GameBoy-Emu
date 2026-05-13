@@ -26,4 +26,4 @@ class GameBoy {
         uint32_t calculateCyclesForFrame();
 };
 
-#endif  // SRC_GAME_BOY_HPP_
+#endif  // RC_GAME_BOY_HPP_

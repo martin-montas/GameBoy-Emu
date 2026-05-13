@@ -3,6 +3,7 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 
 #include <cstdint>
+#include <bitset>
 #include <cstdio>
 #include <iostream>
 
@@ -1375,22 +1376,36 @@ void InstructionSet::execute(uint8_t opcode) {
                                    break;
                            }
                 case 0xCD: {
-                                   std::cout << "CALL a16" << std::endl;
-                                   uint16_t address =  mmu->read16(mmu->romData[cpu->PC +1]);
-                                   cpu->PC = address;
-                                   break;
+                                        // std::cout << "CALL a16" << std::endl;
+                                        // uint16_t address =  mmu->read16(mmu->romData[cpu->PC +1]);
+                                        // cpu->PC = address;
+                                        // // bool carry_flag =  ((result >> 4) & 0x1);
+                                        // /
+                                        // //
+                                        // // bit:  7 6 5 4 3 2 1 0
+                                        // //       Z N H C 0 0 0 0
+                                        // cpu->F = ((cpu-F) << );
+
+              break;
                            }
                 case 0xCE: {
-                                   std::cout <<  "ADC A,d8" << std::endl;
-                                   uint8_t d8 = mmu->romData[cpu->PC + 1];
-                                   bool current_carry = cpu->F & FLAG_CARRY;
-                                   uint16_t result = cpu->A + d8 + current_carry;
-                                   cpu->set_flag(FLAG_CARRY, result > 0xFF);
-                                   cpu->set_flag(FLAG_HALF_CARRY, 
-                                                   ((cpu->A & 0xF) + (d8 & 0xF) + current_carry) > 0xF);
-                                   cpu->A = result & 0xFF;
+                                   // TODO(current)
+                                   std::cout <<  "ADC A,u8" << std::endl;
+                                   uint16_t n                   = mmu->read8(cpu->PC+1);
+                                   uint16_t _carry_flag         = ((cpu->F >> 4) & 0x1);
+                                   cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0xf) + (n & 0xf) + _carry_flag > 0xf); 
+
+                                   uint16_t _result             = cpu->A + n + _carry_flag;
+                                   cpu->A                       = static_cast<uint8_t>(_result);
+
                                    cpu->set_flag(FLAG_ZERO, cpu->A == 0);
-                                   cpu->clear_flag(FLAG_SUBTRACT);
+                                   cpu->set_flag(FLAG_SUBTRACT, 0);
+                                   cpu->set_flag(FLAG_CARRY, _result > 0xff);
+
+                                   std::bitset<8> f_debug = cpu->F;
+                                   printf("%s\n", f_debug.to_string().c_str());
+
+                                   cpu->PC = cpu->PC+2;
                                    break;
                            }
                 case 0xCF: {

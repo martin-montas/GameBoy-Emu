@@ -2,6 +2,7 @@ todo.md
 *.gb
 *.o
 ROM/
+dummy/*
 .map
 .sym
 test/a.out

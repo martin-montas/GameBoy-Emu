@@ -9,21 +9,21 @@
 #include <string>
 
 #include "cpu.hpp"
-#include "mmu.hpp"
 #include "instructions.hpp"
+#include "mmu.hpp"
 
 class GameBoy {
- private:
-        Cpu *cpu;
-        MMU *mmu;
-        InstructionSet *instructions;
-        bool emulationRunning;
+private:
+  Cpu *cpu;
+  MMU *mmu;
+  InstructionSet *instructions;
+  bool emulationRunning;
 
- public:
-        GameBoy(std::string filename);
-        ~GameBoy();
-        void run();
-        uint32_t calculateCyclesForFrame();
+public:
+  GameBoy(std::string filename);
+  ~GameBoy();
+  void run();
+  uint32_t calculateCyclesForFrame();
 };
 
-#endif  // RC_GAME_BOY_HPP_
+#endif // RC_GAME_BOY_HPP_

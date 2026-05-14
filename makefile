@@ -42,3 +42,6 @@ clean:
 lint:
 	@cppcheck  --enable=all --check-level=exhaustive $(CPP_FILES)
 
+
+format: 
+	find . -name "*.cpp" -o -name "*.hpp" | xargs clang-format -style=llvm -i

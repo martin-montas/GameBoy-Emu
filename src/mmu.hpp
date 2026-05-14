@@ -22,7 +22,7 @@ class MMU {
                 uint8_t OAM[0xA0] = {};
 
                 uint8_t IO_REGISTERS[0x80] = {};
-                uint8_t EXTERNAL_RAM[8192] = {};
+                uint8_t EXTERNAL_RAM[8192];
 
                 uint8_t InterruptEnabled;
                 uint8_t read8(uint16_t address);

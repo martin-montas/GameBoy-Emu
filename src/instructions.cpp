@@ -44,7 +44,9 @@ void InstructionSet::execute(uint8_t opcode) {
                                    break;
                            }
                 case 0x02: {
-                                   std::cout << "LD (BC), A" << std::endl;
+                                   printf("LD (BC), A");
+                                   // TODO: investigate this function and others too!!
+                                   // TODO next
                                    ldr_mem(cpu->BC, cpu->A);
                                    cpu+=1;
                                    break;
@@ -384,9 +386,10 @@ void InstructionSet::execute(uint8_t opcode) {
                                    break;
                            }
                 case 0x3E: {
-                                   std::cout << "LD A, d8" << std::endl;
+                                   // DONE:
                                    cpu->A = mmu->romData[cpu->PC];
-                                   cpu->PC++;
+                                   printf("LD A, d8\n");
+                                   cpu->PC = cpu->PC +2;
                                    break;
                            }
                 case 0x3F: {
@@ -412,7 +415,7 @@ void InstructionSet::execute(uint8_t opcode) {
                                    std::cout << "LD B, E" << std::endl;
                                    cpu->B = cpu->E;
                                    break;
-                           }
+                                   }
                 case 0x44: {
                                    std::cout << "LD B, H" << std::endl;
                                    cpu->B = cpu->H;
@@ -1058,6 +1061,7 @@ void InstructionSet::execute(uint8_t opcode) {
                                    break;
                            }
                 case 0xC3: {
+                                   // DONE:
                                    auto _lw = mmu->read8(cpu->PC+1);
                                    auto _hi = mmu->read8(cpu->PC+2);
                                    uint16_t jmp_addr = (_hi << 8) | _lw;

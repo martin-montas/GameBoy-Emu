@@ -1,4 +1,4 @@
 #/bin/env bash
 
 
-./gameboy ./add_test.gb
+./gameboy ./unit_test/add_test.gb

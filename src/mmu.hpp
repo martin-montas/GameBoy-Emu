@@ -9,21 +9,27 @@
 #include <string>
 #include <vector>
 
+#define HRAM_SIZE 0x7F
+#define IRAM_SIZE 8192
+#define OAM_SIZE 0xA0
+#define VRAM_SIZE 0x2000
+#define IO_REGISTERS_SIZE 0X80
+
 class MMU {
 public:
   MMU(std::string filename);
   std::vector<uint8_t> romData;
-  uint8_t HRAM[0x7F] = {};
-  uint8_t IRAM[8192] = {};
+  uint8_t HRAM[HRAM_SIZE] = {};
+  uint8_t IRAM[IRAM_SIZE] = {};
 
-  uint8_t VRAM[0x2000] = {};
-  uint8_t WRAM[0x2000] = {};
-  uint8_t OAM[0xA0] = {};
+  uint8_t VRAM[VRAM_SIZE] = {};
+  uint8_t WRAM[VRAM_SIZE] = {};
+  uint8_t OAM[OAM_SIZE] = {};
 
-  uint8_t IO_REGISTERS[0x80] = {};
-  uint8_t EXTERNAL_RAM[8192];
+  uint8_t IO_REGISTERS[IO_REGISTERS_SIZE] = {};
+  uint8_t EXTERNAL_RAM[8192] = {};
 
-  uint8_t InterruptEnabled;
+  // auto InterruptEnabled;
   uint8_t read8(uint16_t address);
   uint16_t read16(uint16_t address);
 

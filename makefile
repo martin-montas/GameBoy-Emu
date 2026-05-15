@@ -34,14 +34,7 @@ extended-instructions.o: ./src/extended-instructions.cpp ./src/instructions.hpp
 mmu.o: ./src/mmu.cpp ./src/mmu.hpp
 	$(CXX)  -c ./src/mmu.cpp #$(CXXFLAGS)
 
-# Clean rule
 clean:
 	rm -f *.o gameboy test_binary
-
-# Lint rule
-lint:
-	@cppcheck  --enable=all --check-level=exhaustive $(CPP_FILES)
-
-
 format: 
 	find . -name "*.cpp" -o -name "*.hpp" | xargs clang-format -style=llvm -i

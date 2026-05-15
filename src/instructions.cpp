@@ -79,7 +79,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x06: {
     // DONE:
     std::cout << "LD B, d8 :0x06" << std::endl;
-    cpu->B = mmu->romData[cpu->PC+1];
+    cpu->B = mmu->romData[cpu->PC + 1];
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -219,10 +219,10 @@ void InstructionSet::execute(uint8_t opcode) {
     std::cout << "JR NZ, r8" << std::endl;
     bool z = (cpu->F >> 7) & 1;
     if (z) {
-      uint8_t n = mmu->romData[cpu->PC]+1;
+      uint8_t n = mmu->romData[cpu->PC] + 1;
       cpu->PC = cpu->PC + n;
     } else {
-    cpu->PC = cpu->PC + 2;
+      cpu->PC = cpu->PC + 2;
     }
     break;
   }
@@ -282,7 +282,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x28: {
     std::cout << "JR Z, r8" << std::endl;
     if (cpu->F & FLAG_ZERO) {
-      int8_t offset = static_cast<int8_t>(mmu->romData[cpu->PC+1]);
+      int8_t offset = static_cast<int8_t>(mmu->romData[cpu->PC + 1]);
       cpu->PC = cpu->PC + offset;
     } else {
       cpu->PC = cpu->PC + 2;

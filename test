@@ -2,4 +2,4 @@
 
 
 make
-./gameboy ./unit_test/add_test.gb
+./gameboy ./unit_test/inc-dec-sub-ldhl_test.gb

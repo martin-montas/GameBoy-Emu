@@ -227,8 +227,10 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x21: {
-    std::cout << "LD HL, d16" << std::endl;
+    std::cout << "LD HL, d16 0x21" << std::endl;
     ldr(cpu->HL);
+    cpu->PC = cpu->PC + 3;
+
     break;
   }
   case 0x22: {

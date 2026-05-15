@@ -43,7 +43,7 @@ void InstructionSet::execute(uint8_t opcode) {
   switch (opcode) {
   // TODO augment pc register
   case 0x00: {
-    printf("NOP: [ %X ] \n", opcode);
+    printf("NOP  %X\n", opcode);
     cpu->PC += 1;
     break;
   }
@@ -74,7 +74,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x05: {
     // std::cout << "DEC B" << std::endl;
     // dec(cpu->B);
-    // break;
+    break;
   }
   case 0x06: {
     // DONE:
@@ -218,9 +218,9 @@ void InstructionSet::execute(uint8_t opcode) {
     // DONE:
     std::cout << "JR NZ, r8 0x20" << std::endl;
     bool z = (cpu->F >> 7) & 1;
-    if (z) {
-      uint8_t n = mmu->romData[cpu->PC] + 1;
-      cpu->PC = cpu->PC + n;
+    if (!z) {
+      int8_t n = mmu->romData[cpu->PC] + 1;
+      cpu->PC = cpu->PC + 2 + n;
     } else {
       cpu->PC = cpu->PC + 2;
     }
@@ -282,9 +282,11 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x28: {
     // DONE:
     std::cout << "JR Z, r8 0x28" << std::endl;
-    if (cpu->F & FLAG_ZERO) {
-      int8_t offset = static_cast<int8_t>(mmu->romData[cpu->PC + 1]);
-      cpu->PC = cpu->PC + offset;
+    bool z = cpu->F & FLAG_ZERO;
+    if (z) {
+      // the offset might come from any reason of memory, should update
+      int8_t offset = mmu->romData[cpu->PC + 1];
+      cpu->PC = cpu->PC + 2 + offset;
     } else {
       cpu->PC = cpu->PC + 2;
     }
@@ -370,10 +372,13 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x38: {
-    std::cout << "JR C, r8" << std::endl;
-    int8_t offset = static_cast<int8_t>(mmu->romData[cpu->PC++]);
-    if ((cpu->F & FLAG_CARRY)) {
-      cpu->PC += offset;
+    // DONE:
+    std::cout << "JR C, r8 0x38" << std::endl;
+    if ((cpu->F >> 4) & 1) {
+      uint8_t n = mmu->romData[cpu->PC] + 1;
+      cpu->PC = cpu->PC + n;
+    } else {
+      cpu->PC = cpu->PC + 2;
     }
     break;
   }
@@ -405,7 +410,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x3E: {
     // DONE:
-    cpu->A = mmu->romData[cpu->PC];
+    cpu->A = mmu->romData[cpu->PC + 1];
     printf("LD A, d8: 0x3E\n");
     cpu->PC = cpu->PC + 2;
     break;
@@ -734,14 +739,13 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x80: {
     // soon
-    printf("ADD A, B: 0x80 \n");
-    uint8_t result = add8(cpu->A, cpu->B);
-    cpu->A = result;
+    uint8_t r = add8(cpu->A, cpu->B);
+    cpu->A = cpu->A + cpu->B;
     cpu->PC = cpu->PC + 1;
+    printf("ADD A, B: 0x80 %X\n", r);
     break;
   }
   case 0x81: {
-    std::cout << "ADD A, C" << std::endl;
     add8(cpu->A, cpu->C);
     break;
   }
@@ -1415,7 +1419,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0xCE: {
     // DONE: but check.
-    std::cout << "ADC A,u8" << std::endl;
+    std::cout << "ADC A,u8 \n" << std::endl;
     uint16_t n = mmu->read8(cpu->PC + 1);
     uint16_t _carry_flag = ((cpu->F >> 4) & 0x1);
     cpu->set_flag(FLAG_HALF_CARRY,
@@ -1429,7 +1433,6 @@ void InstructionSet::execute(uint8_t opcode) {
     cpu->set_flag(FLAG_CARRY, _result > 0xff);
 
     std::bitset<8> f_debug = cpu->F;
-    printf("%s\n", f_debug.to_string().c_str());
 
     cpu->PC = cpu->PC + 2;
     break;
@@ -1440,14 +1443,6 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0xD0: {
     std::cout << " RET NC" << std::endl;
-    break;
-  }
-  case 0xD1: {
-    std::cout << " POP DE" << std::endl;
-    break;
-  }
-  case 0xD2: {
-    std::cout << "  JPNC, nn" << std::endl;
     break;
   }
   case 0xD3: {
@@ -1539,7 +1534,14 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xEA: {
-    std::cout << "  LD(nn), A" << std::endl;
+    // DONE:
+    std::cout << "  LD(nn), A 0xEA" << std::endl;
+    uint8_t l = mmu->romData[cpu->PC + 1];
+    uint8_t h = mmu->romData[cpu->PC + 2];
+    uint16_t nn = (h << 8) | l;
+    mmu->write8(nn, cpu->A);
+    cpu->PC = cpu->PC + 3;
+
     break;
   }
   case 0xEB: {
@@ -1611,10 +1613,16 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xFE: {
-    // DONE:
-    printf("CP nn: 0xFE\n");
-    dec(cpu->A, mmu->romData[cpu->PC] + 1);
+    // soon:
+    printf("CP A,n8 0xFE\n");
+    uint8_t n = mmu->romData[cpu->PC + 1];
+    uint8_t r = cpu->A - n;
+    cpu->set_flag(FLAG_ZERO, r == 0);
+    cpu->set_flag(FLAG_SUBTRACT, true);
+    cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0x0F) < (n & 0x0F));
+    cpu->set_flag(FLAG_CARRY, cpu->A < n);
     cpu->PC = cpu->PC + 2;
+
     break;
   }
   case 0xFF: {
@@ -1703,7 +1711,7 @@ uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
   uint8_t result = reg_1 + reg_2;
   uint16_t _carry = reg_1 + reg_2;
   cpu->set_flag(FLAG_ZERO, result == 0);
-  cpu->set_flag(FLAG_SUBTRACT, 1);
+  cpu->set_flag(FLAG_SUBTRACT, false);
   cpu->set_flag(FLAG_HALF_CARRY, (reg_1 & 0x0F) + (reg_2 & 0x0F) >= 0x10);
   cpu->set_flag(FLAG_CARRY, _carry >= 0x0100);
   return result;

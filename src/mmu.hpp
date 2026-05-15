@@ -13,6 +13,7 @@
 #define IRAM_SIZE 8192
 #define OAM_SIZE 0xA0
 #define VRAM_SIZE 0x2000
+#define WRAM_SIZE 0x2000
 #define IO_REGISTERS_SIZE 0X80
 
 class MMU {
@@ -23,7 +24,7 @@ public:
   uint8_t IRAM[IRAM_SIZE] = {};
 
   uint8_t VRAM[VRAM_SIZE] = {};
-  uint8_t WRAM[VRAM_SIZE] = {};
+  uint8_t WRAM[WRAM_SIZE] = {};
   uint8_t OAM[OAM_SIZE] = {};
 
   uint8_t IO_REGISTERS[IO_REGISTERS_SIZE] = {};

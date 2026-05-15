@@ -27,6 +27,12 @@ void MMU::load_rom(const std::string &filename) {
   }
 }
 
+uint16_t MMU::read16(uint16_t address) {
+  uint8_t low_byte = read8(address);
+  uint8_t high_byte = read8(address + 1);
+  return (high_byte << 8) | low_byte;
+}
+
 uint8_t MMU::read8(uint16_t address) {
   // 0000-7FFF → ROM
   // 8000-9FFF → VRAM
@@ -110,10 +116,4 @@ void MMU::write16(uint16_t address, uint16_t value) {
 
   write8(address, low_byte);
   write8(address + 1, high_byte);
-}
-
-uint16_t MMU::read16(uint16_t address) {
-  uint8_t low_byte = read8(address);
-  uint8_t high_byte = read8(address + 1);
-  return (high_byte << 8) | low_byte;
 }

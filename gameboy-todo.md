@@ -25,34 +25,35 @@ opcode 0x38
 - finish this for the tet01  
      0x00000100      00             nop
 
-[0x00000150 [xAdvc]0 0% 270 add_test.gb]> afsQ;pd $r.. @ main
-            0x0000014f  ~   d63e           sub 0x3e
-            ; CODE XREF from fcn.00000101 @ 0x101(x)
 ┌ 32432: int main (int argc, char **argv, char **envp);
-│           0x00000150      3e01           ld a, 0x01
-│           0x00000152      0602           ld b, 0x02
-│           0x00000154      80             add b
-│           0x00000155      fe03           cp 0x03
-│       ┌─< 0x00000157      200f           jr nZ, 0x0f
-│      ┌──< 0x00000159      280d           jr Z, 0x0d
-│     ┌───< 0x0000015b      380b           jr C, 0x0b
-│     │││   0x0000015d      3e50           ld a, 0x50
-│     │││   0x0000015f      ea01ff         ld [0xff01], a
-│     │││   0x00000162      3e81           ld a, 0x81
-│     │││   0x00000164      ea02ff         ld [0xff02], a
-│     │││   0x00000167      76             halt
-│     │││   ; CODE XREFS from main @ 0x157(x), 0x159(x), 0x15b(x)
-│     └└└─> 0x00000168      3e46           ld a, 0x46                  ; 'F'
-│           0x0000016a      ea01ff         ld [0xff01], a
-│           0x0000016d      3e81           ld a, 0x81
-│           0x0000016f      ea02ff         ld [0xff02], a
-│           0x00000172      76             halt
-│           0x00000173      00             nop
-│           0x00000174      00             nop
-│           0x00000175      00             nop
-│           0x00000176      00             nop
-│           0x00000177      00             nop
-│           0x00000178      00             nop
-│           0x00000179      00             nop
-│           0x0000017a      00             nop
-
+│           0x00000150      2100c0         ld hl, 0xc000
+│           0x00000153      3e10           ld a, 0x10
+│           0x00000155      77             ld [hl], a
+│           0x00000156      34             inc [hl]
+│           0x00000157      7e             ld a, [hl]
+│           0x00000158      fe11           cp 0x11
+│       ┌─< 0x0000015a      2023           jr nZ, 0x23
+│       │   0x0000015c      35             dec [hl]
+│       │   0x0000015d      7e             ld a, [hl]
+│       │   0x0000015e      fe10           cp 0x10
+│      ┌──< 0x00000160      201d           jr nZ, 0x1d
+│      ││   0x00000162      3e05           ld a, 0x05
+│      ││   0x00000164      d603           sub 0x03
+│      ││   0x00000166      fe02           cp 0x02
+│     ┌───< 0x00000168      2015           jr nZ, 0x15
+│    ┌────< 0x0000016a      2802           jr Z, 0x02
+│   ┌─────< 0x0000016c      1811           jr 0x11
+│   │││││   ; CODE XREF from main @ 0x16a(x)
+│   │└────> 0x0000016e      3e00           ld a, 0x00
+│   │ │││   0x00000170      d601           sub 0x01
+│   │┌────< 0x00000172      300b           jr nC, 0x0b
+│   │││││   0x00000174      3e50           ld a, 0x50
+│   │││││   0x00000176      ea01ff         ld [0xff01], a
+│   │││││   0x00000179      3e81           ld a, 0x81
+│   │││││   0x0000017b      ea02ff         ld [0xff02], a
+│   │││││   0x0000017e      76             halt
+│   │││││   ; CODE XREFS from main @ 0x15a(x), 0x160(x), 0x168(x), 0x16c(x), 0x172(x)
+│   └└└└└─> 0x0000017f      3e46           ld a, 0x46                  ; 'F'
+│           0x00000181      ea01ff         ld [0xff01], a
+│           0x00000184      3e81           ld a, 0x81
+│           0x00000186      ea02ff         ld [0xff02], a

@@ -804,7 +804,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x77: {
-    // DONE: I think 
+    // DONE
     mmu->write8(cpu->HL, cpu->A);
     cpu->PC = cpu->PC + 1;
     printf("LD (HL), A: 0x%X 0x77\n", cpu->A);

@@ -27,17 +27,25 @@ opcode 0x38
 
     // NOP  0
     // JP u16: 0xC3
-    // LD HL, d16 0x21**
-    // **LD A, d8: 0x3E A:0x10 nLD (HL), A: 0x10 0x77**
+    // LD HL, d16 0x21 -- (HL == C000) --
+    // LD A, d8: 0x3E A: -- 16 -- nLD (HL), A: 0x10 0x77
     // INC (HL) 0x34
-    // -- Debug: 0x1 to 0xC000 --
-    // LD A, (HL) 0x1 0x7E
+    // -- Debug: 0x11 to 0xC000 --
+    // LD A, (HL) 0x11 0x7E
     // CP A,n8 opcode:0xFE, n8:11
+    // JR NZ, r8 0x20 bool: 1
+    // DEC (HL) 0x35
+    // LD A, (HL) 0x10 0x7E
+    // CP A,n8 opcode:0xFE, n8:10
+    // JR NZ, r8 0x20 bool: 1
+    // LD A, d8: 0x3E A: -- 5 -- n SUB nn
+    // CP A,n8 opcode:0xFE, n8:2
     // JR NZ, r8 0x20 bool: 0
-    // LD A, d8: 0x3E A:0x46 n  LD(nn), A 0xEA
-    // LD A, d8: 0x3E A:0x81 n  LD(nn), A 0xEA
+    // LD A, d8: 0x3E A: -- 70 -- n  LD(nn), A 0xEA
+    // LD A, d8: 0x3E A: -- 129 -- n  LD(nn), A 0xEA
     // HALT
     // NOP  0
+
 
 ┌ 32432: int main (int argc, char **argv, char **envp);
 │           0x00000150      2100c0         ld hl, 0xc000

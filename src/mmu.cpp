@@ -46,7 +46,6 @@ uint8_t MMU::read8(uint16_t address) {
 
   if (address <= 0x3FFF) {
     return this->romData[address];
-
   } else if (address >= 0x8000 && address <= 0x9FFF) {
     return this->VRAM[address - 0x8000];
 

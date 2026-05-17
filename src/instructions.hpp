@@ -38,7 +38,7 @@ public:
   void add8_mem(uint8_t destination, uint8_t value);
   void add16(uint16_t destination, uint16_t value);
 
-  void ldr(uint16_t reg);
+  uint16_t ldr(uint16_t reg);
   void ldr(uint8_t reg, uint8_t address);
   void ldr_mem(uint16_t reg, uint8_t address);
 

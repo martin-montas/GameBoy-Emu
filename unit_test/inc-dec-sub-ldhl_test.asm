@@ -6,8 +6,13 @@ jp Start
 ds $150 - @, 0
 
 Start:
-    ld hl, $C000      ; WRAM test address
 
+        // JP u16: 0xC3
+
+
+
+
+    ld hl, $C000      ; WRAM test address
     ld a, $10
     ld [hl], a        ; [C000] = 0x10
 

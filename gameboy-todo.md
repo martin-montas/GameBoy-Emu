@@ -25,12 +25,26 @@ opcode 0x38
 - finish this for the tet01  
      0x00000100      00             nop
 
+    // NOP  0
+    // JP u16: 0xC3
+    // LD HL, d16 0x21**
+    // **LD A, d8: 0x3E A:0x10 nLD (HL), A: 0x10 0x77**
+    // INC (HL) 0x34
+    // -- Debug: 0x1 to 0xC000 --
+    // LD A, (HL) 0x1 0x7E
+    // CP A,n8 opcode:0xFE, n8:11
+    // JR NZ, r8 0x20 bool: 0
+    // LD A, d8: 0x3E A:0x46 n  LD(nn), A 0xEA
+    // LD A, d8: 0x3E A:0x81 n  LD(nn), A 0xEA
+    // HALT
+    // NOP  0
+
 ┌ 32432: int main (int argc, char **argv, char **envp);
 │           0x00000150      2100c0         ld hl, 0xc000
 │           0x00000153      3e10           ld a, 0x10
-│           0x00000155      77             ld [hl], a
+│          **0x00000155      77             ld [hl], a**
 │           0x00000156      34             inc [hl]
-│           0x00000157      7e             ld a, [hl]
+│           0x00000157      7e             d a, [hl]
 │           0x00000158      fe11           cp 0x11
 │       ┌─< 0x0000015a      2023           jr nZ, 0x23
 │       │   0x0000015c      35             dec [hl]
@@ -57,3 +71,4 @@ opcode 0x38
 │           0x00000181      ea01ff         ld [0xff01], a
 │           0x00000184      3e81           ld a, 0x81
 │           0x00000186      ea02ff         ld [0xff02], a
+│           0x00000189      76             halt

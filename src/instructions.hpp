@@ -39,7 +39,7 @@ public:
   void ldr(uint8_t reg, uint8_t address);
   void ldr_mem(uint16_t reg, uint8_t address);
 
-  // TODO(soon)
+  //    TODO(soon)
   // static void adc(uint8_t reg_1, uint8_t reg_2);
   // static void sbc(uint8_t *reg_1, uint8_t *reg_2);
   // static void and_(uint8_t *reg_1, uint8_t *reg_2);

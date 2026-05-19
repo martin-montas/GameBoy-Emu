@@ -2,8 +2,8 @@
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
-#ifndef SRC_MEMORY_MMU_HPP_
-#define SRC_MEMORY_MMU_HPP_
+#ifndef SRC_MMU_HPP_
+#define SRC_MMU_HPP_
 
 #include <cstdint>
 #include <string>
@@ -40,4 +40,4 @@ public:
   void load_rom(const std::string &filename);
 };
 
-#endif // SRC_MEMORY_MMU_HPP_
+#endif // SRC_MMU_HPP_

@@ -1,12 +1,6 @@
 // Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
-
-// uint8_t tmp = reg_1 + reg_2;
-// cpu->set_flag(FLAG_CARRY, tmp > 0xFF);
-// cpu->set_flag(FLAG_ZERO, (tmp == 0));
-// cpu->set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) + (reg_2 & 0x0F)) > 0x0F);
-// cpu->clear_flag(FLAG_SUBTRACT);
 #include "./instructions.hpp"
 
 #include <bitset>
@@ -42,7 +36,6 @@ void InstructionSet::execute(uint8_t opcode) {
   // Bit:  7 6 5 4 3 2 1 0
   //       Z N H C 0 0 0 0
   switch (opcode) {
-  // TODO augment pc register
   case 0x00: {
     printf("NOP  %X\n", opcode);
     cpu->PC += 1;
@@ -292,7 +285,8 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x27: {
-    std::cout << "DAA the jumped should be checked out!!" << std::endl;
+    std::cout << "-- 0x27 -- DAA the jumped should be checked out!!"
+              << std::endl;
     uint8_t correction = 0;
     if (!(cpu->F & FLAG_SUBTRACT)) {
       if ((cpu->A & 0x0F) > 9 || FLAG_HALF_CARRY) {
@@ -375,9 +369,9 @@ void InstructionSet::execute(uint8_t opcode) {
     printf("JR NC,r8 -- %d --\n", c);
 
     if (!c) {
-        cpu->PC += 2 + offset;
+      cpu->PC += 2 + offset;
     } else {
-        cpu->PC += 2;
+      cpu->PC += 2;
     }
 
     break;
@@ -808,7 +802,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x77: {
-    // DONE
+    // DONE:
     mmu->write8(cpu->HL, cpu->A);
     cpu->PC = cpu->PC + 1;
     printf("LD (HL), A: 0x%X 0x77\n", cpu->A);
@@ -1332,7 +1326,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xCB: {
-    std::cout << " ---  PREFIX CB NOT DONE 0xCB -- " << std::endl;
+    std::cout << " ---  PREFIX CB NOTDONE 0xCB -- " << std::endl;
     //        switch (mmu->read8(cpu->PC + 1)) {
     //                case 0x00:
     //                        //rlc_extended(&cpu->B);
@@ -1989,19 +1983,19 @@ void ldhl(int8_t value) {}
 //     cpu->set_flag(FLAG_CARRY, (result > 0xFF));
 // }
 
-void  InstructionSet::sub(uint8_t *reg_1, uint8_t *reg_2) {
-    uint8_t a = *reg_1;
-    uint8_t b = *reg_2;
+void InstructionSet::sub(uint8_t *reg_1, uint8_t *reg_2) {
+  uint8_t a = *reg_1;
+  uint8_t b = *reg_2;
 
-    uint16_t result = a - b;
+  uint16_t result = a - b;
 
-    *reg_1 = result & 0xFF;
+  *reg_1 = result & 0xFF;
 
-    cpu->set_flag(FLAG_ZERO, (*reg_1 == 0));
-    cpu->set_flag(FLAG_SUBTRACT, true);
+  cpu->set_flag(FLAG_ZERO, (*reg_1 == 0));
+  cpu->set_flag(FLAG_SUBTRACT, true);
 
-    cpu->set_flag(FLAG_HALF_CARRY, (a & 0x0F) < (b & 0x0F));
-    cpu->set_flag(FLAG_CARRY, a < b);
+  cpu->set_flag(FLAG_HALF_CARRY, (a & 0x0F) < (b & 0x0F));
+  cpu->set_flag(FLAG_CARRY, a < b);
 }
 
 void InstructionSet::rlc(uint8_t reg) {

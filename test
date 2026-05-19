@@ -1,6 +1,5 @@
 #/bin/env bash
 
-make clean
 
 make
-./gameboy ./unit_test/inc-dec-sub-ldhl_test.gb
+./gameboy ./unit_test/test3.gb

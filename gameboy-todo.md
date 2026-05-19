@@ -18,17 +18,10 @@ find . -name "*.cpp" -o -name "*.hpp" | xargs wc -l
 
 # next
 
-opcode 0x28
-opcode 0x38
-
-
-- finish this for the tet01  
-     0x00000100      00             nop
-
     // NOP  0
     // JP u16: 0xC3
     // LD HL, d16 0x21 -- (HL == C000) --
-    // LD A, d8: 0x3E A: -- 16 --
+    // LD A, d8: 0x3E A: -- 10 --
     // LD (HL), A: 0x10 0x77
     // INC (HL) 0x34
     // -- Debug: 0x11 to 0xC000 --
@@ -40,15 +33,20 @@ opcode 0x38
     // CP A,n8 opcode:0xFE, n8:10
     // JR NZ, r8 0x20 bool: 1
     // LD A, d8: 0x3E A: -- 5 --
-    //  SUB nn. result of a -- 2 --
+    //  SUB nn. result of a -- 2 -- 0xD6
     // CP A,n8 opcode:0xFE, n8:2
     // JR NZ, r8 0x20 bool: 1
     // JR Z, r8 0x28
-    // **LD A, d8: 0x3E A: -- 0 --**
-    //  SUB nn. result of a -- FF --
-    // JR NC, r8 should be checked for pc augmentation
+    // LD A, d8: 0x3E A: -- 0 --
+    //  SUB nn. result of a -- FF -- 0xD6
+    // LD A, d8: 0x3E A: -- 46 --
+    //   LD(nn), A 0xEA
+    // LD A, d8: 0x3E A: -- 81 --
+    //   LD(nn), A 0xEA
+    // HALT
+    // NOP  0
 
-┌ 32432: int main (int argc, char **argv, char **envp);
+┌ 32432: int main (int argc, char argv, char envp);
 │           0x00000150      2100c0         ld hl, 0xc000
 │           0x00000153      3e10           ld a, 0x10
 │           0x00000155      77             ld [hl], a
@@ -76,7 +74,7 @@ opcode 0x38
 │   │││││   0x0000017b      ea02ff         ld [0xff02], a
 │   │││││   0x0000017e      76             halt
 │   │││││   ; CODE XREFS from main @ 0x15a(x), 0x160(x), 0x168(x), 0x16c(x), 0x172(x)
-│   └└└└└─> 0x0000017f      3e46           ld a, 0x46                  ; 'F'**
+│   └└└└└─> **0x0000017f      3e46           ld a, 0x46                  ; 'F'**
 │           0x00000181      ea01ff         ld [0xff01], a
 │           0x00000184      3e81           ld a, 0x81
 │           0x00000186      ea02ff         ld [0xff02], a

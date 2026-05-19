@@ -38,7 +38,7 @@ void InstructionSet::ldr_mem(uint16_t reg, uint8_t address) {
 }
 
 void InstructionSet::execute(uint8_t opcode) {
-  // F flag storage:
+  //  F flag storage:
   // Bit:  7 6 5 4 3 2 1 0
   //       Z N H C 0 0 0 0
   switch (opcode) {

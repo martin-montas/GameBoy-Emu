@@ -19,7 +19,7 @@ private:
   bool emulationRunning;
 
 public:
-  GameBoy(string filename);
+  GameBoy(std::string filename);
   ~GameBoy();
   void run();
   uint32_t calculateCyclesForFrame();

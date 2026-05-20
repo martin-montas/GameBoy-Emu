@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <iostream>
 
+using namespace std;
+
 InstructionSet::InstructionSet(MMU *mmu, Cpu *cpu) {
   this->cpu = cpu;
   this->mmu = mmu;
@@ -37,53 +39,73 @@ void InstructionSet::execute(uint8_t opcode) {
   //       Z N H C 0 0 0 0
   switch (opcode) {
   case 0x00: {
-    printf("NOP  %X\n", opcode);
+    // DONE
+    printf("NOP  -- %X --\n", opcode);
     cpu->PC += 1;
     break;
   }
   case 0x01: {
-    std::cout << "LD BC, d16 0x01" << std::endl;
-    ldr(cpu->BC);
-    cpu += 3;
+    // DONE
+    uint8_t l = mmu->romData(cpu->PC + 1);
+    uint8_t h = mmu->romData(cpu->PC + 2);
+    uint16_t val = h << 8 | l;
+    printf("LD (BC), A 0x02 -- %X --", val);
+    cpu->BC = val;
+    cpu->PC = cpu->PC + 3;
     break;
   }
   case 0x02: {
+    // DONE
     printf("LD (BC), A 0x02");
     ldr_mem(cpu->BC, cpu->A);
-    cpu += 1;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x03: {
-    std::cout << "INC BC 0x03" << std::endl;
-    cpu->BC++;
+    // DONE
+    printf("INC BC 0x03 -- before %X --", cpu->BC);
+    cpu->BC = cpu->BC + 1;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x04: {
-    std::cout << "INC B 0x04" << std::endl;
-    inc(cpu->B);
+    // DONE
+    printf("INC B 0x04 -- before %X --", cpu->B);
+    inc(&cpu->B);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x05: {
-    std::cout << "DEC B 0x05" << std::endl;
-    dec(cpu->B, 1);
+    // DONE
+    printf("DEC B 0x05 -- before %X --", cpu->B);
+    dec(&cpu->B, 1);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x06: {
     // DONE:
-    std::cout << "LD B, d8 0x06" << std::endl;
+    printf("LD B, d8 0x06 --- before %X --", cpu->B);
     cpu->B = mmu->romData[cpu->PC + 1];
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x07: {
-    std::cout << "RLCA" << std::endl;
-    rlc(cpu->A);
+    // DONE
+    uint16_t result = cpu->A << 1;
+    bool b = (cpu->A >> 7) & 1;
+    printf("RLCA -- %d --", b);
+    if (b) {
+      cpu->A |= 1;
+      cpu->set_flag(FLAG_CARRY, 1);
+    } else {
+      cpu->A &= ~1;
+      cpu->set_flag(FLAG_CARRY, 0);
+    }
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x08: {
+    // you are here
     std::cout << "LD (a16), SP" << std::endl;
     uint16_t address =
         mmu->romData[cpu->PC + 1] | (mmu->romData[cpu->PC + 2] << 8);
@@ -415,6 +437,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x37: {
+    // DONE:
     std::cout << "SCF" << std::endl;
     cpu->set_flag(FLAG_CARRY, true);
     cpu->PC = cpu->PC + 1;
@@ -1605,13 +1628,12 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xCE: {
-    // DONE: but check.
-    std::cout << "ADC A,u8 \n" << std::endl;
-    uint16_t n = mmu->read8(cpu->PC + 1);
+    // DONE:
+    uint16_t n = mmu->romData(cpu->PC + 1);
+    prinf("ADC A,u8 -- %X --\n", n);
     uint16_t _carry_flag = ((cpu->F >> 4) & 0x1);
     cpu->set_flag(FLAG_HALF_CARRY,
                   (cpu->A & 0xf) + (n & 0xf) + _carry_flag > 0xf);
-
     uint16_t _result = cpu->A + n + _carry_flag;
     cpu->A = static_cast<uint8_t>(_result);
 
@@ -1906,34 +1928,32 @@ void InstructionSet::inc_mem(uint16_t reg) {
   cpu->clear_flag(FLAG_SUBTRACT);
 }
 
-void InstructionSet::inc(uint8_t reg) {
+void InstructionSet::inc(uint8_t *reg) {
   uint8_t nibble_carry = reg & 0x0F;
 
-  (reg)++;
+  *reg = *reg + 1;
   cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
 
   cpu->set_flag(FLAG_ZERO, (reg == 0));
   cpu->clear_flag(FLAG_SUBTRACT);
 }
 
-void InstructionSet::inc(uint16_t reg) {
-  uint8_t nibble_carry = reg & 0x0F;
+void InstructionSet::inc(uint16_t *reg) {
+  // uint8_t nibble_carry = reg & 0x0F;
+  *reg = *reg + 1;
+  // cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
 
-  (reg)++;
-  cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
-
-  cpu->set_flag(FLAG_ZERO, (reg == 0));
-  cpu->clear_flag(FLAG_SUBTRACT);
+  // cpu->set_flag(FLAG_ZERO, (reg == 0));
+  // cpu->clear_flag(FLAG_SUBTRACT);
 }
 
-void InstructionSet::dec(uint8_t reg, uint8_t n) {
+void InstructionSet::dec(uint8_t *reg, uint8_t n) {
   // DONE
-  uint8_t r = reg - n;
+  uint8_t r = *reg - n;
   cpu->set_flag(FLAG_ZERO, r == 0);
   cpu->set_flag(FLAG_SUBTRACT, true);
-
-  cpu->set_flag(FLAG_HALF_CARRY, (reg & 0x0F) == 0);
-  reg = reg - n;
+  cpu->set_flag(FLAG_HALF_CARRY, (*reg & 0x0F) == 0);
+  *reg = *reg - n;
 }
 
 uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {

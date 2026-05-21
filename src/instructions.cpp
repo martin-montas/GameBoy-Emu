@@ -92,7 +92,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x07: {
     // DONE
     uint16_t result = cpu->A << 1;
-    bool b = (cpu->A >> 7) & 1;
+    bool b = (cpu->A << 8) & 1;
     printf("RLCA -- %d --\n", b);
     if (b) {
       cpu->A |= 1;
@@ -128,6 +128,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x0A: {
+    // DONE
     printf("LD A, (BC)\n");
     cpu->A = mmu->read8(cpu->BC);
     cpu->PC = cpu->PC + 1;
@@ -170,44 +171,49 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x10: {
     // this one should be checked out
-    std::cout << "STOP 0x10" << std::endl;
+    printf("STOP 0x10 \n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x11: {
     // DONE
     ldr(&cpu->DE);
+    printf("LD (DE), d16 -- %X --\n", cpu->DE);
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0x12: {
     // DONE
     mmu->write8(mmu->read8(cpu->DE), cpu->A);
+    printf("LD (DE), A -- %X --\n", cpu->DE);
     cpu->PC = cpu->PC + 1;
-    printf("LD (DE), A -- %X --", cpu->DE);
     break;
   }
   case 0x13: {
+    // DONE
     cpu->DE = cpu->DE + 1;
-    printf("INC DE -- %X --", cpu->DE);
+    printf("INC DE -- %X --\n", cpu->DE);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x14: {
-    std::cout << "INC D" << std::endl;
+    // DONE
     inc(&cpu->D);
+    printf("INC D, -- %X --\n", cpu->D);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x15: {
-    std::cout << "DEC D" << std::endl;
-    // dec(cpu->D,1);
+    // DONE
+    dec(&cpu->D, 1);
+    prinf("DEC D -- %X --\n", cpu->D);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x16: {
-    std::cout << "LD D, d8" << std::endl;
-    cpu->D = mmu->romData[cpu->PC++];
+    // DONE
+    cpu->D = mmu->romData[cpu->PC + 1];
+    printf("LD D, d8 -- %X --\n", cpu->D);
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -2079,10 +2085,13 @@ void InstructionSet::dec_mem(uint16_t reg) {
 }
 
 void InstructionSet::rla() {
-  std::cout << "RLA" << std::endl;
+  // you are here
+  printf("RLA\n");
   bool carry = cpu->F & FLAG_CARRY;
-  cpu->set_flag(FLAG_CARRY, cpu->A & 0x80);
+  uint16_t old_bit = (cpu->A >> 7) & 1;
   cpu->A = cpu->A << 1;
+
+  cpu->set_flag(FLAG_CARRY, cpu->A & 0x80);
   if (carry) {
     cpu->A |= 0x01;
   }

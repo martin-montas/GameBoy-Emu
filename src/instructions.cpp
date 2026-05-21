@@ -1,4 +1,4 @@
-// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
+/ Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 #include "instructions.hpp"
@@ -218,36 +218,38 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x17: {
-    std::cout << "RLA" << std::endl;
+    // DONE
+    printf("RLA\n"); 
     rla();
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x18: {
+    // DONE
     int8_t offset;
-    std::cout << "JR r8 shole be checked" << std::endl;
-    if (!(cpu->F & FLAG_ZERO)) {
-      offset = static_cast<int8_t>(mmu->romData[cpu->PC]);
-    }
+    offset = static_cast<int8_t>(mmu->romData[cpu->PC+1]);
     cpu->PC += offset;
-    cpu->PC += 1;
+    printf("JR r8 -- %X --\n", offset);
+    cpu->PC += 2;
     break;
   }
   case 0x19: {
-    std::cout << "ADD HL, DE" << std::endl;
+    // DONE
     add16(cpu->HL, cpu->DE);
     cpu->PC = cpu->PC + 1;
+    printf("ADD HL, DE\n");
     break;
   }
   case 0x1A: {
-    std::cout << "LD A, (DE)" << std::endl;
+    // DONE
     cpu->A = mmu->read8(cpu->DE);
+    printf("LD A, (DE) -- %X --\n", cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x1B: {
-    std::cout << "DEC DE" << std::endl;
     cpu->DE--;
+    printf("DEC DE", cpu->DE); 
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -1988,11 +1990,11 @@ uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
   return result;
 }
 
-void InstructionSet::add16(uint16_t destination, uint16_t value) {
-  uint32_t result = destination + value;
-  cpu->F &= ~FLAG_SUBTRACT;
+void InstructionSet::add16(uint16_t *destination, uint16_t *value) {
+  // you are here
+  uint32_t result = destination + *value;
+  cpu->clear_flag(FLAG_SUBTRACT);
   cpu->set_flag(FLAG_CARRY, result > 0xFFFF);
-
   cpu->set_flag(FLAG_HALF_CARRY,
                 ((destination & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF);
   destination = result & 0xFFFF;
@@ -2085,21 +2087,22 @@ void InstructionSet::dec_mem(uint16_t reg) {
 }
 
 void InstructionSet::rla() {
-  // you are here
+  // DONE but should check 
   printf("RLA\n");
   bool carry = cpu->F & FLAG_CARRY;
   uint16_t old_bit = (cpu->A >> 7) & 1;
   cpu->A = cpu->A << 1;
-
   cpu->set_flag(FLAG_CARRY, cpu->A & 0x80);
   if (carry) {
     cpu->A |= 0x01;
   }
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->clear_flag(FLAG_HALF_CARRY);
+  cpu->clear_flag(FLAG_ZERO);
 }
 
 void InstructionSet::add8_mem(uint8_t destination, uint8_t value) {
   mmu->write8(destination, destination + value);
-
   cpu->set_flag(FLAG_ZERO, (destination + value) == 0);
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->set_flag(FLAG_HALF_CARRY,

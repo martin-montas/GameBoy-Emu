@@ -1,5 +1,0 @@
-#/bin/env bash
-
-
-make
-./gameboy ./unit_test/test3.gb

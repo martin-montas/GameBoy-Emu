@@ -1,4 +1,4 @@
-/ Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
+// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 #include "instructions.hpp"
@@ -62,7 +62,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x03: {
-    // DONE
+    // DON
     printf("INC BC 0x03 -- before %X --\n", cpu->BC);
     cpu->BC = cpu->BC + 1;
     cpu->PC = cpu->PC + 1;
@@ -71,14 +71,14 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x04: {
     // DONE
     printf("INC B 0x04 -- before %X --\n", cpu->B);
-    inc(&cpu->B);
+    inc(cpu->B);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x05: {
     // DONE
     printf("DEC B 0x05 -- before %X --\n", cpu->B);
-    dec(&cpu->B, 1);
+    dec(cpu->B, 1);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -143,14 +143,14 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x0C: {
     // DONE
-    inc(&cpu->C);
+    inc(cpu->C);
     printf("INC C -- %X --\n", cpu->C);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x0D: {
     // DONE
-    dec(&cpu->C, 1);
+    dec(cpu->C, 1);
     printf("DEC C -- %X --", cpu->C);
     cpu->PC = cpu->PC + 1;
     break;
@@ -198,15 +198,15 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x14: {
     // DONE
-    inc(&cpu->D);
+    inc(cpu->D);
     printf("INC D, -- %X --\n", cpu->D);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x15: {
     // DONE
-    dec(&cpu->D, 1);
-    prinf("DEC D -- %X --\n", cpu->D);
+    dec(cpu->D, 1);
+    printf("DEC D -- %X --\n", cpu->D);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -234,10 +234,10 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x19: {
-    // DONE
+    // should be checked out
     add16(cpu->HL, cpu->DE);
     cpu->PC = cpu->PC + 1;
-    printf("ADD HL, DE\n");
+    printf("ADD HL, DE --%X --\n",cpu->HL);
     break;
   }
   case 0x1A: {
@@ -248,31 +248,34 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x1B: {
-    cpu->DE--;
-    printf("DEC DE", cpu->DE); 
+    // DONE
+    cpu->DE = cpu->DE -1;
+    printf("DEC DE -- %X --\n", cpu->DE); 
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x1C: {
-    std::cout << "INC E" << std::endl;
-    inc(&cpu->E);
+    // DONE
+    inc(cpu->E);
+    printf("INC E -- %X --\n", cpu->E);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x1D: {
-    std::cout << "DEC E" << std::endl;
-    // dec(cpu->E,1);
+    // DONE
+    dec(cpu->E, 1);
+    printf("DEC E -- %X --\n", cpu->E); 
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x1E: {
-    std::cout << "LD E, d8" << std::endl;
+    printf("LD E, d8");
     cpu->E = mmu->romData[cpu->PC++];
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x1F: {
-    std::cout << "RRA" << std::endl;
+    printf("RRA\n"); 
     rra();
     cpu->PC = cpu->PC + 1;
     break;
@@ -312,7 +315,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x24: {
     std::cout << "INC H" << std::endl;
-    inc(&cpu->H);
+    inc(cpu->H);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -385,7 +388,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x2C: {
     std::cout << "INC L" << std::endl;
-    inc(&cpu->L);
+    inc(cpu->L);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -498,7 +501,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x3C: {
     std::cout << "INC A" << std::endl;
-    inc(&cpu->A);
+    inc(cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -1951,10 +1954,10 @@ void InstructionSet::inc_mem(uint16_t reg) {
   cpu->clear_flag(FLAG_SUBTRACT);
 }
 
-void InstructionSet::inc(uint8_t *reg) {
-  uint8_t nibble_carry = *reg & 0xF;
+void InstructionSet::inc(uint8_t &reg) {
+  uint8_t nibble_carry = reg & 0xF;
 
-  *reg = *reg + 1;
+  reg = reg + 1;
   cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
 
   cpu->set_flag(FLAG_ZERO, (reg == 0));
@@ -1970,13 +1973,13 @@ void InstructionSet::inc(uint16_t *reg) {
   // cpu->clear_flag(FLAG_SUBTRACT);
 }
 
-void InstructionSet::dec(uint8_t *reg, uint8_t n) {
+void InstructionSet::dec(uint8_t &reg, uint8_t n) {
   // DONE
-  uint8_t r = *reg - n;
+  uint8_t r = reg - n;
   cpu->set_flag(FLAG_ZERO, r == 0);
   cpu->set_flag(FLAG_SUBTRACT, true);
-  cpu->set_flag(FLAG_HALF_CARRY, (*reg & 0x0F) == 0);
-  *reg = *reg - n;
+  cpu->set_flag(FLAG_HALF_CARRY, (reg & 0x0F) == 0);
+  reg = reg - n;
 }
 
 uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
@@ -1990,9 +1993,9 @@ uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
   return result;
 }
 
-void InstructionSet::add16(uint16_t *destination, uint16_t *value) {
+void InstructionSet::add16(uint16_t &destination, uint16_t &value) {
   // you are here
-  uint32_t result = destination + *value;
+  uint32_t result = destination + value;
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->set_flag(FLAG_CARRY, result > 0xFFFF);
   cpu->set_flag(FLAG_HALF_CARRY,
@@ -2001,7 +2004,6 @@ void InstructionSet::add16(uint16_t *destination, uint16_t *value) {
 }
 
 void ldhl(int8_t value) {}
-
 // TODO(martin-montas)
 // void InstructionSet::adc(uint8_t& reg_1, uint8_t reg_2) {
 //     uint8_t carry = cpu->get_flag(FLAG_CARRY) ? 1 : 0;

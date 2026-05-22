@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "IO.hpp"
 
 #define HRAM_SIZE 0x7F
 #define IRAM_SIZE 8192
@@ -18,8 +19,19 @@
 
 class MMU {
 public:
-  MMU(std::string filename);
+  IO *io;
   std::vector<uint8_t> romData;
+  MMU(std::string filename);
+  uint8_t read8(uint16_t address);
+  uint16_t read16(uint16_t address);
+
+  void write8(uint16_t address, uint8_t value);
+  void write16(uint16_t address, uint16_t value);
+
+  void load_rom(const std::string &filename);
+private:
+
+  
   uint8_t HRAM[HRAM_SIZE] = {};
   uint8_t IRAM[IRAM_SIZE] = {};
 
@@ -31,13 +43,6 @@ public:
   uint8_t EXTERNAL_RAM[8192] = {};
 
   // auto InterruptEnabled;
-  uint8_t read8(uint16_t address);
-  uint16_t read16(uint16_t address);
-
-  void write8(uint16_t address, uint8_t value);
-  void write16(uint16_t address, uint16_t value);
-
-  void load_rom(const std::string &filename);
 };
 
 #endif // SRC_MMU_HPP_

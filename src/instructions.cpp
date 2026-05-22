@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <iostream>
 
-using namespace std;
+// using namespace std;
 
 InstructionSet::InstructionSet(MMU *mmu, Cpu *cpu) {
   this->cpu = cpu;
@@ -56,8 +56,8 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x02: {
     // DONE
-    printf("LD (BC), A 0x02\n");
     ldr_mem(&cpu->BC, cpu->A);
+    printf("LD (BC), A 0x02 -- %X --\n", cpu->BC);
     cpu->PC = cpu->PC + 1;
     break;
   }

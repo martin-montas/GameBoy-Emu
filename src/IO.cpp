@@ -1,19 +1,19 @@
-#include "IO.hpp"
 #include<cstdint>
+#include "IO.hpp"
 
-uint16_t IO::read(uint16_t addr, uint8_t value) {
+void IO::write(uint16_t addr, uint8_t value) {
   switch (addr) {
   case 0xFF00 {
     break;
   } case 0xFF01 {
-    // soon SB instruction
+    this->SC = value;
     break;
   } case 0xFF02 {
-    // if value == 0x81:
-    //     output SB as character
+    if (value == 0x81 {
+	printf("-- %X --\n",value);
+      }
     break;
-  }
-case 0xFF04 {
+  } case 0xFF04 {
   break;
 } case 0xFF05 {
   break;

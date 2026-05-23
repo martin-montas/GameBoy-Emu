@@ -7,6 +7,8 @@
 
 #include "IO.hpp"
 #include "MBC.hpp"
+#include "timer.hpp"
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -22,7 +24,7 @@
 class MMU {
 public:
   std::vector<uint8_t> romData;
-  MMU(std::string filename);
+  MMU(std::string filename, IO *io);
   uint8_t read8(uint16_t address);
   uint16_t read16(uint16_t address);
 
@@ -33,6 +35,7 @@ public:
 private:
   std::unique_ptr<MBC> mbc;
   IO *io;
+  Timer *timer;
   void check_rom_type();
   uint8_t HRAM[HRAM_SIZE] = {};
   uint8_t IRAM[IRAM_SIZE] = {};

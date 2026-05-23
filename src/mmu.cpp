@@ -6,6 +6,7 @@
 #include "IO.hpp"
 #include "MBC.hpp"
 #include "MBC0.hpp"
+#include "timer.hpp"
 
 #include <cstdint>
 #include <fstream>
@@ -13,10 +14,11 @@
 #include <string>
 #include <vector>
 
-MMU::MMU(std::string filename) {
+MMU::MMU(std::string filename, IO *io, Timer *timer) {
   load_rom(filename);
   check_rom_type();
-  this->io = new IO;
+  this->io = io;
+  this->timer = timer;
 }
 
 void MMU::check_rom_type() {
@@ -63,7 +65,7 @@ uint8_t MMU::read8(uint16_t address) {
     return this->EXTERNAL_RAM[address - 0xA000];
   } else if ((address >= 0xC000 && address <= 0xDFFF) ||
              (address >= 0xE000 && address <= 0xFDFF)) {
-    uint16_t idx = address & 0x1FFF;
+    uint16_t idx = address & 0xC000;
     return this->WRAM[idx];
   } else if (address >= 0xFE00 && address <= 0xFE9F) {
     return this->OAM[address - 0xFE00];
@@ -84,12 +86,14 @@ void MMU::write8(uint16_t address, uint8_t value) {
     this->EXTERNAL_RAM[address - 0xA000] = value;
   } else if ((address >= 0xC000 && address <= 0xDFFF) ||
              (address >= 0xE000 && address <= 0xFDFF)) {
-    uint16_t idx = address & 0x1FFF;
+    uint16_t idx = address & 0xC000;
     this->WRAM[idx] = value;
+  } else if (address == 0xFF04) {
+    timer.reset_div();
   } else if (address >= 0xFE00 && address <= 0xFE9F) {
     this->OAM[address - 0xFE00] = value;
   } else if (address >= 0xFF00 && address <= 0xFF7F) {
-    this->io->write(address - 0xFF00, value);
+    this->io->write(address, value);
   } else if (address >= 0xFF80 && address <= 0xFFFE) {
     this->HRAM[address - 0xFF80] = value;
   } else {

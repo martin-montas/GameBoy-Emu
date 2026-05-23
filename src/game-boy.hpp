@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <string>
 
+#include "IO.hpp"
 #include "cpu.hpp"
 #include "instructions.hpp"
 #include "mmu.hpp"
@@ -15,6 +16,7 @@ class GameBoy {
 private:
   Cpu *cpu;
   MMU *mmu;
+  IO *io;
   InstructionSet *instructions;
   bool emulationRunning;
 

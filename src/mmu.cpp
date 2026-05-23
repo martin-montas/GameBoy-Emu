@@ -68,8 +68,10 @@ uint16_t MMU::read16(uint16_t address) {
   uint8_t high_byte = read8(address + 1);
   return (high_byte << 8) | low_byte;
 }
+.
 
-uint8_t MMU::read8(uint16_t address) {
+    uint8_t
+    MMU::read8(uint16_t address) {
   if (address <= 0x7FFF) {
     return mbc->read(address);
   } else if (address >= 0x8000 && address <= 0x9FFF) {
@@ -84,6 +86,19 @@ uint8_t MMU::read8(uint16_t address) {
   } else if (address >= 0xFE00 && address <= 0xFE9F) {
     return this->OAM[address - 0xFE00];
   } else if (address >= 0xFF00 && address <= 0xFF7F) {
+    // TODO: do this don't create a separate IO object
+    // uint8_t IO::read(uint16_t addr) {
+    //     switch (addr) {
+    //         case 0xFF04 ... 0xFF07:
+    //             return timer.read(addr);
+    //         case 0xFF00 ... 0xFF00:
+    //             return joypad.read();
+    //         case 0xFF40 ... 0xFF4B:
+    //             return lcd.read(addr);
+    //         default:
+    //             return io_regs[addr - 0xFF00];
+    //     }
+    // }
     return this->io->read(address - 0xFF00);
   } else if (address >= 0xFF80 && address <= 0xFFFE) {
     return this->HRAM[address - 0xFF80];

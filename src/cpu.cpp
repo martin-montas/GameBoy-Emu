@@ -5,6 +5,7 @@
 #include "cpu.hpp"
 
 #include <cstdint>
+#include <vector>
 
 const double cyclesPerMicrosecond = 4.194304;
 const uint32_t timeSlice = 1000;

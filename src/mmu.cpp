@@ -103,7 +103,7 @@ void MMU::write8(uint16_t address, uint8_t value) {
     uint16_t idx = address & 0xC000;
     this->WRAM[idx] = value;
   } else if (address == 0xFF04) {
-    timer.reset_div();
+    timer->reset_div();
   } else if (address >= 0xFE00 && address <= 0xFE9F) {
     this->OAM[address - 0xFE00] = value;
   } else if (address >= 0xFF00 && address <= 0xFF7F) {

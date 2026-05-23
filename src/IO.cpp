@@ -8,8 +8,14 @@
 #include <cstdint>
 #include <cstdio>
 
+/*
+ * @brief:
+ */
 IO::IO(Timer &timer) { this->timer = timer; }
 
+/*
+ * @brief: TODO should be implemented again
+ */
 void IO::write(uint16_t addr, uint8_t value) {
   // reg[addr - 0xFF00] = value;
   switch (addr) {
@@ -24,8 +30,6 @@ void IO::write(uint16_t addr, uint8_t value) {
   }
     // DIV (Divider Register)
   case 0xFF04: {
-    // this register should be reset if the
-    // stop instructIOn executed.
     timer->counter = 0;
 
     break;
@@ -51,6 +55,10 @@ void IO::write(uint16_t addr, uint8_t value) {
   }
 }
 
+/*
+ * @brief: TODO
+ *
+ */
 uint8_t IO::read(uint16_t addr) {
   switch (addr) {
   case 0xFF01: {

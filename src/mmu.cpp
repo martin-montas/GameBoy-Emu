@@ -20,7 +20,12 @@ MMU::MMU(std::string filename, IO *io, Timer *timer) {
   this->io = io;
   this->timer = timer;
 }
-
+/*
+ * @brief: Based on the 0x147 byte of the rom
+ * file the gameboy goes in different  different
+ * mode where diffent type of RAM memory gets
+ * allocated and more.
+ */
 void MMU::check_rom_type() {
   uint8_t type = romData[0x0147];
   switch (type) {
@@ -34,6 +39,10 @@ void MMU::check_rom_type() {
   }
 }
 
+/*
+ * @brief: Loads the rom file into the
+ * romData vector.
+ */
 void MMU::load_rom(const std::string &filename) {
   std::ifstream file(filename, std::ios::binary);
   const size_t chunk_size = 1024;
@@ -49,6 +58,11 @@ void MMU::load_rom(const std::string &filename) {
   }
 }
 
+/*
+ * @brief: Reads based the 16 bit memory value
+ * from ROM/RAM.
+ *
+ */
 uint16_t MMU::read16(uint16_t address) {
   uint8_t low_byte = read8(address);
   uint8_t high_byte = read8(address + 1);

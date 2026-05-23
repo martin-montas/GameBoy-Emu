@@ -9,10 +9,12 @@
 #include <cstdint>
 
 GameBoy::GameBoy(std::string filename) {
-  io = new IO();
-  mmu = new MMU(filename, io);
   cpu = new Cpu();
+  timer = new Timer();
+  io = new IO();
+  mmu = new MMU(filename, io, timer);
   instructions = new InstructionSet(mmu, cpu);
+
   emulationRunning = true;
 }
 

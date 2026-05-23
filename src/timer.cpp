@@ -1,18 +1,24 @@
+// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
+// All components of this software are licensed under the GNU License.
+// Programmer: Martin Montas, martinmontas1@gmail.com
+//
 #include "timer.hpp"
 #include <cstdint>
 
-int increment = 256;
-int selected_frequency = 4096;
-int t_counter = 0;
-int curr_frequency = 256;
-
 Timer::Timer() {}
+/*
+ *  TODO research tac flag
+ *   void Timer::set_tac_flag(TAC_TIMER_CONTROL tac_timer) {
+ *   this->TAC |= tac_timer;tick
+ *}
+ */
 
-// TODO research tac flag
-// void Timer::set_tac_flag(TAC_TIMER_CONTROL tac_timer) {
-//   this->TAC |= tac_timer;tick
-// }
-uint8_t Timer::get_tac_flag() { return this->TAC & TAC_SELECT }
+/*
+ * @brief:
+ * the tag flag should be set if value paramenter has the
+ * bit 0 flipped
+ */
+uint8_t Timer::get_tac_flag(uint8_t value) { return this->TAC & TAC_SELECT }
 
 int Timer::time_frequency_select() {
   switch ((this->TAC) & 0b11) {
@@ -34,10 +40,26 @@ int Timer::time_frequency_select() {
   }
   }
 }
+/*
+ *  @brief:
+ * this flag reset the internal counter
+ * when it is written to the 0xFF04 address
+ * and on the STOP instruction.
+ */
 void Timer::reset_div() { internal_div_counter = 0; }
 
+/*
+ * @brief:
+ * this writtens tac
+ * TODO: write to tac should be implemented here
+ */
 void Timer::write_tac() {}
 
+/*
+ *
+ * @brief:
+ * this happens every iteration of the game loop
+ */
 void Timer::tick(int cycle) {
   internal_div_counter += cycle;
   bool timer_enabled = TAC & 0b100;

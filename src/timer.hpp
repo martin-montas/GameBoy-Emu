@@ -1,3 +1,7 @@
+// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
+// All components of this software are licensed under the GNU License.
+// Programmer: Martin Montas, martinmontas1@gmail.com
+//
 #ifndef SRC_TIMER_HPP_
 #define SRC_TIMER_HPP_
 
@@ -17,6 +21,8 @@ private:
   uint8_t TMA;
   uint8_t TAC;
   uint16_t internal_div_counter;
+
+  int curr_frequency = 256;
 
 public:
   void tick(int cycle);

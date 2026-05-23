@@ -24,7 +24,7 @@
 class MMU {
 public:
   std::vector<uint8_t> romData;
-  MMU(std::string filename, IO *io);
+  MMU(std::string filename, IO *io, Timer *timer);
   uint8_t read8(uint16_t address);
   uint16_t read16(uint16_t address);
 

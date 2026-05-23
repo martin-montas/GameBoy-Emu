@@ -11,12 +11,15 @@
 #include "cpu.hpp"
 #include "instructions.hpp"
 #include "mmu.hpp"
+#include "timer.hpp"
 
 class GameBoy {
 private:
   Cpu *cpu;
   MMU *mmu;
   IO *io;
+  Timer *timer;
+
   InstructionSet *instructions;
   bool emulationRunning;
 

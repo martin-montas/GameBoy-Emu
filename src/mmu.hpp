@@ -39,8 +39,7 @@ private:
   uint8_t VRAM[VRAM_SIZE] = {};
   uint8_t WRAM[WRAM_SIZE] = {};
   uint8_t OAM[OAM_SIZE] = {};
-  // uint8_t [IO_SIZE] = {};
-
+  // uint8_t IO[IO_SIZE] = {};
   uint8_t EXTERNAL_RAM[8192] = {};
 
   // auto InterruptEnabled;

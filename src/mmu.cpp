@@ -23,9 +23,10 @@ void MMU::check_rom_type() {
   uint8_t type = romData[0x0147];
   switch (type) {
   case 0x00:
+  case 0x01:
+    // More cases should be defined here.
     mbc = std::make_unique<MBC0>(romData);
     break;
-    // More cases should be defined here.
   default:
     throw std::runtime_error("Unsupported cartridge");
   }
@@ -57,22 +58,17 @@ uint8_t MMU::read8(uint16_t address) {
     return mbc->read(address);
   } else if (address >= 0x8000 && address <= 0x9FFF) {
     return this->VRAM[address - 0x8000];
-
   } else if (address >= 0xA000 && address <= 0xBFFF) {
     // this should also go to mbc
     return this->EXTERNAL_RAM[address - 0xA000];
-
-  } else if (address >= 0xC000 && address <= 0xDFFF) {
-    return this->WRAM[address - 0xC000];
-
+  } else if ((address >= 0xC000 && address <= 0xDFFF) ||
+             (address >= 0xE000 && address <= 0xFDFF)) {
+    uint16_t idx = address & 0x1FFF;
+    return this->WRAM[idx];
   } else if (address >= 0xFE00 && address <= 0xFE9F) {
     return this->OAM[address - 0xFE00];
-
   } else if (address >= 0xFF00 && address <= 0xFF7F) {
-    return this->IO[address - 0XFF00];
-
-  } else if (address >= 0xE000 && address <= 0xFDFF) {
-    return this->WRAM[address - 0xE000];
+    return this->io->read(address - 0xFF00);
   } else if (address >= 0xFF80 && address <= 0xFFFE) {
     return this->HRAM[address - 0xFF80];
   } else {
@@ -84,21 +80,16 @@ uint8_t MMU::read8(uint16_t address) {
 void MMU::write8(uint16_t address, uint8_t value) {
   if (address >= 0x8000 && address <= 0x9FFF) {
     this->VRAM[address - 0x8000] = value;
-
   } else if (address >= 0xA000 && address <= 0xBFFF) {
     this->EXTERNAL_RAM[address - 0xA000] = value;
-
-  } else if (address >= 0xC000 && address <= 0xDFFF) {
-    this->WRAM[address - 0xC000] = value;
-
+  } else if ((address >= 0xC000 && address <= 0xDFFF) ||
+             (address >= 0xE000 && address <= 0xFDFF)) {
+    uint16_t idx = address & 0x1FFF;
+    this->WRAM[idx] = value;
   } else if (address >= 0xFE00 && address <= 0xFE9F) {
     this->OAM[address - 0xFE00] = value;
-
   } else if (address >= 0xFF00 && address <= 0xFF7F) {
-    this->IO[address - 0xFF00, value] = value;
-  } else if (address >= 0xE000 && address <= 0xFDFF) {
-    this->WRAM[address - 0XE000] = value;
-
+    this->io->write(address - 0xFF00, value);
   } else if (address >= 0xFF80 && address <= 0xFFFE) {
     this->HRAM[address - 0xFF80] = value;
   } else {

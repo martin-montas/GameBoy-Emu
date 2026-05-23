@@ -14,12 +14,12 @@ private:
   uint8_t SB;
   uint8_t SC;
   std::unique_ptr<MBC> mbc;
-  uint8_t regs[0x80] = {};
+  uint8_t reg[0x80] = {};
 
 public:
   uint8_t read(uint16_t addr);
   void write(uint16_t addr, uint8_t value);
-  uint8_t &io_reg(uint16_t addr);
+  // uint8_t &io_reg(uint16_t addr);
 };
 
 #endif // SRC_IO_HPP_

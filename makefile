@@ -12,8 +12,8 @@ CXXFLAGS := -I./src -std=c++20
 #LDFLAGS := #-lsfml-graphics -lsfml-window -lsfml-system
 
 # Target for the main program
-gameboy: main.o cpu.o game-boy.o instructions.o extended-instructions.o mmu.o MBC.o MBC0.o
-	$(CXX) main.o cpu.o game-boy.o instructions.o extended-instructions.o mmu.o MBC.o MBC0.o -o gameboy #$(LDFLAGS)
+gameboy: main.o cpu.o game-boy.o instructions.o extended-instructions.o mmu.o MBC.o MBC0.o IO.o
+	$(CXX) main.o cpu.o game-boy.o instructions.o extended-instructions.o mmu.o MBC.o MBC0.o IO.o -o gameboy #$(LDFLAGS)
 
 # Object file rules
 main.o: main.cpp
@@ -32,6 +32,9 @@ extended-instructions.o: ./src/extended-instructions.cpp ./src/instructions.hpp
 
 mmu.o: ./src/mmu.cpp ./src/mmu.hpp
 	$(CXX)  -c ./src/mmu.cpp #$(CXXFLAGS)
+
+IO.o: ./src/IO.cpp ./src/IO.hpp
+	$(CXX)  -c ./src/IO.cpp #$(CXXFLAGS)
 
 MBC.o: ./src/MBC.cpp ./src/MBC.hpp
 	$(CXX)  -c ./src/MBC.cpp #$(CXXFLAGS)

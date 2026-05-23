@@ -2,13 +2,14 @@
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 #include "instructions.hpp"
+#include "MBC.hpp"
+#include "MBC0.hpp"
 
 #include <bitset>
 #include <cstdint>
 #include <cstdio>
 #include <iostream>
-
-// using namespace std;
+#include <memory>
 
 InstructionSet::InstructionSet(MMU *mmu, Cpu *cpu) {
   this->cpu = cpu;
@@ -62,7 +63,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x03: {
-    // DON
+    // DONE
     printf("INC BC 0x03 -- before %X --\n", cpu->BC);
     cpu->BC = cpu->BC + 1;
     cpu->PC = cpu->PC + 1;
@@ -219,7 +220,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x17: {
     // DONE
-    printf("RLA\n"); 
+    printf("RLA\n");
     rla();
     cpu->PC = cpu->PC + 1;
     break;
@@ -227,7 +228,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x18: {
     // DONE
     int8_t offset;
-    offset = static_cast<int8_t>(mmu->romData[cpu->PC+1]);
+    offset = static_cast<int8_t>(mmu->romData[cpu->PC + 1]);
     cpu->PC += offset;
     printf("JR r8 -- %X --\n", offset);
     cpu->PC += 2;
@@ -237,7 +238,7 @@ void InstructionSet::execute(uint8_t opcode) {
     // should be checked out
     add16(cpu->HL, cpu->DE);
     cpu->PC = cpu->PC + 1;
-    printf("ADD HL, DE --%X --\n",cpu->HL);
+    printf("ADD HL, DE --%X --\n", cpu->HL);
     break;
   }
   case 0x1A: {
@@ -249,8 +250,8 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x1B: {
     // DONE
-    cpu->DE = cpu->DE -1;
-    printf("DEC DE -- %X --\n", cpu->DE); 
+    cpu->DE = cpu->DE - 1;
+    printf("DEC DE -- %X --\n", cpu->DE);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -264,7 +265,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x1D: {
     // DONE
     dec(cpu->E, 1);
-    printf("DEC E -- %X --\n", cpu->E); 
+    printf("DEC E -- %X --\n", cpu->E);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -275,7 +276,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x1F: {
-    printf("RRA\n"); 
+    printf("RRA\n");
     rra();
     cpu->PC = cpu->PC + 1;
     break;
@@ -2089,7 +2090,7 @@ void InstructionSet::dec_mem(uint16_t reg) {
 }
 
 void InstructionSet::rla() {
-  // DONE but should check 
+  // DONE but should check
   printf("RLA\n");
   bool carry = cpu->F & FLAG_CARRY;
   uint16_t old_bit = (cpu->A >> 7) & 1;

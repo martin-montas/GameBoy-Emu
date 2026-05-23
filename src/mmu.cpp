@@ -3,6 +3,9 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
 #include "mmu.hpp"
+#include "IO.hpp"
+#include "MBC.hpp"
+#include "MBC0.hpp"
 
 #include <cstdint>
 #include <fstream>
@@ -10,7 +13,23 @@
 #include <string>
 #include <vector>
 
-MMU::MMU(std::string filename) { load_rom(filename); }
+MMU::MMU(std::string filename) {
+  load_rom(filename);
+  check_rom_type();
+  this->io = new IO;
+}
+
+void MMU::check_rom_type() {
+  uint8_t type = romData[0x0147];
+  switch (type) {
+  case 0x00:
+    mbc = std::make_unique<MBC0>(romData);
+    break;
+    // More cases should be defined here.
+  default:
+    throw std::runtime_error("Unsupported cartridge");
+  }
+}
 
 void MMU::load_rom(const std::string &filename) {
   std::ifstream file(filename, std::ios::binary);
@@ -34,22 +53,13 @@ uint16_t MMU::read16(uint16_t address) {
 }
 
 uint8_t MMU::read8(uint16_t address) {
-  // 0000-7FFF → ROM
-  // 8000-9FFF → VRAM
-  // A000-BFFF → External RAM (cartridge)
-  // C000-DFFF → Work RAM
-  // E000-FDFF → Echo RAM (mirror of C000–DDFF)
-  // FE00-FE9F → OAM
-  // FF00-FF7F → I/O registers
-  // FF80-FFFE → HRAM
-  // FFFF      → IE register
-
-  if (address <= 0x3FFF) {
-    return this->romData[address];
+  if (address <= 0x7FFF) {
+    return mbc->read(address);
   } else if (address >= 0x8000 && address <= 0x9FFF) {
     return this->VRAM[address - 0x8000];
 
   } else if (address >= 0xA000 && address <= 0xBFFF) {
+    // this should also go to mbc
     return this->EXTERNAL_RAM[address - 0xA000];
 
   } else if (address >= 0xC000 && address <= 0xDFFF) {
@@ -58,12 +68,11 @@ uint8_t MMU::read8(uint16_t address) {
   } else if (address >= 0xFE00 && address <= 0xFE9F) {
     return this->OAM[address - 0xFE00];
 
-  } else if (address >= 0XFF00 && address <= 0XFF7F) {
-    return this->IO_REGISTERS[address - 0XFF00];
+  } else if (address >= 0xFF00 && address <= 0xFF7F) {
+    return this->IO[address - 0XFF00];
 
-  } else if (address >= 0XE000 && address <= 0xFDFF) {
+  } else if (address >= 0xE000 && address <= 0xFDFF) {
     return this->WRAM[address - 0xE000];
-
   } else if (address >= 0xFF80 && address <= 0xFFFE) {
     return this->HRAM[address - 0xFF80];
   } else {
@@ -73,16 +82,6 @@ uint8_t MMU::read8(uint16_t address) {
 }
 
 void MMU::write8(uint16_t address, uint8_t value) {
-  // 0000-7FFF → ROM
-  // 8000-9FFF → VRAM
-  // A000-BFFF → External RAM (cartridge)
-  // C000-DFFF → Work RAM
-  // E000-FDFF → Echo RAM (mirror of C000–DDFF)
-  // FE00-FE9F → OAM
-  // FF00-FF7F → I/O registers
-  // FF80-FFFE → HRAM
-  // FFFF      → IE register
-
   if (address >= 0x8000 && address <= 0x9FFF) {
     this->VRAM[address - 0x8000] = value;
 
@@ -95,10 +94,9 @@ void MMU::write8(uint16_t address, uint8_t value) {
   } else if (address >= 0xFE00 && address <= 0xFE9F) {
     this->OAM[address - 0xFE00] = value;
 
-  } else if (address >= 0XFF00 && address <= 0XFF7F) {
-    this->IO_REGISTERS[address - 0XFF00] = value;
-
-  } else if (address >= 0XE000 && address <= 0XFDFF) {
+  } else if (address >= 0xFF00 && address <= 0xFF7F) {
+    this->IO[address - 0xFF00, value] = value;
+  } else if (address >= 0xE000 && address <= 0xFDFF) {
     this->WRAM[address - 0XE000] = value;
 
   } else if (address >= 0xFF80 && address <= 0xFFFE) {

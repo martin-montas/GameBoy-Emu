@@ -5,21 +5,22 @@
 #ifndef SRC_MMU_HPP_
 #define SRC_MMU_HPP_
 
+#include "IO.hpp"
+#include "MBC.hpp"
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
-#include "IO.hpp"
 
 #define HRAM_SIZE 0x7F
 #define IRAM_SIZE 8192
 #define OAM_SIZE 0xA0
 #define VRAM_SIZE 0x2000
 #define WRAM_SIZE 0x2000
-#define IO_REGISTERS_SIZE 0X80
+#define IO_SIZE 0x80
 
 class MMU {
 public:
-  IO *io;
   std::vector<uint8_t> romData;
   MMU(std::string filename);
   uint8_t read8(uint16_t address);
@@ -27,19 +28,19 @@ public:
 
   void write8(uint16_t address, uint8_t value);
   void write16(uint16_t address, uint16_t value);
-
   void load_rom(const std::string &filename);
-private:
 
-  
+private:
+  std::unique_ptr<MBC> mbc;
+  IO *io;
+  void check_rom_type();
   uint8_t HRAM[HRAM_SIZE] = {};
   uint8_t IRAM[IRAM_SIZE] = {};
-
   uint8_t VRAM[VRAM_SIZE] = {};
   uint8_t WRAM[WRAM_SIZE] = {};
   uint8_t OAM[OAM_SIZE] = {};
+  // uint8_t [IO_SIZE] = {};
 
-  uint8_t IO_REGISTERS[IO_REGISTERS_SIZE] = {};
   uint8_t EXTERNAL_RAM[8192] = {};
 
   // auto InterruptEnabled;

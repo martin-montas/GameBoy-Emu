@@ -18,11 +18,13 @@ public:
   InstructionSet(MMU *mmu, Cpu *cpu);
   void execute(uint8_t opcode);
 
+  void get_mbc_type();
   void rrca(uint8_t *reg);
   void rra();
   void rla();
   void ret(bool condition);
 
+  void generate_mbc();
   void inc(uint8_t &value);
   void inc(uint16_t *value);
   void inc_mem(uint16_t reg);

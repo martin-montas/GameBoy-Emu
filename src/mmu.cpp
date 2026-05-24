@@ -3,7 +3,6 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
 #include "mmu.hpp"
-// #include "IO.hpp"
 #include "MBC.hpp"
 #include "MBC0.hpp"
 #include "timer.hpp"
@@ -71,21 +70,23 @@ uint8_t MMU::read8(uint16_t addr) {
   } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
     switch (addr) {
     case 0xFF04:
+      return timer->read_div(addr);
     case 0xFF05:
     case 0xFF06:
     case 0xFF07:
-      timer.read(addr);
+      return timer->read(addr);
+    default: {
+      return this->IO_REG[addr - 0xFF00];
+      }
     }
-    return this->IO_REG[addr - 0xFF00];
   }
-}
-else if (addr >= 0xFF80 && addr <= 0xFFFE) {
-  return this->HRAM[addr - 0xFF80];
-}
-else {
-  std::cout << "Memory access out of bounds: " << addr << std::endl;
-  exit(1);
-}
+  else if (addr >= 0xFF80 && addr <= 0xFFFE) {
+    return this->HRAM[addr - 0xFF80];
+  }
+  else {
+    std::cout << "Memory access out of bounds: " << addr << std::endl;
+    exit(1);
+  }
 }
 
 void MMU::write8(uint16_t addr, uint8_t value) {

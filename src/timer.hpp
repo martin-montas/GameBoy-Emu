@@ -49,8 +49,8 @@ public:
 
   void write(uint16_t addr, uint8_t value);
 
-  uint8_t read8(uint16_t addr);
-  uint16_t read16(uint16_t addr);
+  uint8_t read(uint16_t addr);
+  uint16_t read_div(uint16_t addr);
 
   uint8_t write(uint16_t addr);
 };

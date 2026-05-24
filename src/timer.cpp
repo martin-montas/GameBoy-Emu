@@ -1,3 +1,7 @@
+// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
+// All components of this software are licensed under the GNU License.
+// Programmer: Martin Montas, martinmontas1@gmail.com
+//
 #include "timer.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -55,7 +59,8 @@ void Timer::write(uint16_t addr, uint8_t value) {
     _tac = value;
   }
 }
-uint8_t Timer::read8(uint16_t addr) {
+
+uint8_t Timer::read(uint16_t addr) {
   if (addr == 0xFF05) {
     return _tima;
   }
@@ -68,13 +73,11 @@ uint8_t Timer::read8(uint16_t addr) {
   return 0x00;
 }
 
-uint16_t Timer::read16(uint16_t addr) {
+uint16_t Timer::read_div(uint16_t addr) {
   if (addr == 0xFF04) {
     return _div;
   }
 }
-
-
 
 void Timer::tick(int cycle) {
   _div_counter += cycle;

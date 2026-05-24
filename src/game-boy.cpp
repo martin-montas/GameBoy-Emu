@@ -29,9 +29,9 @@ void GameBoy::run() {
 
     instructions->execute(_opcode);
     int current_cycle = cpu->opcode_cycles[_opcode];
-    // cpu->cycle_count += current_cycle;
-    // TODO: make this a another object
-    // io->advance(cpu->opcode_cycles[_opcode]);
+    cpu->cycle_count += current_cycle;
+    // TODO call timer.tick(curr_cycle) here
+    
     // TODO finish the rest of this loop:
     // Render frame, update audio, etc.
   }

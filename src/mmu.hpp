@@ -5,7 +5,7 @@
 #ifndef SRC_MMU_HPP_
 #define SRC_MMU_HPP_
 
-#include "IO.hpp"
+// #include "IO.hpp"
 #include "MBC.hpp"
 #include "timer.hpp"
 
@@ -21,28 +21,47 @@
 #define WRAM_SIZE 0x2000
 #define IO_SIZE 0x80
 
+using namespace std;
+
 class MMU {
 public:
   std::vector<uint8_t> romData;
-  MMU(std::string filename, IO *io, Timer *timer);
-  uint8_t read8(uint16_t address);
-  uint16_t read16(uint16_t address);
+  MMU(std::string filename, /*IO *io,*/ Timer *timer);
 
-  void write8(uint16_t address, uint8_t value);
-  void write16(uint16_t address, uint16_t value);
+  /*
+   * @brief: Reads based the 16 bit memory value
+   * from ROM/RAM.
+   *
+   */
+  uint8_t read8(uint16_t addr);
+  uint16_t read16(uint16_t addr);
+  void write8(uint16_t addr, uint8_t value);
+  void write16(uint16_t addr, uint16_t value);
+
+  /*
+   * @brief: Loads the rom file into the
+   * romData vector.
+   */
   void load_rom(const std::string &filename);
 
 private:
   std::unique_ptr<MBC> mbc;
-  IO *io;
+  // IO *io;
   Timer *timer;
+
+  /*
+   * @brief: Based on the 0x147 byte of the rom
+   * file the gameboy goes in different  different
+   * mode where diffent type of RAM memory gets
+   * allocated and more.
+   */
   void check_rom_type();
   uint8_t HRAM[HRAM_SIZE] = {};
   uint8_t IRAM[IRAM_SIZE] = {};
   uint8_t VRAM[VRAM_SIZE] = {};
   uint8_t WRAM[WRAM_SIZE] = {};
   uint8_t OAM[OAM_SIZE] = {};
-  // uint8_t IO[IO_SIZE] = {};
+  uint8_t IO_REG[IO_SIZE] = {};
   uint8_t EXTERNAL_RAM[8192] = {};
 
   // auto InterruptEnabled;

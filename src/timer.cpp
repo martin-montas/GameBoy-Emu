@@ -1,22 +1,16 @@
 #include "timer.hpp"
+#include <cstddef>
 #include <cstdint>
+// Timer::Timer() {}
 
-Timer::Timer() {}
-/*
- *  TODO research tac flag
- *   void Timer::set_tac_flag(TAC_TIMER_CONTROL tac_timer) {
- *   this->TAC |= tac_timer;tick
- *}
- */
+Timer::Timer()
+    : _sb(0), _div(0), _sc(0), _tima(0), _tma(0), _tac(0), _tima_accumulator(0),
+      _div_counter(0) {}
 
-/*
- * @brief: the tag flag should be set if value paramenter has the
- * bit 0 flipped
- */
-uint8_t Timer::get_tac_flag(uint8_t value) { return this->TAC & TAC_SELECT }
+uint8_t Timer::get_tac_flag() { return _tac & TAC_SELECT; }
 
-int Timer::time_frequency_select() {
-  switch ((this->TAC) & 0b11) {
+int Timer::get_time_frequency() {
+  switch ((_tac) & 0b11) {
   case 0x00: {
     return curr_frequency = 1024;
     break;
@@ -34,34 +28,65 @@ int Timer::time_frequency_select() {
     break;
   }
   }
+  return -1;
 }
-/*
- * @brief: this flag reset the internal counter
- * when it is written to the 0xFF04 address
- * and on the STOP instruction.
- */
-void Timer::reset_div() { internal_div_counter = 0; }
 
-/*
- * @brief: this writtens tac
- * TODO: write to tac should be implemented here
- */
-void Timer::write_tac() {}
+void Timer::write(uint16_t addr, uint8_t value) {
+  if (addr == 0xFF04) {
+    /*
+     * @brief: writing to the div timer register
+     * disables it.
+     */
+    _div = 0;
+  }
+  if (addr == 0xFF05) {
+    _tima = value;
+  }
+  if (addr == 0xFF06) {
+    _tma = value;
+  }
+  if (addr == 0xFF07) {
+    // TAC = 0b00000101
+    //         ||||||||
+    //         |||||||+-- clock bit 0
+    //         ||||||+--- clock bit 1
+    //         |||||+---- enable
+    //
+    _tac = value;
+  }
+}
+uint8_t Timer::read8(uint16_t addr) {
+  if (addr == 0xFF05) {
+    return _tima;
+  }
+  if (addr == 0xFF06) {
+    return _tma;
+  }
+  if (addr == 0xFF07) {
+    return _tac;
+  }
+  return 0x00;
+}
 
-/*
- * @brief: this happens every iteration of the game loop
- */
+uint16_t Timer::read16(uint16_t addr) {
+  if (addr == 0xFF04) {
+    return _div;
+  }
+}
+
+
+
 void Timer::tick(int cycle) {
-  internal_div_counter += cycle;
-  bool timer_enabled = TAC & 0b100;
+  _div_counter += cycle;
+  bool timer_enabled = _tac & 0b100;
   if (timer_enabled) {
-    tima_accumulator += cycle;
+    _tima_accumulator += cycle;
     int threshold = this->get_time_frequency();
-    while (tima_accumulator >= threshold) {
-      tima_accumulator -= threshold;
-      TIMA = TIMA + 1;
-      if (TIMA == 0x00) {
-        TIMA = TMA;
+    while (_tima_accumulator >= threshold) {
+      _tima_accumulator -= threshold;
+      _tima = _tima + 1;
+      if (_tima == 0x00) {
+        _tima = _tma;
         // TODO THIS:
         // request_interrupt()
       }

@@ -18,20 +18,40 @@ enum TAC_TIMER_CONTROL : uint8_t {
 
 class Timer {
 private:
-  uint8_t SB;
-  uint32_t DIV;
-  uint8_t SC;
-  uint8_t TIMA;
-  uint8_t TMA;
-  uint8_t TAC;
-  uint16_t internal_div_counter;
+  uint8_t _sb;
+  uint8_t _sc;
+  uint8_t _tima;
+  uint8_t _tma;
+  uint8_t _tac;
+  uint32_t _div;
+  uint8_t _tima_accumulator;
+  uint16_t _div_counter;
 
   int curr_frequency = 256;
 
 public:
+  Timer();
+
+  /*
+   * @brief: this happens every iteration of the game loop
+   * @param[in]: current m-cycle for the instruction
+   */
   void tick(int cycle);
+
+  /*
+   * @brief: the tag flag should be set if value paramenter has the
+   * bit 0 flipped
+   */
   uint8_t get_tac_flag();
+
   void set_tac_flag(TAC_TIMER_CONTROL tac_timer);
-  int time_frequency_select();
+  int get_time_frequency();
+
+  void write(uint16_t addr, uint8_t value);
+
+  uint8_t read8(uint16_t addr);
+  uint16_t read16(uint16_t addr);
+
+  uint8_t write(uint16_t addr);
 };
 #endif // !SRC_TIMER_HPP_

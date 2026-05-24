@@ -27,12 +27,6 @@ public:
   void write(uint16_t addr, uint8_t value);
   // uint8_t &io_reg(uint16_t addr);
 private:
-  uint8_t SB;
-  uint32_t DIV;
-  uint8_t SC;
-  uint8_t TIMA;
-  uint8_t TMA;
-  uint8_t TAC;
   Timer *timer;
   State state = State::RUNNING;
 

@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <string>
 
-#include "IO.hpp"
+// #include "IO.hpp"
 #include "cpu.hpp"
 #include "instructions.hpp"
 #include "mmu.hpp"
@@ -17,7 +17,7 @@ class GameBoy {
 private:
   Cpu *cpu;
   MMU *mmu;
-  IO *io;
+  // IO *io;
   Timer *timer;
 
   InstructionSet *instructions;

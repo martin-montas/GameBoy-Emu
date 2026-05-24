@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 enum RegisterFlags {
   FLAG_ZERO = (1 << 7),
   FLAG_SUBTRACT = (1 << 6),
@@ -29,7 +31,7 @@ public:
   void print_flags();
 
   void step();
-  std::vector<uint8_t> load_rom(const std::string &filename);
+  vector<uint8_t> load_rom(const std::string &filename);
   uint32_t execute_opcode(uint8_t opcode);
   void emulate_cycles(uint32_t cyclesToRun);
 
@@ -53,7 +55,7 @@ public:
       12, 12, 8, 0,  0,  16, 8,  16, 16, 4,  16, 0, 0, 0,  8, 16, // 0xe_
       12, 12, 8, 4,  0,  16, 8,  16, 12, 8,  16, 4, 0, 0,  8, 16  // 0xf_
   };
-  std::array<std::function<void()>, 256> opcode_table;
+  array<function<void()>, 256> opcode_table;
   struct {
     union {
       struct {

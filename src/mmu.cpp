@@ -3,7 +3,7 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
 #include "mmu.hpp"
-#include "IO.hpp"
+// #include "IO.hpp"
 #include "MBC.hpp"
 #include "MBC0.hpp"
 #include "timer.hpp"
@@ -14,18 +14,12 @@
 #include <string>
 #include <vector>
 
-MMU::MMU(std::string filename, IO *io, Timer *timer) {
+MMU::MMU(std::string filename, /*IO *io,*/ Timer *timer) {
   load_rom(filename);
   check_rom_type();
-  this->io = io;
+  // this->io = io;
   this->timer = timer;
 }
-/*
- * @brief: Based on the 0x147 byte of the rom
- * file the gameboy goes in different  different
- * mode where diffent type of RAM memory gets
- * allocated and more.
- */
 void MMU::check_rom_type() {
   uint8_t type = romData[0x0147];
   switch (type) {
@@ -39,10 +33,6 @@ void MMU::check_rom_type() {
   }
 }
 
-/*
- * @brief: Loads the rom file into the
- * romData vector.
- */
 void MMU::load_rom(const std::string &filename) {
   std::ifstream file(filename, std::ios::binary);
   const size_t chunk_size = 1024;
@@ -58,82 +48,72 @@ void MMU::load_rom(const std::string &filename) {
   }
 }
 
-/*
- * @brief: Reads based the 16 bit memory value
- * from ROM/RAM.
- *
- */
-uint16_t MMU::read16(uint16_t address) {
-  uint8_t low_byte = read8(address);
-  uint8_t high_byte = read8(address + 1);
+uint16_t MMU::read16(uint16_t addr) {
+  uint8_t low_byte = read8(addr);
+  uint8_t high_byte = read8(addr + 1);
   return (high_byte << 8) | low_byte;
 }
-.
 
-    uint8_t
-    MMU::read8(uint16_t address) {
-  if (address <= 0x7FFF) {
-    return mbc->read(address);
-  } else if (address >= 0x8000 && address <= 0x9FFF) {
-    return this->VRAM[address - 0x8000];
-  } else if (address >= 0xA000 && address <= 0xBFFF) {
+uint8_t MMU::read8(uint16_t addr) {
+  if (addr <= 0x7FFF) {
+    return mbc->read(addr);
+  } else if (addr >= 0x8000 && addr <= 0x9FFF) {
+    return this->VRAM[addr - 0x8000];
+  } else if (addr >= 0xA000 && addr <= 0xBFFF) {
     // this should also go to mbc
-    return this->EXTERNAL_RAM[address - 0xA000];
-  } else if ((address >= 0xC000 && address <= 0xDFFF) ||
-             (address >= 0xE000 && address <= 0xFDFF)) {
-    uint16_t idx = address & 0xC000;
+    return this->EXTERNAL_RAM[addr - 0xA000];
+  } else if ((addr >= 0xC000 && addr <= 0xDFFF) ||
+             (addr >= 0xE000 && addr <= 0xFDFF)) {
+    uint16_t idx = addr & 0xC000;
     return this->WRAM[idx];
-  } else if (address >= 0xFE00 && address <= 0xFE9F) {
-    return this->OAM[address - 0xFE00];
-  } else if (address >= 0xFF00 && address <= 0xFF7F) {
-    // TODO: do this don't create a separate IO object
-    // uint8_t IO::read(uint16_t addr) {
-    //     switch (addr) {
-    //         case 0xFF04 ... 0xFF07:
-    //             return timer.read(addr);
-    //         case 0xFF00 ... 0xFF00:
-    //             return joypad.read();
-    //         case 0xFF40 ... 0xFF4B:
-    //             return lcd.read(addr);
-    //         default:
-    //             return io_regs[addr - 0xFF00];
-    //     }
-    // }
-    return this->io->read(address - 0xFF00);
-  } else if (address >= 0xFF80 && address <= 0xFFFE) {
-    return this->HRAM[address - 0xFF80];
-  } else {
-    std::cout << "Memory access out of bounds: " << address << std::endl;
-    exit(1);
+  } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
+    return this->OAM[addr - 0xFE00];
+  } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
+    switch (addr) {
+    case 0xFF04:
+    case 0xFF05:
+    case 0xFF06:
+    case 0xFF07:
+      timer.read(addr);
+    }
+    return this->IO_REG[addr - 0xFF00];
   }
 }
+else if (addr >= 0xFF80 && addr <= 0xFFFE) {
+  return this->HRAM[addr - 0xFF80];
+}
+else {
+  std::cout << "Memory access out of bounds: " << addr << std::endl;
+  exit(1);
+}
+}
 
-void MMU::write8(uint16_t address, uint8_t value) {
-  if (address >= 0x8000 && address <= 0x9FFF) {
-    this->VRAM[address - 0x8000] = value;
-  } else if (address >= 0xA000 && address <= 0xBFFF) {
-    this->EXTERNAL_RAM[address - 0xA000] = value;
-  } else if ((address >= 0xC000 && address <= 0xDFFF) ||
-             (address >= 0xE000 && address <= 0xFDFF)) {
-    uint16_t idx = address & 0xC000;
+void MMU::write8(uint16_t addr, uint8_t value) {
+  if (addr >= 0x8000 && addr <= 0x9FFF) {
+    this->VRAM[addr - 0x8000] = value;
+  } else if (addr >= 0xA000 && addr <= 0xBFFF) {
+    this->EXTERNAL_RAM[addr - 0xA000] = value;
+  } else if ((addr >= 0xC000 && addr <= 0xDFFF) ||
+             (addr >= 0xE000 && addr <= 0xFDFF)) {
+    uint16_t idx = addr & 0xC000;
     this->WRAM[idx] = value;
-  } else if (address == 0xFF04) {
+  } else if (addr == 0xFF04) {
     timer->reset_div();
-  } else if (address >= 0xFE00 && address <= 0xFE9F) {
-    this->OAM[address - 0xFE00] = value;
-  } else if (address >= 0xFF00 && address <= 0xFF7F) {
-    this->io->write(address, value);
-  } else if (address >= 0xFF80 && address <= 0xFFFE) {
-    this->HRAM[address - 0xFF80] = value;
+  } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
+    this->OAM[addr - 0xFE00] = value;
+  } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
+    this->IO_REG[0xFF00 - addr] = value;
+  } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
+    this->HRAM[addr - 0xFF80] = value;
   } else {
-    printf("Memory access out of bounds: %X", address);
+    printf("Memory access out of bounds: %X", addr);
     exit(1);
   }
 }
 
-void MMU::write16(uint16_t address, uint16_t value) {
+void MMU::write16(uint16_t addr, uint16_t value) {
   uint8_t low_byte = value & 0xFF;
   uint8_t high_byte = (value >> 8) & 0xFF;
-  write8(address, low_byte);
-  write8(address + 1, high_byte);
+  write8(addr, low_byte);
+  write8(addr + 1, high_byte);
 }

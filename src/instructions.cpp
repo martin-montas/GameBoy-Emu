@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <cstdio>
 #include <iostream>
-#include <memory>
 
 InstructionSet::InstructionSet(MMU *mmu, Cpu *cpu) {
   this->cpu = cpu;

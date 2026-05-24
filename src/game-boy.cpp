@@ -4,15 +4,16 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
 #include "game-boy.hpp"
-#include "IO.hpp"
+#include "timer.hpp"
+// #include "IO.hpp"
 
 #include <cstdint>
 
 GameBoy::GameBoy(std::string filename) {
   cpu = new Cpu();
   timer = new Timer();
-  io = new IO();
-  mmu = new MMU(filename, io, timer);
+  // io = new IO();
+  mmu = new MMU(filename, /*io,*/ timer);
   instructions = new InstructionSet(mmu, cpu);
 
   emulationRunning = true;
@@ -30,7 +31,7 @@ void GameBoy::run() {
     int current_cycle = cpu->opcode_cycles[_opcode];
     // cpu->cycle_count += current_cycle;
     // TODO: make this a another object
-    io->advance(cpu->opcode_cycles[_opcode]);
+    // io->advance(cpu->opcode_cycles[_opcode]);
     // TODO finish the rest of this loop:
     // Render frame, update audio, etc.
   }

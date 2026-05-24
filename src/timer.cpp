@@ -11,8 +11,6 @@ Timer::Timer()
     : _sb(0), _div(0), _sc(0), _tima(0), _tma(0), _tac(0), _tima_accumulator(0),
       _div_counter(0) {}
 
-uint8_t Timer::get_tac_flag() { return _tac & TAC_SELECT; }
-
 int Timer::get_time_frequency() {
   switch ((_tac) & 0b11) {
   case 0x00: {
@@ -50,17 +48,14 @@ void Timer::write(uint16_t addr, uint8_t value) {
     _tma = value;
   }
   if (addr == 0xFF07) {
-    // TAC = 0b00000101
-    //         ||||||||
-    //         |||||||+-- clock bit 0
-    //         ||||||+--- clock bit 1
-    //         |||||+---- enable
-    //
     _tac = value;
   }
 }
 
 uint8_t Timer::read(uint16_t addr) {
+  if (addr == 0xFF04) {
+    return _div;
+  }
   if (addr == 0xFF05) {
     return _tima;
   }
@@ -73,25 +68,21 @@ uint8_t Timer::read(uint16_t addr) {
   return 0x00;
 }
 
-uint16_t Timer::read_div(uint16_t addr) {
-  if (addr == 0xFF04) {
-    return _div;
-  }
-}
-
 void Timer::tick(int cycle) {
   _div_counter += cycle;
   bool timer_enabled = _tac & 0b100;
   if (timer_enabled) {
     _tima_accumulator += cycle;
     int threshold = this->get_time_frequency();
-    while (_tima_accumulator >= threshold) {
-      _tima_accumulator -= threshold;
-      _tima = _tima + 1;
-      if (_tima == 0x00) {
-        _tima = _tma;
-        // TODO THIS:
-        // request_interrupt()
+    if (threshold != -1) {
+      while (_tima_accumulator >= threshold) {
+        _tima_accumulator -= threshold;
+        _tima = _tima + 1;
+        if (_tima == 0x00) {
+          _tima = _tma;
+          // TODO:
+          // request_interrupt()
+        }
       }
     }
   }

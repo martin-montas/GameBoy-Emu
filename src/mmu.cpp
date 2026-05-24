@@ -61,29 +61,21 @@ uint8_t MMU::read8(uint16_t addr) {
   } else if (addr >= 0xA000 && addr <= 0xBFFF) {
     // this should also go to mbc
     return this->EXTERNAL_RAM[addr - 0xA000];
-  } else if ((addr >= 0xC000 && addr <= 0xDFFF) ||
-             (addr >= 0xE000 && addr <= 0xFDFF)) {
-    uint16_t idx = addr & 0xC000;
-    return this->WRAM[idx];
+  } else if (addr >= 0xC000 && addr <= 0xDFFF) {
+    return this->WRAM[addr - 0xC000];
+  } else if (addr >= 0xE000 && addr <= 0xFDFF) {
+    return this->WRAM[addr - 0xE000];
   } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
     return this->OAM[addr - 0xFE00];
   } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
-    switch (addr) {
-    case 0xFF04:
-      return timer->read_div(addr);
-    case 0xFF05:
-    case 0xFF06:
-    case 0xFF07:
+    if (addr >= 0xFF04 && addr <= 0xFF07) {
       return timer->read(addr);
-    default: {
-      return this->IO_REG[addr - 0xFF00];
-      }
+    } else {
+      return IO_REG[addr - 0xFF00];
     }
-  }
-  else if (addr >= 0xFF80 && addr <= 0xFFFE) {
+  } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
     return this->HRAM[addr - 0xFF80];
-  }
-  else {
+  } else {
     std::cout << "Memory access out of bounds: " << addr << std::endl;
     exit(1);
   }
@@ -94,20 +86,22 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     this->VRAM[addr - 0x8000] = value;
   } else if (addr >= 0xA000 && addr <= 0xBFFF) {
     this->EXTERNAL_RAM[addr - 0xA000] = value;
-  } else if ((addr >= 0xC000 && addr <= 0xDFFF) ||
-             (addr >= 0xE000 && addr <= 0xFDFF)) {
-    uint16_t idx = addr & 0xC000;
-    this->WRAM[idx] = value;
-  } else if (addr == 0xFF04) {
-    timer->reset_div();
+  } else if (addr >= 0xC000 && addr <= 0xDFFF) {
+    this->WRAM[addr - 0xC000] = value;
+  } else if (addr >= 0xE000 && addr <= 0xFDFF) {
+    this->WRAM[addr - 0xE000] = value; // echo RAM
   } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
     this->OAM[addr - 0xFE00] = value;
   } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
-    this->IO_REG[0xFF00 - addr] = value;
+    if (addr >= 0xFF04 && addr <= 0xFF07) {
+      timer->write(addr, value);
+    } else {
+      this->IO_REG[addr - 0xFF00] = value;
+    }
   } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
     this->HRAM[addr - 0xFF80] = value;
   } else {
-    printf("Memory access out of bounds: %X", addr);
+    printf("Memory access out of bounds: %X\n", addr);
     exit(1);
   }
 }

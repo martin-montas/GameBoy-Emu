@@ -7,27 +7,25 @@
 #include <cstdint>
 #include <string>
 
-// #include "IO.hpp"
 #include "cpu.hpp"
 #include "instructions.hpp"
 #include "mmu.hpp"
 #include "timer.hpp"
 
+using namespace std;
 class GameBoy {
 private:
   Cpu *cpu;
   MMU *mmu;
-  // IO *io;
   Timer *timer;
 
   InstructionSet *instructions;
   bool emulationRunning;
 
 public:
-  GameBoy(std::string filename);
-  ~GameBoy();
-  void run();
+  GameBoy(string filename);
   uint32_t calculateCyclesForFrame();
+  void run();
 };
 
 #endif // SRC_GAME_BOY_HPP_

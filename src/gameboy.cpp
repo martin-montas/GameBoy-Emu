@@ -1,13 +1,11 @@
-
 // Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
 #include "game-boy.hpp"
 #include "timer.hpp"
-// #include "IO.hpp"
 
-#include <cstdint>
+#include <stdint.h>
 
 GameBoy::GameBoy(std::string filename) {
   cpu = new Cpu();
@@ -19,8 +17,6 @@ GameBoy::GameBoy(std::string filename) {
   emulationRunning = true;
 }
 
-GameBoy::~GameBoy() {}
-
 void GameBoy::run() {
   uint8_t _opcode;
   int cycle_count = 0;
@@ -31,7 +27,7 @@ void GameBoy::run() {
     int current_cycle = cpu->opcode_cycles[_opcode];
     cpu->cycle_count += current_cycle;
     // TODO call timer.tick(curr_cycle) here
-    
+
     // TODO finish the rest of this loop:
     // Render frame, update audio, etc.
   }

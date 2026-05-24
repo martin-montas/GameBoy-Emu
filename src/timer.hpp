@@ -38,19 +38,36 @@ public:
    */
   void tick(int cycle);
 
-  /*
-   * @brief: the tag flag should be set if value paramenter has the
-   * bit 0 flipped
-   */
-  uint8_t get_tac_flag();
+  // /*
+  //  * @brief: the tag flag should be set if value paramenter has the
+  //  * bit 0 flipped
+  //  */
+  // uin8_t get_tac_flag();
 
   void set_tac_flag(TAC_TIMER_CONTROL tac_timer);
+
+  /*
+   * @brief: When the the Gameboy changes speeds
+   * it alters the Gigahertz and it time per instructions
+   * alters as well.
+   * @returns: time per instruction number.
+   */
   int get_time_frequency();
 
+  /*
+   * @brief: This method writes to the register.
+   * Use for the timing of the gameboy.
+   * @param(in): Addresss to write to.
+   * @param_2(in): value to write to any of the timing registers.
+   */
   void write(uint16_t addr, uint8_t value);
 
+  /*
+   * @brief: Reads the timing registers.
+   * @param(in): Address of the giving timing register.
+   * @return: Retuns the given timing register.
+   */
   uint8_t read(uint16_t addr);
-  uint16_t read_div(uint16_t addr);
 
   uint8_t write(uint16_t addr);
 };

@@ -10,8 +10,7 @@ Timer::Timer() {}
  */
 
 /*
- * @brief:
- * the tag flag should be set if value paramenter has the
+ * @brief: the tag flag should be set if value paramenter has the
  * bit 0 flipped
  */
 uint8_t Timer::get_tac_flag(uint8_t value) { return this->TAC & TAC_SELECT }
@@ -37,24 +36,20 @@ int Timer::time_frequency_select() {
   }
 }
 /*
- *  @brief:
- * this flag reset the internal counter
+ * @brief: this flag reset the internal counter
  * when it is written to the 0xFF04 address
  * and on the STOP instruction.
  */
 void Timer::reset_div() { internal_div_counter = 0; }
 
 /*
- * @brief:
- * this writtens tac
+ * @brief: this writtens tac
  * TODO: write to tac should be implemented here
  */
 void Timer::write_tac() {}
 
 /*
- *
- * @brief:
- * this happens every iteration of the game loop
+ * @brief: this happens every iteration of the game loop
  */
 void Timer::tick(int cycle) {
   internal_div_counter += cycle;

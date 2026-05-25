@@ -7,6 +7,7 @@
 
 // #include "IO.hpp"
 #include "MBC.hpp"
+#include "serial.hpp"
 #include "timer.hpp"
 
 #include <memory>
@@ -26,7 +27,7 @@ using namespace std;
 class MMU {
 public:
   std::vector<uint8_t> romData;
-  MMU(std::string filename, /*IO *io,*/ Timer *timer);
+  MMU(std::string filename, Timer *timer, Serial *serial);
 
   /*
    * @brief: Reads based the 16 bit memory value
@@ -46,8 +47,8 @@ public:
 
 private:
   std::unique_ptr<MBC> mbc;
-  // IO *io;
   Timer *timer;
+  Serial *serial;
 
   /*
    * @brief: Based on the 0x147 byte of the rom

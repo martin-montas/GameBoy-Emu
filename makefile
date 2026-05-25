@@ -4,8 +4,8 @@ CXX := g++
 CXXFLAGS := -I./src -std=c++20
 LDFLAGS :=
 
-gameboy: main.o cpu.o gameboy.o instructions.o extended-instructions.o mmu.o MBC.o MBC0.o timer.o
-	$(CXX) main.o cpu.o gameboy.o instructions.o extended-instructions.o mmu.o MBC.o MBC0.o timer.o -o gameboy $(LDFLAGS)
+gameboy: main.o cpu.o gameboy.o instructions.o extended-instructions.o mmu.o MBC.o MBC0.o timer.o serial.o
+	$(CXX) main.o cpu.o gameboy.o instructions.o extended-instructions.o mmu.o MBC.o MBC0.o timer.o serial.o -o gameboy $(LDFLAGS)
 
 main.o: main.cpp
 	$(CXX) -c main.cpp $(CXXFLAGS)
@@ -33,6 +33,9 @@ MBC0.o: ./src/MBC0.cpp ./src/MBC0.hpp
 
 timer.o: ./src/timer.cpp ./src/timer.hpp
 	$(CXX) -c ./src/timer.cpp $(CXXFLAGS)
+
+serial.o: ./src/serial.cpp ./src/serial.hpp
+	$(CXX) -c ./src/serial.cpp $(CXXFLAGS)
 
 clean:
 	rm -f *.o gameboy

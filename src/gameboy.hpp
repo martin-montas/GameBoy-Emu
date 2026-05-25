@@ -10,6 +10,7 @@
 #include "cpu.hpp"
 #include "instructions.hpp"
 #include "mmu.hpp"
+#include "serial.hpp"
 #include "timer.hpp"
 
 using namespace std;
@@ -18,6 +19,7 @@ private:
   Cpu *cpu;
   MMU *mmu;
   Timer *timer;
+  Serial *serial;
 
   InstructionSet *instructions;
   bool emulationRunning;

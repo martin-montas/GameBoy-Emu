@@ -5,6 +5,7 @@
 #include "mmu.hpp"
 #include "MBC.hpp"
 #include "MBC0.hpp"
+#include "serial.hpp"
 #include "timer.hpp"
 
 #include <fstream>
@@ -13,11 +14,11 @@
 #include <string>
 #include <vector>
 
-MMU::MMU(std::string filename, /*IO *io,*/ Timer *timer) {
+MMU::MMU(std::string filename, Timer *timer, Serial *serial) {
   load_rom(filename);
   check_rom_type();
-  // this->io = io;
   this->timer = timer;
+  this->serial = serial;
 }
 void MMU::check_rom_type() {
   uint8_t type = romData[0x0147];
@@ -67,9 +68,12 @@ uint8_t MMU::read8(uint16_t addr) {
     return this->WRAM[addr - 0xE000];
   } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
     return this->OAM[addr - 0xFE00];
-  } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
+  } else if (addr >= 0xFF00 && addr <= 0xFF02) {
+    if (addr >= 0xFF01 && addr <= 0xFF02) {
+      return serial.read(addr); // serial register reads
+    }
     if (addr >= 0xFF04 && addr <= 0xFF07) {
-      return timer->read(addr);
+      return timer->read(addr); // timer registers
     } else {
       return IO_REG[addr - 0xFF00];
     }
@@ -93,6 +97,9 @@ void MMU::write8(uint16_t addr, uint8_t value) {
   } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
     this->OAM[addr - 0xFE00] = value;
   } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
+    if (addr >= 0xFF01 && addr <= 0xFF02) {
+      serial.write(addr, value); // serial register reads
+    }
     if (addr >= 0xFF04 && addr <= 0xFF07) {
       timer->write(addr, value);
     } else {

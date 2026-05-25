@@ -5,7 +5,7 @@
 #ifndef SRC_TIMER_HPP_
 #define SRC_TIMER_HPP_
 
-#include <cstdint>
+#include <stdint.h>
 
 #define TAC_SELECT 0b11
 
@@ -30,7 +30,9 @@ private:
   int curr_frequency = 256;
 
 public:
-  Timer();
+  Timer()
+      : _sb(0), _div(0), _sc(0), _tima(0), _tma(0), _tac(0),
+        _tima_accumulator(0), _div_counter(0) {}
 
   /*
    * @brief: this happens every iteration of the game loop

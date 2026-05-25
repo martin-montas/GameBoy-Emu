@@ -4,7 +4,7 @@
 
 #include <sys/types.h>
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "cpu.hpp"
 #include "instructions.hpp"

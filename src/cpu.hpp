@@ -6,8 +6,8 @@
 #define SRC_CPU_CPU_HPP_
 
 #include <array>
-#include <cstdint>
 #include <functional>
+#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -37,6 +37,7 @@ public:
 
   void init_opcode_table();
 
+  // t_cycles used
   const int opcode_cycles[256] = {
       4,  12, 8, 8,  4,  4,  8,  4,  20, 8,  8,  8, 4, 4,  8, 4,  // 0x0_
       4,  12, 8, 8,  4,  4,  8,  4,  12, 8,  8,  8, 4, 4,  8, 4,  // 0x1_

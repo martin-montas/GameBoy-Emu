@@ -3,14 +3,9 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
 #include "timer.hpp"
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
 // Timer::Timer() {}
-
-Timer::Timer()
-    : _sb(0), _div(0), _sc(0), _tima(0), _tma(0), _tac(0), _tima_accumulator(0),
-      _div_counter(0) {}
-
 int Timer::get_time_frequency() {
   switch ((_tac) & 0b11) {
   case 0x00: {

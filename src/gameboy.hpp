@@ -4,7 +4,7 @@
 #ifndef SRC_GAME_BOY_HPP_
 #define SRC_GAME_BOY_HPP_
 
-#include <cstdint>
+#include <stdint.h>
 #include <string>
 
 #include "cpu.hpp"
@@ -23,7 +23,7 @@ private:
   bool emulationRunning;
 
 public:
-  GameBoy(string filename);
+  GameBoy(std::string filename);
   uint32_t calculateCyclesForFrame();
   void run();
 };

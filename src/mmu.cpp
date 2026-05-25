@@ -7,9 +7,9 @@
 #include "MBC0.hpp"
 #include "timer.hpp"
 
-#include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <stdint.h>
 #include <string>
 #include <vector>
 

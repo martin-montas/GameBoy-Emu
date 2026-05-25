@@ -6,9 +6,9 @@
 #include "MBC0.hpp"
 
 #include <bitset>
-#include <cstdint>
 #include <cstdio>
 #include <iostream>
+#include <stdint.h>
 
 InstructionSet::InstructionSet(MMU *mmu, Cpu *cpu) {
   this->cpu = cpu;

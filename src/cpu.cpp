@@ -4,7 +4,7 @@
 //
 #include "cpu.hpp"
 
-#include <cstdint>
+#include <stdint.h>
 #include <vector>
 
 const double cyclesPerMicrosecond = 4.194304;

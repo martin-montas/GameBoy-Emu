@@ -6,7 +6,7 @@
 
 #include "cpu.hpp"
 #include "mmu.hpp"
-#include <cstdint>
+#include <stdint.h>
 
 class InstructionSet {
 private:

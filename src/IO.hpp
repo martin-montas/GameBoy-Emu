@@ -7,8 +7,8 @@
 
 #include "MBC.hpp"
 #include "timer.hpp"
-#include <cstdint>
 #include <memory>
+#include <stdint.h>
 
 enum State { RUNNING, STOPPED, ERROR };
 

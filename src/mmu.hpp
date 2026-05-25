@@ -9,8 +9,8 @@
 #include "MBC.hpp"
 #include "timer.hpp"
 
-#include <cstdint>
 #include <memory>
+#include <stdint.h>
 #include <string>
 #include <vector>
 

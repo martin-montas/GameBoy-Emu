@@ -2,7 +2,7 @@
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
-#include "game-boy.hpp"
+#include "gameboy.hpp"
 #include "timer.hpp"
 
 #include <stdint.h>

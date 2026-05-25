@@ -1,7 +1,7 @@
 #ifndef SRC_TYPES_HPP_
 #define SRC_TYPES_HPP_
 
-#include <cstdint>
+#include <stdint.h>
 
 using u8 = std::uint8_t;
 using u16 = std::uint16_t;

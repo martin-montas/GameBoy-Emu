@@ -9,18 +9,18 @@
 #include <stdint.h>
 
 GameBoy::GameBoy(std::string filename) {
-  serial = new Serial();
-  cpu = new Cpu();
-  timer = new Timer();
-  mmu = new MMU(filename, timer, serial);
-  instructions = new InstructionSet(mmu, cpu);
+  serial           = new Serial();
+  cpu              = new Cpu();
+  timer            = new Timer();
+  mmu              = new MMU(filename, timer, serial);
+  instructions     = new InstructionSet(mmu, cpu);
 
   emulationRunning = true;
 }
 
 void GameBoy::run() {
   uint8_t _opcode;
-  int cycle_count = 0;
+  int     cycle_count = 0;
   while (emulationRunning) {
     _opcode = mmu->romData[cpu->PC];
 

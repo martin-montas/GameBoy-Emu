@@ -15,10 +15,10 @@
 #include <vector>
 
 MMU::MMU(std::string filename, Timer *timer, Serial *serial) {
+  this->timer  = timer;
+  this->serial = serial;
   load_rom(filename);
   check_rom_type();
-  this->timer = timer;
-  this->serial = serial;
 }
 void MMU::check_rom_type() {
   uint8_t type = romData[0x0147];
@@ -34,22 +34,20 @@ void MMU::check_rom_type() {
 }
 
 void MMU::load_rom(const std::string &filename) {
-  std::ifstream file(filename, std::ios::binary);
-  const size_t chunk_size = 1024;
+  std::ifstream     file(filename, std::ios::binary);
+  const size_t      chunk_size = 1024;
   std::vector<char> chunk(chunk_size);
   while (file.read(chunk.data(), chunk_size)) {
-    this->romData.insert(this->romData.end(), chunk.begin(),
-                         chunk.begin() + file.gcount());
+    this->romData.insert(this->romData.end(), chunk.begin(), chunk.begin() + file.gcount());
   }
   // Handle any remaining bytes
   if (file.gcount() > 0) {
-    this->romData.insert(this->romData.end(), chunk.begin(),
-                         chunk.begin() + file.gcount());
+    this->romData.insert(this->romData.end(), chunk.begin(), chunk.begin() + file.gcount());
   }
 }
 
 uint16_t MMU::read16(uint16_t addr) {
-  uint8_t low_byte = read8(addr);
+  uint8_t low_byte  = read8(addr);
   uint8_t high_byte = read8(addr + 1);
   return (high_byte << 8) | low_byte;
 }
@@ -114,7 +112,7 @@ void MMU::write8(uint16_t addr, uint8_t value) {
 }
 
 void MMU::write16(uint16_t addr, uint16_t value) {
-  uint8_t low_byte = value & 0xFF;
+  uint8_t low_byte  = value & 0xFF;
   uint8_t high_byte = (value >> 8) & 0xFF;
   write8(addr, low_byte);
   write8(addr + 1, high_byte);

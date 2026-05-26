@@ -16,18 +16,18 @@
 using namespace std;
 class GameBoy {
 private:
-  Cpu *cpu;
-  MMU *mmu;
-  Timer *timer;
-  Serial *serial;
+  Cpu            *cpu;
+  MMU            *mmu;
+  Timer          *timer;
+  Serial         *serial;
 
   InstructionSet *instructions;
-  bool emulationRunning;
+  bool            emulationRunning;
 
 public:
   GameBoy(std::string filename);
   uint32_t calculateCyclesForFrame();
-  void run();
+  void     run();
 };
 
 #endif // SRC_GAME_BOY_HPP_

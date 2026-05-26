@@ -17,15 +17,15 @@ InstructionSet::InstructionSet(MMU *mmu, Cpu *cpu) {
 
 void InstructionSet::ldr(uint16_t *reg) {
   // DONE
-  uint8_t tmp_1 = this->mmu->romData[cpu->PC + 1];
-  uint8_t tmp_2 = this->mmu->romData[cpu->PC + 2];
-  uint16_t tmp = (tmp_2 << 8) | tmp_1;
-  *reg = tmp;
+  uint8_t  tmp_1 = this->mmu->romData[cpu->PC + 1];
+  uint8_t  tmp_2 = this->mmu->romData[cpu->PC + 2];
+  uint16_t tmp   = (tmp_2 << 8) | tmp_1;
+  *reg           = tmp;
 }
 
 void InstructionSet::ldr(uint8_t *reg, uint8_t address) {
   uint8_t tmp = this->mmu->romData[this->cpu->PC + 1];
-  *reg = tmp;
+  *reg        = tmp;
 }
 
 void InstructionSet::ldr_mem(uint16_t *reg, uint8_t address) {
@@ -46,8 +46,8 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x01: {
     // DONE
-    uint8_t l = mmu->romData[cpu->PC + 1];
-    uint8_t h = mmu->romData[cpu->PC + 2];
+    uint8_t  l   = mmu->romData[cpu->PC + 1];
+    uint8_t  h   = mmu->romData[cpu->PC + 2];
     uint16_t val = h << 8 | l;
     printf("LD (BC), A 0x02 -- %X --\n", val);
     cpu->BC = val;
@@ -85,14 +85,14 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x06: {
     // DONE:
     printf("LD B, d8 0x06 --- before %X --\n", cpu->B);
-    cpu->B = mmu->romData[cpu->PC + 1];
+    cpu->B  = mmu->romData[cpu->PC + 1];
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x07: {
     // DONE
     uint16_t result = cpu->A << 1;
-    bool b = (cpu->A << 8) & 1;
+    bool     b      = (cpu->A << 8) & 1;
     printf("RLCA -- %d --\n", b);
     if (b) {
       cpu->A |= 1;
@@ -106,8 +106,8 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x08: {
     // DONE. but check:
-    uint8_t l = mmu->romData[cpu->PC + 1];
-    uint8_t h = mmu->romData[cpu->PC + 2];
+    uint8_t  l       = mmu->romData[cpu->PC + 1];
+    uint8_t  h       = mmu->romData[cpu->PC + 2];
     uint16_t address = (h << 8) | l;
     printf("LD (a16), SP -- %X --\n", address);
     uint8_t value = cpu->SP & 0xFF;
@@ -117,20 +117,19 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x09: {
     // DONE. but check:
-    cpu->HL = cpu->HL + cpu->BC;
+    cpu->HL      = cpu->HL + cpu->BC;
     uint32_t tmp = cpu->HL + cpu->BC;
     printf("ADD HL, BC -- %X --\n", cpu->HL);
     cpu->set_flag(FLAG_ZERO, 0);
     cpu->set_flag(FLAG_CARRY, tmp > 0xFFFF);
-    cpu->set_flag(FLAG_SUBTRACT,
-                  ((cpu->HL & 0x0FFF) + (cpu->BC & 0x0FFF)) > 0x0FFF);
+    cpu->set_flag(FLAG_SUBTRACT, ((cpu->HL & 0x0FFF) + (cpu->BC & 0x0FFF)) > 0x0FFF);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x0A: {
     // DONE
     printf("LD A, (BC)\n");
-    cpu->A = mmu->read8(cpu->BC);
+    cpu->A  = mmu->read8(cpu->BC);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -157,8 +156,8 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x0E: {
     // DONE
-    printf("LD C, d8 -- %X --\n", cpu->C);
     cpu->C = mmu->romData[cpu->PC + 1];
+    printf("LD C, d8 -- %X --\n", cpu->C);
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -270,7 +269,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x1E: {
     printf("LD E, d8");
-    cpu->E = mmu->romData[cpu->PC++];
+    cpu->E  = mmu->romData[cpu->PC++];
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -286,7 +285,7 @@ void InstructionSet::execute(uint8_t opcode) {
     printf("JR NZ, r8 0x20 bool: %d\n", z);
     if (!z) {
       int8_t n = mmu->romData[cpu->PC + 1];
-      cpu->PC = cpu->PC + 2 + n;
+      cpu->PC  = cpu->PC + 2 + n;
     } else {
       cpu->PC = cpu->PC + 2;
     }
@@ -328,7 +327,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x26: {
     std::cout << "LD H, d8" << std::endl;
-    cpu->H = mmu->romData[cpu->PC++];
+    cpu->H  = mmu->romData[cpu->PC++];
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -362,7 +361,7 @@ void InstructionSet::execute(uint8_t opcode) {
     if (z) {
       // the offset might come from any reason of memory, should update
       int8_t offset = mmu->romData[cpu->PC + 1];
-      cpu->PC = cpu->PC + 2 + offset;
+      cpu->PC       = cpu->PC + 2 + offset;
     } else {
       cpu->PC = cpu->PC + 2;
     }
@@ -375,8 +374,9 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x2A: {
-    std::cout << "LD A, (HL+)" << std::endl;
     cpu->A = mmu->read8(cpu->HL);
+    cpu->A = cpu->A + 1;
+    printf("0x2A LD A, (HL+) -- %X --\n", cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -400,7 +400,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x2E: {
     std::cout << "LD L, d8" << std::endl;
-    cpu->L = mmu->romData[cpu->PC++];
+    cpu->L  = mmu->romData[cpu->PC++];
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -412,7 +412,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x30: { // JR NC,r8
     // DONE:
-    bool c = (cpu->F >> 4) & 1;
+    bool   c      = (cpu->F >> 4) & 1;
     int8_t offset = static_cast<int8_t>(mmu->romData[cpu->PC + 1]);
     printf("JR NC,r8 -- %d --\n", c);
 
@@ -474,7 +474,7 @@ void InstructionSet::execute(uint8_t opcode) {
     std::cout << "JR C, r8 0x38 DONE" << std::endl;
     if ((cpu->F >> 4) & 1) {
       uint8_t n = mmu->romData[cpu->PC] + 1;
-      cpu->PC = cpu->PC + n;
+      cpu->PC   = cpu->PC + n;
     } else {
       cpu->PC = cpu->PC + 2;
     }
@@ -524,115 +524,115 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x40: {
     std::cout << "LD B, B" << std::endl;
-    cpu->B = cpu->B;
+    cpu->B  = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x41: {
     std::cout << "LD B, C" << std::endl;
-    cpu->B = cpu->C;
+    cpu->B  = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x42: {
     std::cout << "LD B, D" << std::endl;
-    cpu->B = cpu->D;
+    cpu->B  = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x43: {
     std::cout << "LD B, E" << std::endl;
-    cpu->B = cpu->E;
+    cpu->B  = cpu->E;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x44: {
     std::cout << "LD B, H" << std::endl;
-    cpu->B = cpu->H;
+    cpu->B  = cpu->H;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x45: {
     std::cout << "LD B, L" << std::endl;
-    cpu->B = cpu->L;
+    cpu->B  = cpu->L;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x46: {
     std::cout << "LD B, (HL)" << std::endl;
-    cpu->B = mmu->romData[cpu->HL];
+    cpu->B  = mmu->romData[cpu->HL];
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x47: {
-    std::cout << "LD B, A" << std::endl;
-    cpu->B = cpu->A;
-    cpu->PC = cpu->PC + 2;
+    printf("LD B, A -- A: %X --", cpu->A);
+    cpu->B  = cpu->A;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x48: {
     std::cout << "LD C, B" << std::endl;
-    cpu->C = cpu->B;
+    cpu->C  = cpu->B;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x49: {
     std::cout << "LD C, C" << std::endl;
-    cpu->C = cpu->C;
+    cpu->C  = cpu->C;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x4A: {
     std::cout << "LD C, D" << std::endl;
-    cpu->C = cpu->D;
+    cpu->C  = cpu->D;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x4B: {
     std::cout << "LD C, E" << std::endl;
-    cpu->C = cpu->E;
+    cpu->C  = cpu->E;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x4C: {
     std::cout << "LD C, H" << std::endl;
-    cpu->C = cpu->H;
+    cpu->C  = cpu->H;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x4D: {
     std::cout << "LD C, L" << std::endl;
-    cpu->C = cpu->L;
+    cpu->C  = cpu->L;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x4E: {
     std::cout << "LD C, (HL)" << std::endl;
-    cpu->C = mmu->romData[cpu->HL];
+    cpu->C  = mmu->romData[cpu->HL];
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x4F: {
     std::cout << "LD C, A" << std::endl;
-    cpu->C = cpu->A;
+    cpu->C  = cpu->A;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x50: {
     std::cout << "LD D, B" << std::endl;
-    cpu->D = cpu->B;
+    cpu->D  = cpu->B;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x51: {
     std::cout << "LD D, C" << std::endl;
-    cpu->D = cpu->C;
+    cpu->D  = cpu->C;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x52: {
     std::cout << "LD D, D" << std::endl;
-    cpu->D = cpu->D;
+    cpu->D  = cpu->D;
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -643,206 +643,206 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x54: {
     std::cout << "LD D, H" << std::endl;
-    cpu->D = cpu->H;
+    cpu->D  = cpu->H;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x55: {
     std::cout << "LD D, L" << std::endl;
-    cpu->D = cpu->L;
+    cpu->D  = cpu->L;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x56: {
     std::cout << "LD D, (HL)" << std::endl;
-    cpu->D = mmu->romData[cpu->HL];
+    cpu->D  = mmu->romData[cpu->HL];
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x57: {
     std::cout << "LD D, A" << std::endl;
-    cpu->D = cpu->A;
+    cpu->D  = cpu->A;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x58: {
     std::cout << "LD E, B" << std::endl;
-    cpu->E = cpu->B;
+    cpu->E  = cpu->B;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x59: {
     std::cout << "LD E, C" << std::endl;
-    cpu->E = cpu->C;
+    cpu->E  = cpu->C;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x5A: {
     std::cout << "LD E, D" << std::endl;
-    cpu->E = cpu->D;
+    cpu->E  = cpu->D;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x5B: {
     std::cout << "LD E, E" << std::endl;
-    cpu->E = cpu->E;
+    cpu->E  = cpu->E;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x5C: {
     std::cout << "LD E, H" << std::endl;
-    cpu->E = cpu->H;
+    cpu->E  = cpu->H;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x5D: {
     std::cout << "LD E, L" << std::endl;
-    cpu->E = cpu->L;
+    cpu->E  = cpu->L;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x5E: {
     std::cout << "LD E, (HL)" << std::endl;
-    cpu->E = mmu->romData[cpu->HL];
+    cpu->E  = mmu->romData[cpu->HL];
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x5F: {
     std::cout << "LD E, A" << std::endl;
-    cpu->E = cpu->A;
+    cpu->E  = cpu->A;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x60: {
     std::cout << "LD H, B" << std::endl;
-    cpu->H = cpu->B;
+    cpu->H  = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x61: {
     std::cout << "LD H, C" << std::endl;
-    cpu->H = cpu->C;
+    cpu->H  = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x62: {
     std::cout << "LD H, D" << std::endl;
-    cpu->H = cpu->D;
+    cpu->H  = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x63: {
     std::cout << "LD H, E" << std::endl;
-    cpu->H = cpu->E;
+    cpu->H  = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x64: {
     std::cout << "LD H, H" << std::endl;
-    cpu->H = cpu->H;
+    cpu->H  = cpu->H;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x65: {
     std::cout << "LD H, L" << std::endl;
-    cpu->H = cpu->L;
+    cpu->H  = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x66: {
     std::cout << "LD H, (HL)" << std::endl;
-    cpu->H = mmu->romData[cpu->HL];
+    cpu->H  = mmu->romData[cpu->HL];
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x67: {
     std::cout << "LD H, A" << std::endl;
-    cpu->H = cpu->A;
+    cpu->H  = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x68: {
     std::cout << "LD L, B" << std::endl;
-    cpu->L = cpu->B;
+    cpu->L  = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x69: {
     std::cout << "LD L, C" << std::endl;
-    cpu->L = cpu->C;
+    cpu->L  = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6A: {
     std::cout << "LD L, D" << std::endl;
-    cpu->L = cpu->D;
+    cpu->L  = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6B: {
     std::cout << "LD L, E" << std::endl;
-    cpu->L = cpu->E;
+    cpu->L  = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6C: {
     std::cout << "LD L, H" << std::endl;
-    cpu->L = cpu->H;
+    cpu->L  = cpu->H;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6D: {
     std::cout << "LD L, L" << std::endl;
-    cpu->L = cpu->L;
+    cpu->L  = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6E: {
     std::cout << "LD L, (HL)" << std::endl;
-    cpu->L = mmu->romData[cpu->HL];
+    cpu->L  = mmu->romData[cpu->HL];
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6F: {
     std::cout << "LD L, A" << std::endl;
-    cpu->L = cpu->A;
+    cpu->L  = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x70: {
     std::cout << "LD (HL), B" << std::endl;
     mmu->romData[cpu->HL] = cpu->B;
-    cpu->PC = cpu->PC + 1;
+    cpu->PC               = cpu->PC + 1;
     break;
   }
   case 0x71: {
     std::cout << "LD (HL), C" << std::endl;
     mmu->romData[cpu->HL] = cpu->C;
-    cpu->PC = cpu->PC + 1;
+    cpu->PC               = cpu->PC + 1;
     break;
   }
   case 0x72: {
     std::cout << "LD (HL), D" << std::endl;
     mmu->romData[cpu->HL] = cpu->D;
-    cpu->PC = cpu->PC + 1;
+    cpu->PC               = cpu->PC + 1;
     break;
   }
   case 0x73: {
     std::cout << "LD (HL), E" << std::endl;
     mmu->romData[cpu->HL] = cpu->E;
-    cpu->PC = cpu->PC + 1;
+    cpu->PC               = cpu->PC + 1;
     break;
   }
   case 0x74: {
     std::cout << "LD (HL), H" << std::endl;
     mmu->romData[cpu->HL] = cpu->H;
-    cpu->PC = cpu->PC + 1;
+    cpu->PC               = cpu->PC + 1;
     break;
   }
   case 0x75: {
     std::cout << "LD (HL), L" << std::endl;
     mmu->romData[cpu->HL] = cpu->L;
-    cpu->PC = cpu->PC + 1;
+    cpu->PC               = cpu->PC + 1;
     break;
   }
   case 0x76: {
@@ -859,37 +859,37 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x78: {
     std::cout << "LD A, B" << std::endl;
-    cpu->A = cpu->B;
+    cpu->A  = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x79: {
     std::cout << "LD A, C" << std::endl;
-    cpu->A = cpu->C;
+    cpu->A  = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7A: {
     std::cout << "LD A, D" << std::endl;
-    cpu->A = cpu->D;
+    cpu->A  = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7B: {
     std::cout << "LD A, E" << std::endl;
-    cpu->A = cpu->E;
+    cpu->A  = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7C: {
     std::cout << "LD A, H" << std::endl;
-    cpu->A = cpu->H;
+    cpu->A  = cpu->H;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7D: {
     std::cout << "LD A, L" << std::endl;
-    cpu->A = cpu->L;
+    cpu->A  = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -902,14 +902,14 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x7F: {
     std::cout << "LD A, A" << std::endl;
-    cpu->A = cpu->A;
+    cpu->A  = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x80: {
     uint8_t r = add8(cpu->A, cpu->B);
-    cpu->A = cpu->A + cpu->B;
-    cpu->PC = cpu->PC + 1;
+    cpu->A    = cpu->A + cpu->B;
+    cpu->PC   = cpu->PC + 1;
     printf("ADD A, B: 0x80 %X\n", r);
     break;
   }
@@ -1317,12 +1317,10 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0xC3: {
     // DONE:
-    auto _lw = mmu->read8(cpu->PC + 1);
-    auto _hi = mmu->read8(cpu->PC + 2);
-    uint16_t jmp_addr = (_hi << 8) | _lw;
+    uint16_t addr = mmu->romData[cpu->PC + 1] | (mmu->romData[cpu->PC + 2] << 8);
 
-    printf("JP u16: 0xC3\n");
-    cpu->PC = jmp_addr;
+    printf("JP u16: 0xC3 -- addr: %X PC: %X --\n", addr, cpu->PC);
+    cpu->PC = addr; // overwrite PC
     break;
   }
   case 0xC4: {
@@ -1620,8 +1618,8 @@ void InstructionSet::execute(uint8_t opcode) {
       srl_extended(&cpu->A);
       break;
     default:
-      std::cerr << "Unknown opcode: 0x" << std::hex
-                << static_cast<int>(mmu->read8(cpu->PC + 1)) << std::endl;
+      std::cerr << "Unknown opcode: 0x" << std::hex << static_cast<int>(mmu->read8(cpu->PC + 1))
+                << std::endl;
       break;
     }
     // Breaks out of the switch block : break;
@@ -1654,10 +1652,9 @@ void InstructionSet::execute(uint8_t opcode) {
     uint16_t n = mmu->romData[cpu->PC + 1];
     printf("ADC A,u8 -- %X --\n", n);
     uint16_t _carry_flag = ((cpu->F >> 4) & 0x1);
-    cpu->set_flag(FLAG_HALF_CARRY,
-                  (cpu->A & 0xf) + (n & 0xf) + _carry_flag > 0xf);
+    cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0xf) + (n & 0xf) + _carry_flag > 0xf);
     uint16_t _result = cpu->A + n + _carry_flag;
-    cpu->A = static_cast<uint8_t>(_result);
+    cpu->A           = static_cast<uint8_t>(_result);
 
     cpu->set_flag(FLAG_ZERO, cpu->A == 0);
     cpu->set_flag(FLAG_SUBTRACT, 0);
@@ -1793,8 +1790,8 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0xEA: {
     // DONE:
-    uint8_t l = mmu->romData[cpu->PC + 1];
-    uint8_t h = mmu->romData[cpu->PC + 2];
+    uint8_t  l  = mmu->romData[cpu->PC + 1];
+    uint8_t  h  = mmu->romData[cpu->PC + 2];
     uint16_t nn = (h << 8) | l;
     printf("LD(nn), A 0xEA nn: -- %X --\n", nn);
     mmu->write8(nn, cpu->A);
@@ -1913,7 +1910,7 @@ void InstructionSet::ret(bool condition) {
   if (condition) {
     cpu->SP += 2;
     uint16_t address = mmu->read16(cpu->SP);
-    cpu->PC = address;
+    cpu->PC          = address;
   }
 }
 
@@ -1938,9 +1935,9 @@ void InstructionSet::inc_mem(uint16_t reg) {
   // the value at the [reg],
   // and updates the F flag register
   // accordinly.
-  uint8_t tmp = mmu->read8(reg);
+  uint8_t tmp          = mmu->read8(reg);
   uint8_t nibble_carry = tmp & 0x0F;
-  tmp = tmp + 1;
+  tmp                  = tmp + 1;
   printf("-- Debug: 0x%X to 0x%X --\n", tmp, reg);
   mmu->write8(reg, tmp);
 
@@ -1952,7 +1949,7 @@ void InstructionSet::inc_mem(uint16_t reg) {
 void InstructionSet::inc(uint8_t &reg) {
   uint8_t nibble_carry = reg & 0xF;
 
-  reg = reg + 1;
+  reg                  = reg + 1;
   cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
 
   cpu->set_flag(FLAG_ZERO, (reg == 0));
@@ -1979,7 +1976,7 @@ void InstructionSet::dec(uint8_t &reg, uint8_t n) {
 
 uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
   // DONE:
-  uint8_t result = reg_1 + reg_2;
+  uint8_t  result = reg_1 + reg_2;
   uint16_t _carry = reg_1 + reg_2;
   cpu->set_flag(FLAG_ZERO, result == 0);
   cpu->set_flag(FLAG_SUBTRACT, false);
@@ -1993,8 +1990,7 @@ void InstructionSet::add16(uint16_t &destination, uint16_t &value) {
   uint32_t result = destination + value;
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->set_flag(FLAG_CARRY, result > 0xFFFF);
-  cpu->set_flag(FLAG_HALF_CARRY,
-                ((destination & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF);
+  cpu->set_flag(FLAG_HALF_CARRY, ((destination & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF);
   destination = result & 0xFFFF;
 }
 
@@ -2024,12 +2020,12 @@ void ldhl(int8_t value) {}
 // }
 
 void InstructionSet::sub(uint8_t *reg_1, uint8_t *reg_2) {
-  uint8_t a = *reg_1;
-  uint8_t b = *reg_2;
+  uint8_t  a      = *reg_1;
+  uint8_t  b      = *reg_2;
 
   uint16_t result = a - b;
 
-  *reg_1 = result & 0xFF;
+  *reg_1          = result & 0xFF;
 
   cpu->set_flag(FLAG_ZERO, (*reg_1 == 0));
   cpu->set_flag(FLAG_SUBTRACT, true);
@@ -2040,7 +2036,7 @@ void InstructionSet::sub(uint8_t *reg_1, uint8_t *reg_2) {
 
 void InstructionSet::rlc(uint8_t reg) {
   bool msb = reg & 0x80;
-  reg = (reg << 1) | (msb >> 7);
+  reg      = (reg << 1) | (msb >> 7);
 
   cpu->set_flag(FLAG_CARRY, msb);
 
@@ -2053,7 +2049,7 @@ void InstructionSet::rlc(uint8_t reg) {
 void InstructionSet::rrca(uint8_t *reg) {
   // DONE
   bool least_sig_bit = *reg & 1;
-  *reg = *reg >> 1;
+  *reg               = *reg >> 1;
   if (least_sig_bit) {
     *reg |= 128;
   }
@@ -2073,9 +2069,9 @@ void InstructionSet::rrca(uint8_t *reg) {
 
 void InstructionSet::dec_mem(uint16_t reg) {
   // To be DONE
-  uint8_t tmp = mmu->read8(reg);
+  uint8_t tmp          = mmu->read8(reg);
   uint8_t nibble_carry = tmp & 0x0F;
-  tmp = tmp - 1;
+  tmp                  = tmp - 1;
   mmu->write8(reg, tmp);
 
   cpu->set_flag(FLAG_HALF_CARRY, nibble_carry == 0);
@@ -2086,9 +2082,9 @@ void InstructionSet::dec_mem(uint16_t reg) {
 void InstructionSet::rla() {
   // DONE but should check
   printf("RLA\n");
-  bool carry = cpu->F & FLAG_CARRY;
+  bool     carry   = cpu->F & FLAG_CARRY;
   uint16_t old_bit = (cpu->A >> 7) & 1;
-  cpu->A = cpu->A << 1;
+  cpu->A           = cpu->A << 1;
   cpu->set_flag(FLAG_CARRY, cpu->A & 0x80);
   if (carry) {
     cpu->A |= 0x01;
@@ -2102,14 +2098,13 @@ void InstructionSet::add8_mem(uint8_t destination, uint8_t value) {
   mmu->write8(destination, destination + value);
   cpu->set_flag(FLAG_ZERO, (destination + value) == 0);
   cpu->clear_flag(FLAG_SUBTRACT);
-  cpu->set_flag(FLAG_HALF_CARRY,
-                ((destination & 0x0F) + (value & 0x0F)) > 0x0F);
+  cpu->set_flag(FLAG_HALF_CARRY, ((destination & 0x0F) + (value & 0x0F)) > 0x0F);
   cpu->set_flag(FLAG_CARRY, (destination + value) > 0xFF);
 }
 
 void InstructionSet::rra() {
   bool msb = cpu->A & 0x01;
-  cpu->A = cpu->A >> 1;
+  cpu->A   = cpu->A >> 1;
   if (msb) {
     cpu->A |= 0x80;
   }

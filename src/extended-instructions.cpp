@@ -18,7 +18,7 @@ void InstructionSet::rl_extended(uint8_t *reg) {
   //  bit-wise OR: 0b00011100 | 0b00000001 results in 0b00011101
   //  (decimal 29).
   //  Assignment: The value 0b00011101 is assigned back to *reg.
-  *reg = (*reg << 1) | (cpu->F & FLAG_CARRY ? 1 : 0);
+  *reg      = (*reg << 1) | (cpu->F & FLAG_CARRY ? 1 : 0);
 
   if (bit7) {
     cpu->F |= FLAG_CARRY;
@@ -29,7 +29,7 @@ void InstructionSet::rl_extended(uint8_t *reg) {
 
 void InstructionSet::rlc_extended(uint8_t *reg) {
   uint8_t bit7 = (*reg & 0x80) >> 7;
-  *reg = (*reg << 1);
+  *reg         = (*reg << 1);
   *reg |= bit7;
   cpu->set_flag(FLAG_CARRY, bit7);
   cpu->set_flag(FLAG_ZERO, *reg == 0);
@@ -118,7 +118,7 @@ void InstructionSet::swap_extended(uint8_t *reg) {
   //  for the proper SWAP:
   //  *reg = (lower_nibble << 4) | (higher_nibble);
 
-  uint8_t lower_nibble = *reg & 0x0Fl;
+  uint8_t lower_nibble  = *reg & 0x0Fl;
   uint8_t higher_nibble = (*reg & 0xF0) >> 4;
-  *reg = (lower_nibble << 4) | (higher_nibble);
+  *reg                  = (lower_nibble << 4) | (higher_nibble);
 }

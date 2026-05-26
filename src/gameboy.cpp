@@ -22,11 +22,11 @@ void GameBoy::run() {
   uint8_t _opcode;
   int     cycle_count = 0;
   while (emulationRunning) {
-    _opcode = mmu->romData[cpu->PC];
-
-    instructions->execute(_opcode);
+    _opcode           = mmu->romData[cpu->PC];
     int current_cycle = cpu->opcode_cycles[_opcode];
     cpu->cycle_count += current_cycle;
+
+    instructions->execute(_opcode);
 
     // serial->tick(current_cycle);
 

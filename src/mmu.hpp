@@ -34,21 +34,21 @@ public:
    * from ROM/RAM.
    *
    */
-  uint8_t read8(uint16_t addr);
+  uint8_t  read8(uint16_t addr);
   uint16_t read16(uint16_t addr);
-  void write8(uint16_t addr, uint8_t value);
-  void write16(uint16_t addr, uint16_t value);
+  void     write8(uint16_t addr, uint8_t value);
+  void     write16(uint16_t addr, uint16_t value);
 
   /*
    * @brief: Loads the rom file into the
    * romData vector.
    */
-  void load_rom(const std::string &filename);
+  void     load_rom(const std::string &filename);
 
 private:
   std::unique_ptr<MBC> mbc;
-  Timer *timer;
-  Serial *serial;
+  Timer               *timer;
+  Serial              *serial;
 
   /*
    * @brief: Based on the 0x147 byte of the rom
@@ -56,14 +56,14 @@ private:
    * mode where diffent type of RAM memory gets
    * allocated and more.
    */
-  void check_rom_type();
-  uint8_t HRAM[HRAM_SIZE] = {};
-  uint8_t IRAM[IRAM_SIZE] = {};
-  uint8_t VRAM[VRAM_SIZE] = {};
-  uint8_t WRAM[WRAM_SIZE] = {};
-  uint8_t OAM[OAM_SIZE] = {};
-  uint8_t IO_REG[IO_SIZE] = {};
-  uint8_t EXTERNAL_RAM[8192] = {};
+  void                 check_rom_type();
+  uint8_t              HRAM[HRAM_SIZE]    = {};
+  uint8_t              IRAM[IRAM_SIZE]    = {};
+  uint8_t              VRAM[VRAM_SIZE]    = {};
+  uint8_t              WRAM[WRAM_SIZE]    = {};
+  uint8_t              OAM[OAM_SIZE]      = {};
+  uint8_t              IO_REG[IO_SIZE]    = {};
+  uint8_t              EXTERNAL_RAM[8192] = {};
 
   // auto InterruptEnabled;
 };

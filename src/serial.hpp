@@ -23,6 +23,12 @@ public:
       : _sb(0x00), _sc(0x7E), _extern_clock_mode(0), _acc(0), _shift_reg(0), _bit_count(0),
         t_cycle(0) {}
 
+  /*
+   * @brief:  this function runs every instruction
+   * execution and keeps accumulating the t_cycles.
+   *
+   * @param[in]: t_cycle per instructions.
+   */
   void    tick(int cycle);
   void    write(uint16_t addr, uint8_t value);
   uint8_t read(uint16_t addr);

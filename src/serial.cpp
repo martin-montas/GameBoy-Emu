@@ -3,24 +3,33 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 
 #include "serial.hpp"
-#include <cstdint>
+#include <iostream>
 #include <stdint.h>
-#include <stdio.h>
 
-void Serial::write_sc(uint8_t value) {
-  uint8_t old_sc = _sc;
-  _sc = value;
-
-  bool old_start = old_sc & 0x80;
-  bool new_start = value & 0x80;
-  if (!old_start && new_start) {
-    _transfer_active = true;
-    _acc = 0;
-    _bit_count = 0;
-    _shift_reg = _sb;
+// make this write to sb too
+void Serial::write(uint16_t addr, uint8_t value) {
+  if (addr == 0xFF01) {
+    _sb = value;
   }
+  if (addr == 0xFF02 && value == 0x81) {
+    _sb = value;
+    std::cout << (char)value;
+    return;
+  }
+  //  else {
+  //  // TODO:
+  //  uint8_t old_sc = _sc;
+  //  _sc = value;
+  //  bool old_start = old_sc & 0x80;
+  //  bool new_start = value & 0x80;
+  //  if (!old_start && new_start) {
+  //    _transfer_active = true;
+  //    _acc = 0;
+  //    _bit_count = 0;
+  //    _shift_reg = _sb;
+  //  }
 }
-void Serial::write_sb(uint8_t value) { _sb = value; }
+
 void Serial::tick(int cycle) {
   if (_transfer_active) {
     _acc += cycle;
@@ -41,12 +50,4 @@ uint8_t Serial::read(uint16_t addr) {
     return _sb;
   else
     return _sc;
-}
-
-void Serial::write(uint16_t addr, uint8_t value) {
-  if (addr == 0xFF01) {
-    // TODO:
-  } else {
-    // TODO:
-  }
 }

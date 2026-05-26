@@ -4,6 +4,7 @@
 #ifndef SRC_SERIAL_HPP_
 #define SRC_SERIAL_HPP_
 
+#include <cstdint>
 #include <stdint.h>
 
 #define TRANSFER_STATUS (1 << 7)
@@ -25,10 +26,9 @@ public:
         _bit_count(0), t_cycle(0) {}
 
   void tick(int cycle);
-  void write_sb(uint8_t value);
-  void write_sc(uint8_t value);
+  void write(uint16_t addr, uint8_t value);
   // uint8_t read_sb();
-  // uint8_t read_sc();
+  uint8_t read(uint16_t addr);
 
 private:
   uint8_t _sb;

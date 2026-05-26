@@ -70,7 +70,7 @@ uint8_t MMU::read8(uint16_t addr) {
     return this->OAM[addr - 0xFE00];
   } else if (addr >= 0xFF00 && addr <= 0xFF02) {
     if (addr >= 0xFF01 && addr <= 0xFF02) {
-      return serial.read(addr); // serial register reads
+      return serial->read(addr); // serial register reads
     }
     if (addr >= 0xFF04 && addr <= 0xFF07) {
       return timer->read(addr); // timer registers
@@ -98,7 +98,7 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     this->OAM[addr - 0xFE00] = value;
   } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
     if (addr >= 0xFF01 && addr <= 0xFF02) {
-      serial.write(addr, value); // serial register reads
+      serial->write(addr, value); // serial register reads
     }
     if (addr >= 0xFF04 && addr <= 0xFF07) {
       timer->write(addr, value);

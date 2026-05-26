@@ -69,23 +69,23 @@ uint8_t MMU::read8(uint16_t addr) {
     return this->WRAM[addr - 0xE000];
   } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
     return this->OAM[addr - 0xFE00];
-  } else if (addr >= 0xFF00 && addr <= 0xFF02) {
+  } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
     if (addr >= 0xFF01 && addr <= 0xFF02) {
       return serial->read(addr); // serial register reads
     }
     if (addr >= 0xFF04 && addr <= 0xFF07) {
       return timer->read(addr); // timer registers
-      if (addr == 0xFF44) {     // stubbed for now
-        return 0x90;
-      } else {
-        return IO_REG[addr - 0xFF00];
-      }
-    } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
-      return this->HRAM[addr - 0xFF80];
-    } else {
-      std::cout << "Memory access out of bounds: " << addr << std::endl;
-      exit(1);
     }
+    if (addr == 0xFF44) { // stubbed for now
+      return 0x90;
+    } else {
+      return IO_REG[addr - 0xFF00];
+    }
+  } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
+    return this->HRAM[addr - 0xFF80];
+  } else {
+    std::cout << "Memory access out of bounds: " << addr << std::endl;
+    exit(1);
   }
   return 0xFF;
 }

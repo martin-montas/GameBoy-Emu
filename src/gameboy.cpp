@@ -24,16 +24,16 @@ void GameBoy::run() {
   int     cycle_count = 0;
 
   while (emulationRunning) {
+    // change this to _opcode = mmu->read8(cpu->PC);
     _opcode           = mmu->romData[cpu->PC];
+
     int current_cycle = cpu->opcode_cycles[_opcode];
     cpu->cycle_count += current_cycle;
-
     instructions->execute(_opcode);
-
     // serial->tick(current_cycle);
-
     // TODO call timer.tick(curr_cycle) here
     // TODO finish the rest of this loop:
+    timer->tick(current_cycle);
   }
 }
 

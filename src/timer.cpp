@@ -29,24 +29,31 @@ int Timer::get_time_frequency() {
 }
 
 void Timer::write(uint16_t addr, uint8_t value) {
-  if (addr == 0xFF04) {
+  switch (addr) {
+  case 0xFF04:
     /*
-     * @brief: writing to the div timer register
-     * disables it.
+     * Writing any value to DIV resets it.
      */
-    _div = 0;
-  }
-  if (addr == 0xFF05) {
+    _div         = 0;
+    _div_counter = 0;
+    break;
+
+  case 0xFF05:
     _tima = value;
-  }
-  if (addr == 0xFF06) {
+    break;
+
+  case 0xFF06:
     _tma = value;
-  }
-  if (addr == 0xFF07) {
-    _tac = value;
+    break;
+
+  case 0xFF07:
+    /*
+     * Only lower 3 bits are used.
+     */
+    _tac = value & 0x07;
+    break;
   }
 }
-
 uint8_t Timer::read(uint16_t addr) {
   if (addr == 0xFF04) {
     return _div;
@@ -62,23 +69,30 @@ uint8_t Timer::read(uint16_t addr) {
   }
   return 0x00;
 }
-
-void Timer::tick(int cycle) {
-  _div_counter += cycle;
-  bool timer_enabled = _tac & 0b100;
-  if (timer_enabled) {
-    _tima_accumulator += cycle;
-    int threshold = this->get_time_frequency();
-    if (threshold != -1) {
-      while (_tima_accumulator >= threshold) {
-        _tima_accumulator -= threshold;
-        _tima = _tima + 1;
-        if (_tima == 0x00) {
-          _tima = _tma;
-          // TODO:
-          // request_interrupt()
-        }
-      }
-    }
+void Timer::tick(int cycles) {
+  _div_counter += cycles;
+  while (_div_counter >= 256) {
+    _div++;
+    _div_counter -= 256;
   }
 }
+
+// void Timer::tick(int cycle) {
+//   _div_counter += cycle;
+//   bool timer_enabled = _tac & 0b100;
+//   if (timer_enabled) {
+//     _tima_accumulator += cycle;
+//     int threshold = this->get_time_frequency();
+//     if (threshold != -1) {
+//       while (_tima_accumulator >= threshold) {
+//         _tima_accumulator -= threshold;
+//         _tima = _tima + 1;
+//         if (_tima == 0x00) {
+//           _tima = _tma;
+//           // TODO:
+//           // request_interrupt()
+//         }
+//       }
+//     }
+//   }
+//}

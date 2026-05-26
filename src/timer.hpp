@@ -33,7 +33,7 @@ public:
    * @brief: this happens every iteration of the game loop
    * @param[in]: current m-cycle for the instruction
    */
-  void    tick(int cycle);
+  void    tick(int cycles);
 
   // /*
   //  * @brief: the tag flag should be set if value paramenter has the

@@ -5,6 +5,7 @@
 #include "serial.hpp"
 #include <iostream>
 #include <stdint.h>
+#include <stdio.h>
 
 // make this write to sb too
 void Serial::write(uint16_t addr, uint8_t value) {
@@ -13,9 +14,13 @@ void Serial::write(uint16_t addr, uint8_t value) {
   }
   if (addr == 0xFF02 && value == 0x81) {
     _sb = value;
-    std::cout << (char)value;
+    printf("%c", (char)value);
+    _sc = 0x01;
     return;
   }
+  if (addr == 0xFF04) {
+  }
+
   //  else {
   //  // TODO:
   //  uint8_t old_sc = _sc;
@@ -39,9 +44,10 @@ void Serial::tick(int cycle) {
     }
   }
 }
+
 void Serial::shift_one_bit() {
   uint8_t bit = (_shift_reg & 0x80) ? 1 : 0;
-  printf("%d\n", bit);
+  printf("%d", bit);
   _shift_reg <<= 1;
 }
 

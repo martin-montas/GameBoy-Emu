@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 
-#define TRANSFER_STATUS (1 << 7)
-#define CLOCK_STATUS (1 << 1)
+#define TRANSFER_STATUS        (1 << 7)
+#define CLOCK_STATUS           (1 << 1)
 
 #define check_flag(value, bit) ((value) & (bit))
 
@@ -19,9 +19,7 @@
 class Serial {
 
 public:
-  Serial()
-      : _sb(0x00), _sc(0x7E), _extern_clock_mode(0), _acc(0), _shift_reg(0), _bit_count(0),
-        t_cycle(0) {}
+  Serial() : _sb(0x00), _sc(0x7E), _extern_clock_mode(0), _acc(0), _shift_reg(0), _bit_count(0) {}
 
   /*
    * @brief:  this function runs every instruction
@@ -36,7 +34,6 @@ public:
 private:
   uint8_t _sb;
   uint8_t _sc;
-  int     t_cycle;
   int     _acc;
   bool    _extern_clock_mode;
   bool    _transfer_active;

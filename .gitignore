@@ -5,6 +5,6 @@ ROM/
 dummy/*
 .map
 .sym
-test/*
+#test/*
 test/a.out
 gameboy

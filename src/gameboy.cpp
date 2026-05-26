@@ -6,6 +6,7 @@
 #include "serial.hpp"
 #include "timer.hpp"
 
+#include <iostream>
 #include <stdint.h>
 
 GameBoy::GameBoy(std::string filename) {
@@ -21,6 +22,7 @@ GameBoy::GameBoy(std::string filename) {
 void GameBoy::run() {
   uint8_t _opcode;
   int     cycle_count = 0;
+
   while (emulationRunning) {
     _opcode           = mmu->romData[cpu->PC];
     int current_cycle = cpu->opcode_cycles[_opcode];

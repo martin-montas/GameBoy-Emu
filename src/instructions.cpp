@@ -183,8 +183,8 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x12: {
     // DONE
-    mmu->write8(mmu->read8(cpu->DE), cpu->A);
     printf("LD (DE), A -- %X --\n", cpu->DE);
+    mmu->write8(cpu->DE, cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -374,9 +374,9 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x2A: {
-    cpu->A = mmu->read8(cpu->HL);
-    cpu->A = cpu->A + 1;
-    printf("0x2A LD A, (HL+) -- %X --\n", cpu->A);
+    cpu->A  = mmu->read8(cpu->HL);
+    cpu->HL = cpu->HL + 1;
+    printf("0x2A LD A, (HL+) -- %02X --\n", cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -1317,7 +1317,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0xC3: {
     // DONE:
-    uint16_t addr = mmu->romData[cpu->PC + 1] | (mmu->romData[cpu->PC + 2] << 8);
+    uint16_t addr = mmu->read8(cpu->PC + 1) | (mmu->read8(cpu->PC + 2) << 8);
 
     printf("JP u16: 0xC3 -- addr: %X PC: %X --\n", addr, cpu->PC);
     cpu->PC = addr; // overwrite PC
@@ -1895,7 +1895,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xFF: {
-    std::cout << " RST 38H" << std::endl;
+    printf("RST 38H");
     cpu->PC = cpu->PC + 2;
     break;
   }

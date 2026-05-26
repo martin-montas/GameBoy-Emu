@@ -24,21 +24,21 @@ class Cpu {
 public:
   Cpu();
   ~Cpu() {}
-  bool            is_flag_set(uint8_t flag);
-  void            set_flag(uint8_t flags, bool state);
-  void            clear_flag(uint8_t flag);
-  void            print_flags();
+  bool                 is_flag_set(uint8_t flag);
+  void                 set_flag(uint8_t flags, bool state);
+  void                 clear_flag(uint8_t flag);
+  void                 print_flags();
 
-  RegisterFlags  *flags;
-  void            step();
-  vector<uint8_t> load_rom(const std::string &filename);
-  uint32_t        execute_opcode(uint8_t opcode);
-  void            emulate_cycles(uint32_t cyclesToRun);
+  RegisterFlags       *flags;
+  void                 step();
+  std::vector<uint8_t> load_rom(const std::string &filename);
+  uint32_t             execute_opcode(uint8_t opcode);
+  void                 emulate_cycles(uint32_t cyclesToRun);
 
-  void            init_opcode_table();
+  void                 init_opcode_table();
 
   // t_cycles used
-  const int       opcode_cycles[256] = {
+  const int            opcode_cycles[256] = {
       4,  12, 8, 8,  4,  4,  8,  4,  20, 8,  8,  8, 4, 4,  8, 4,  // 0x0_
       4,  12, 8, 8,  4,  4,  8,  4,  12, 8,  8,  8, 4, 4,  8, 4,  // 0x1_
       0,  12, 8, 8,  4,  4,  8,  4,  0,  8,  8,  8, 4, 4,  8, 4,  // 0x2_

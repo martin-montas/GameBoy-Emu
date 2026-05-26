@@ -10,6 +10,7 @@
 #include "serial.hpp"
 #include "timer.hpp"
 
+#include <cstdint>
 #include <memory>
 #include <stdint.h>
 #include <string>
@@ -17,10 +18,10 @@
 
 #define HRAM_SIZE 0x7F
 #define IRAM_SIZE 8192
-#define OAM_SIZE 0xA0
+#define OAM_SIZE  0xA0
 #define VRAM_SIZE 0x2000
 #define WRAM_SIZE 0x2000
-#define IO_SIZE 0x80
+#define IO_SIZE   0x80
 
 using namespace std;
 
@@ -64,6 +65,7 @@ private:
   uint8_t              OAM[OAM_SIZE]      = {};
   uint8_t              IO_REG[IO_SIZE]    = {};
   uint8_t              EXTERNAL_RAM[8192] = {};
+  uint8_t              rom_bank           = 1;
 
   // auto InterruptEnabled;
 };

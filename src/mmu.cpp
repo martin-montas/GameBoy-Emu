@@ -54,7 +54,10 @@ uint16_t MMU::read16(uint16_t addr) {
 
 uint8_t MMU::read8(uint16_t addr) {
   if (addr <= 0x7FFF) {
-    return mbc->read(addr);
+    return this->romData[addr];
+  } else if (addr < 0x8000) {
+    uint32_t offset = (rom_bank * 0x4000) + (addr - 0x4000);
+    return this->romData[offset];
   } else if (addr >= 0x8000 && addr <= 0x9FFF) {
     return this->VRAM[addr - 0x8000];
   } else if (addr >= 0xA000 && addr <= 0xBFFF) {
@@ -72,20 +75,28 @@ uint8_t MMU::read8(uint16_t addr) {
     }
     if (addr >= 0xFF04 && addr <= 0xFF07) {
       return timer->read(addr); // timer registers
+      if (addr == 0xFF44) {     // stubbed for now
+        return 0x90;
+      } else {
+        return IO_REG[addr - 0xFF00];
+      }
+    } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
+      return this->HRAM[addr - 0xFF80];
     } else {
-      return IO_REG[addr - 0xFF00];
+      std::cout << "Memory access out of bounds: " << addr << std::endl;
+      exit(1);
     }
-  } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
-    return this->HRAM[addr - 0xFF80];
-  } else {
-    std::cout << "Memory access out of bounds: " << addr << std::endl;
-    exit(1);
   }
+  return 0xFF;
 }
 
 void MMU::write8(uint16_t addr, uint8_t value) {
   if (addr >= 0x8000 && addr <= 0x9FFF) {
     this->VRAM[addr - 0x8000] = value;
+  } else if (addr >= 0x2000 && addr <= 0x3FFF) {
+    rom_bank = value & 0x1F;
+    if (rom_bank == 0)
+      rom_bank = 1;
   } else if (addr >= 0xA000 && addr <= 0xBFFF) {
     this->EXTERNAL_RAM[addr - 0xA000] = value;
   } else if (addr >= 0xC000 && addr <= 0xDFFF) {
@@ -100,6 +111,9 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     }
     if (addr >= 0xFF04 && addr <= 0xFF07) {
       timer->write(addr, value);
+    }
+    if (addr == 0xFF44) {
+      return;
     } else {
       this->IO_REG[addr - 0xFF00] = value;
     }

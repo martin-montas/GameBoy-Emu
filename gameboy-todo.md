@@ -3,7 +3,23 @@
 # Best Systems For Beginners
 
 * gets how many cpp files have i written
-```bash
+
+
+**TODO** finish interrupts 
+
+// 5. Interrupt Enable / IF Registers
+// 
+// At minimum:
+// 
+//     0xFFFF → IE
+// 
+//     0xFF0F → IF
+// 
+// Just store/read values.
+// 
+// No real interrupt logic needed immediately.
+
+
 find . -name "*.cpp" -o -name "*.hpp" | xargs wc -l
 
 │           ;[x] CODE XREF from main @ 0x216(x)

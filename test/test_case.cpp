@@ -1,3 +1,4 @@
+#include "test_case.hpp"
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <stdint.h>

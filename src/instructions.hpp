@@ -8,15 +8,18 @@
 #include "mmu.hpp"
 #include <stdint.h>
 
+class MMU;
+class Cpu;
 class InstructionSet {
 private:
   Cpu *cpu;
   MMU *mmu;
 
 public:
-  ~InstructionSet() { delete cpu; }
+  ~InstructionSet() = default;
+  void execute(uint8_t opcode);
+
   InstructionSet(MMU *mmu, Cpu *cpu);
-  void    execute(uint8_t opcode);
 
   void    get_mbc_type();
   void    rrca(uint8_t *reg);

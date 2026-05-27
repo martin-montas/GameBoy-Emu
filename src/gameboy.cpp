@@ -24,9 +24,8 @@ void GameBoy::run() {
   int     cycle_count = 0;
 
   while (emulationRunning) {
-    // change this to _opcode = mmu->read8(cpu->PC);
     _opcode           = mmu->romData[cpu->PC];
-
+    // change this to _opcode = mmu->read8(cpu->PC);
     int current_cycle = cpu->opcode_cycles[_opcode];
     cpu->cycle_count += current_cycle;
     instructions->execute(_opcode);

@@ -3,6 +3,7 @@ todo.md
 *.o
 ROM/
 dummy/*
+test_runner
 .map
 .sym
 #test/*

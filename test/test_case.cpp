@@ -2,53 +2,54 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <stdint.h>
+#include <vector>
 
 using json = nlohmann::json;
 
-TestCase load_json(const std::string &path) {
+std::vector<TestCase> load_json(const std::string &path) {
+
   std::ifstream f(path);
+
   json          j;
   f >> j;
 
-  TestCase tc;
+  std::vector<TestCase> tests;
 
-  // metadata
-  tc.name           = j.value("name", "");
-  tc.steps          = j.value("steps", 1);
+  for (auto &entry : j) {
 
-  // initial CPU
-  auto &icpu        = j["initial"]["cpu"];
-  tc.initialCPU.A   = icpu["A"];
-  tc.initialCPU.B   = icpu["B"];
-  tc.initialCPU.C   = icpu["C"];
-  tc.initialCPU.D   = icpu["D"];
-  tc.initialCPU.E   = icpu["E"];
-  tc.initialCPU.H   = icpu["H"];
-  tc.initialCPU.L   = icpu["L"];
-  tc.initialCPU.F   = icpu["F"];
-  tc.initialCPU.PC  = icpu["PC"];
-  tc.initialCPU.SP  = icpu["SP"];
+    TestCase tc;
 
-  // expected CPU
-  auto &ecpu        = j["expected"]["cpu"];
-  tc.expectedCPU.A  = ecpu["A"];
-  tc.expectedCPU.B  = ecpu["B"];
-  tc.expectedCPU.C  = ecpu["C"];
-  tc.expectedCPU.D  = ecpu["D"];
-  tc.expectedCPU.E  = ecpu["E"];
-  tc.expectedCPU.H  = ecpu["H"];
-  tc.expectedCPU.L  = ecpu["L"];
-  tc.expectedCPU.F  = ecpu["F"];
-  tc.expectedCPU.PC = ecpu["PC"];
-  tc.expectedCPU.SP = ecpu["SP"];
+    tc.name           = entry.value("name", "");
 
-  // memory
-  if (j["initial"].contains("memory")) {
-    for (auto &[addr, val] : j["initial"]["memory"].items()) {
-      uint16_t a          = std::stoi(addr, nullptr, 0);
-      tc.initialMemory[a] = val;
-    }
+    auto &initial     = entry["initial"];
+    auto &final       = entry["final"];
+
+    // initial cpu
+    tc.initialCPU.A   = initial["a"];
+    tc.initialCPU.B   = initial["b"];
+    tc.initialCPU.C   = initial["c"];
+    tc.initialCPU.D   = initial["d"];
+    tc.initialCPU.E   = initial["e"];
+    tc.initialCPU.F   = initial["f"];
+    tc.initialCPU.H   = initial["h"];
+    tc.initialCPU.L   = initial["l"];
+    tc.initialCPU.PC  = initial["pc"];
+    tc.initialCPU.SP  = initial["sp"];
+
+    // expected cpu
+    tc.expectedCPU.A  = final["a"];
+    tc.expectedCPU.B  = final["b"];
+    tc.expectedCPU.C  = final["c"];
+    tc.expectedCPU.D  = final["d"];
+    tc.expectedCPU.E  = final["e"];
+    tc.expectedCPU.F  = final["f"];
+    tc.expectedCPU.H  = final["h"];
+    tc.expectedCPU.L  = final["l"];
+    tc.expectedCPU.PC = final["pc"];
+    tc.expectedCPU.SP = final["sp"];
+
+    tests.push_back(tc);
   }
 
-  return tc;
+  return tests;
 }

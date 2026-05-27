@@ -2143,3 +2143,10 @@ void InstructionSet::execute_call() {
   mmu->write16(cpu->SP, cpu->PC);
   cpu->PC = address;
 }
+
+// for testing
+void InstructionSet::step() {
+  uint8_t opcode = mmu->read8(cpu->PC);
+  this->execute(opcode);
+  cpu->cycle_count += cpu->opcode_cycles[opcode];
+}

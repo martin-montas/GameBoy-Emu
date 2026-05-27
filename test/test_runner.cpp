@@ -11,41 +11,44 @@
 static bool compareCPU(const CPUState &a, const CPUState &b);
 
 int         run_test(const std::string &path) {
-  TestCase       tc = load_json(path);
 
-  Timer          timer;
-  Serial         serial;
-  Cpu            cpu;
-  MMU            mmu("dummy.rom", &timer, &serial);
-  InstructionSet instruction(mmu, cpu);
+  std::vector<TestCase> tests = load_json(path);
 
-  // 1. load CPU state
-  cpu.setState(tc.initialCPU);
+  for (auto &tc : tests) {
 
-  // 2. load memory snapshot
-  for (auto &[addr, val] : tc.initialMemory) {
-    mmu.write8(addr, val);
+    Serial         serial;
+    Timer          timer;
+    MMU            mmu("test.rom", &timer, &serial);
+    Cpu            cpu;
+    InstructionSet instr(&mmu, &cpu);
+
+    // setup cpu state
+    cpu.PC         = tc.initialCPU.PC;
+    cpu.SP         = tc.initialCPU.SP;
+
+    cpu.A          = tc.initialCPU.A;
+    cpu.B          = tc.initialCPU.B;
+    cpu.C          = tc.initialCPU.C;
+    cpu.D          = tc.initialCPU.D;
+    cpu.E          = tc.initialCPU.E;
+    cpu.F          = tc.initialCPU.F;
+    cpu.H          = tc.initialCPU.H;
+    cpu.L          = tc.initialCPU.L;
+
+    // fetch opcode
+    uint8_t opcode = mmu.read8(cpu.PC);
+
+    // execute instruction
+    instr.execute(opcode);
+
+    // compare result
+    if (cpu.A != tc.expectedCPU.A) {
+      std::cout << "FAIL: " << tc.name << "\n";
+      return 1;
+    }
   }
 
-  // 3. execute N steps
-  for (int i = 0; i < tc.steps; i++) {
-    cpu.step();
-  }
+  std::cout << "PASS\n";
 
-  // 4. check result
-  // CPUState got = cpu.getState();
-  // CPUState got = cpu.expectedCPU;
-
-  // if (compareCPU(got, tc.expectedCPU)) {
-  //   std::cout << "[PASS] " << path << "\n";
-  //   return 0;
-  // } else {
-  //   std::cout << "[FAIL] " << path << "\n";
-
-  //   std::cout << "Expected PC: " << tc.expectedCPU.PC << " Got: " << got.PC << "\n";
-
-  //   std::cout << "Expected A: " << (int)tc.expectedCPU.A << " Got: " << (int)got.A << "\n";
-
-  //   return 1;
-  // }
+  return 0;
 }

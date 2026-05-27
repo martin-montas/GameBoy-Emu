@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 struct CPUState {
   uint8_t  A, B, C, D, E, H, L, F;
@@ -16,4 +17,4 @@ struct TestCase {
   std::string                           name;
 };
 
-TestCase load_json(const std::string &path);
+std::vector<TestCase> load_json(const std::string &path);

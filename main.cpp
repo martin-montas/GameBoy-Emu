@@ -1,19 +1,51 @@
-// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
-// All components of this software are licensed under the GNU License.
-// Programmer: Martin Montas, martinmontas1@gmail.com
-#include "./src/gameboy.hpp"
+#include <filesystem>
 #include <iostream>
-// #include <SDL2/SDL.h>
+#include <string>
 
-using namespace std;
+// your test interface
+#include "./test/test_case.hpp"
+
+int run_test(const std::string &path);
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    std::cout << "Usage: GAME <ROM file>" << std::endl;
+    std::cerr << "Usage: test_runner <file_or_directory>\n";
     return 1;
   }
-  GameBoy *game = new GameBoy(argv[1]);
-  game->run();
-  delete (game);
-  return 0;
+
+  std::string path = argv[1];
+
+  // CASE 1: single test file
+  if (std::filesystem::is_regular_file(path)) {
+    int result = run_test(path);
+    return result ? 0 : 1; // 0 = pass, 1 = fail (or invert if you prefer)
+  }
+
+  // CASE 2: directory of tests
+  if (std::filesystem::is_directory(path)) {
+    int total  = 0;
+    int failed = 0;
+
+    for (const auto &entry : std::filesystem::recursive_directory_iterator(path)) {
+      if (entry.path().extension() == ".json") {
+        total++;
+
+        int result = run_test(entry.path().string());
+        if (!result) {
+          failed++;
+          std::cerr << "[FAIL] " << entry.path() << "\n";
+        }
+      }
+    }
+
+    std::cout << "\n====================\n";
+    std::cout << "Total : " << total << "\n";
+    std::cout << "Failed: " << failed << "\n";
+    std::cout << "Passed: " << (total - failed) << "\n";
+
+    return failed ? 1 : 0;
+  }
+
+  std::cerr << "Invalid path: not a file or directory\n";
+  return 1;
 }

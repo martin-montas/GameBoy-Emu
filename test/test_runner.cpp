@@ -2,15 +2,15 @@
 #include <iostream>
 
 // your emulator
-#include "../emu/cpu/cpu.hpp"
-#include "../emu/mmu/mmu.hpp"
+#include "./../src/cpu.hpp"
+#include "./../src/mmu.hpp"
 
 static bool compareCPU(const CPUState &a, const CPUState &b);
 
 int         run_test(const std::string &path) {
   TestCase tc = load_json(path);
 
-  CPU      cpu;
+  Cpu      cpu;
   MMU      mmu;
 
   // 1. load CPU state

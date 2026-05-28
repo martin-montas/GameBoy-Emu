@@ -37,8 +37,4 @@ void     GameBoy::step() {
   instructions->execute(_opcode);
   int current_cycle = cpu->opcode_cycles[_opcode];
   cpu->cycle_count += current_cycle;
-  // serial->tick(current_cycle);
-  // TODO call timer.tick(curr_cycle) here
-  // TODO finish the rest of this loop:
-  // timer->tick(current_cycle);
 }

@@ -7,9 +7,10 @@
 #include "cpu.hpp"
 
 #include <bitset>
-#include <cstdio>
+#include <cstdint>
 #include <iostream>
 #include <stdint.h>
+#include <stdio.h>
 
 InstructionSet::InstructionSet(MMU *mmu, Cpu *cpu) {
   this->cpu = cpu;
@@ -29,10 +30,21 @@ void InstructionSet::ldr(uint8_t *reg, uint8_t address) {
   *reg        = tmp;
 }
 
-void InstructionSet::ldr_mem(uint16_t *reg, uint8_t address) {
-  uint16_t tmp = *reg;
-  mmu->write8(address, tmp);
+// DONE:
+void InstructionSet::ld_mem(uint8_t &reg, uint16_t addr) { mmu->write8(addr, reg); }
+
+void InstructionSet::jump(bool condition, uint8_t offset) {
+  // DONE:
+
+  // int8_t rel = (int8_t)offset;
+  cpu->PC += 2;
+  if (condition) {
+    cpu->PC += rel;
+  }
 }
+
+void InstructionSet::ld8(uint8_t &reg, uint8_t addr) { reg = addr; }
+void InstructionSet::ld16(uint16_t &reg, uint16_t addr) { reg = addr; }
 
 void InstructionSet::execute(uint8_t opcode) {
   //  F flag storage:
@@ -57,7 +69,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x02: {
     // DONE
-    ldr_mem(&cpu->BC, cpu->A);
+    ld_mem(cpu->A, cpu->BC);
     // printf("LD (BC), A 0x02 -- %X --\n", cpu->BC);
     cpu->PC = cpu->PC + 1;
     break;
@@ -234,7 +246,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x19: {
-    // should be checked out
+    // DONE
     add16(cpu->HL, cpu->DE);
     cpu->PC = cpu->PC + 1;
     // printf("ADD HL, DE --%X --\n", cpu->HL);
@@ -270,7 +282,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x1E: {
     // printf("LD E, d8");
-    cpu->E  = mmu->romData[cpu->PC++];
+    cpu->E  = mmu->romData[cpu->PC + 1];
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -282,91 +294,90 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x20: {
-    // DONE:
-    bool z = (cpu->F >> 7) & 1;
-    // printf("JR NZ, r8 0x20 bool: %d\n", z);
-    if (!z) {
-      int8_t n = mmu->romData[cpu->PC + 1];
-      cpu->PC  = cpu->PC + 2 + n;
-    } else {
-      cpu->PC = cpu->PC + 2;
-    }
+    // DONE
+    // printf("JR NZ, s8");
+    jump(!(cpu->F & FLAG_ZERO), mmu->read8(cpu->PC + 1));
     break;
   }
   case 0x21: {
     // DONE:
-    ldr(&cpu->HL);
+    uint8_t  l = mmu->read8(cpu->PC + 1);
+    uint8_t  h = mmu->read8(cpu->PC + 2);
+
+    uint16_t v = l | (h << 8);
+    ld16(cpu->HL, v);
     // printf("LD HL, d16 0x21 -- (HL == %X) --\n", cpu->HL);
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0x22: {
-    // std::cout << "LD (HL+), A" << std::endl;
-    ldr_mem(&cpu->HL, cpu->A);
-    cpu->HL++;
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    // print("LD (HL+), A");
+    ld_mem(cpu->A, cpu->HL);
+    cpu->HL += 1;
+    cpu->PC += 1;
     break;
   }
   case 0x23: {
     // DONE:
-    // std::cout << "INC HL 0x23" << std::endl;
+    // printf("INC HL 0x23\n");
     cpu->HL = cpu->HL + 1;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x24: {
-    // std::cout << "INC H" << std::endl;
-    inc(cpu->H);
+    // DONE
+    // printf"INC H\n");
+    inc(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x25: {
     // soon
-    // std::cout << "DEC H" << std::endl;
-    // dec(cpu->H,1);
+    // printf("DEC H");
+    dec(cpu->H, 1);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x26: {
-    // std::cout << "LD H, d8" << std::endl;
-    cpu->H  = mmu->romData[cpu->PC++];
+    // printf("LD H, d8");
+    ld8(cpu->H, mmu->read8(cpu->PC + 1));
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x27: {
-    // std::cout << "-- 0x27 -- DAA the jumped should be checked out!!";
+    // DONE
+    // printf("DAA");
     uint8_t correction = 0;
     if (!(cpu->F & FLAG_SUBTRACT)) {
-      if ((cpu->A & 0x0F) > 9 || FLAG_HALF_CARRY) {
+      if ((cpu->A & 0x0F) > 9 || cpu->F & FLAG_HALF_CARRY) {
         correction |= 0x06;
       }
-      if ((cpu->A > 0x99) || FLAG_HALF_CARRY) {
+      if ((cpu->A > 0x99) || cpu->F & FLAG_CARRY) {
         correction |= 0x60;
-        cpu->set_flag(FLAG_HALF_CARRY, true);
+        cpu->set_flag(FLAG_CARRY, true);
       }
     } else {
-      if (FLAG_HALF_CARRY)
+      if (cpu->F & FLAG_HALF_CARRY)
         correction |= 0x06;
-      if (FLAG_CARRY)
+      if (cpu->F & FLAG_CARRY)
         correction |= 0x60;
     }
     // TODO
-    // cpu->A += FLAG_SUBTRACT ? -correction : correction;
+    if (cpu->F & FLAG_SUBTRACT)
+      cpu->A -= correction;
+    else
+      cpu->A += correction;
     cpu->set_flag(FLAG_ZERO, cpu->A == 0);
-    cpu->set_flag(FLAG_HALF_CARRY, false);
+    cpu->clear_flag(FLAG_HALF_CARRY);
     break;
   }
   case 0x28: {
     // DONE:
-    // std::cout << "JR Z, r8 0x28" << std::endl;
-    bool z = cpu->F & FLAG_ZERO;
-    if (z) {
-      // the offset might come from any reason of memory, should update
-      int8_t offset = mmu->romData[cpu->PC + 1];
-      cpu->PC       = cpu->PC + 2 + offset;
-    } else {
-      cpu->PC = cpu->PC + 2;
-    }
+    // printf("JR Z, r8 0x28");
+    int8_t offset = mmu->read8(cpu->PC + 1);
+    jump(cpu->F & FLAG_ZERO, offset);
+    // pc shouldn't not be updated here
     break;
   }
   case 0x29: {
@@ -433,9 +444,9 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x32: {
-    // std::cout << "LD (HL-), A" << std::endl;
-    ldr_mem(&cpu->HL, cpu->A);
-    cpu->HL--;
+    // printf("LD (HL-), A");
+    ld_mem(cpu->A, cpu->HL);
+    cpu->HL -= 1;
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -848,7 +859,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x76: {
-    std::cout << "HALT" << std::endl;
+    printf("HALT");
     cpu->halted = true;
     cpu->PC     = cpu->PC + 1;
     break;
@@ -1951,30 +1962,41 @@ void InstructionSet::inc_mem(uint16_t reg) {
 }
 
 void InstructionSet::inc(uint8_t &reg) {
-  uint8_t nibble_carry = reg & 0xF;
+  uint8_t old = reg;
 
-  reg                  = reg + 1;
-  cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
+  reg         = old + 1;
 
-  cpu->set_flag(FLAG_ZERO, (reg == 0));
+  cpu->set_flag(FLAG_ZERO, reg == 0);
   cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->set_flag(FLAG_HALF_CARRY, (old & 0x0F) == 0x0F);
 }
 
-void InstructionSet::inc(uint16_t *reg) {
-  // uint8_t nibble_carry = reg & 0x0F;
-  *reg = *reg + 1;
-  // cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
+void InstructionSet::inc(uint16_t &reg) {
+  uint16_t old = reg;
 
-  // cpu->set_flag(FLAG_ZERO, (reg == 0));
-  // cpu->clear_flag(FLAG_SUBTRACT);
+  reg          = old + 1;
+
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->set_flag(FLAG_HALF_CARRY, ((old & 0x0FFF) + 1) > 0x0FFF);
 }
 
 void InstructionSet::dec(uint8_t &reg, uint8_t n) {
+  // only use it for substract by 1:
   // DONE
   uint8_t r = reg - n;
   cpu->set_flag(FLAG_ZERO, r == 0);
   cpu->set_flag(FLAG_SUBTRACT, true);
   cpu->set_flag(FLAG_HALF_CARRY, (reg & 0x0F) == 0);
+  reg = reg - n;
+}
+
+void InstructionSet::dec(uint16_t &reg, uint8_t n) {
+  // only use it for substract by 1:
+  // DONE
+  uint8_t r = reg - n;
+  cpu->set_flag(FLAG_ZERO, r == 0);
+  cpu->set_flag(FLAG_SUBTRACT, true);
+  cpu->set_flag(FLAG_HALF_CARRY, (reg & 0x0FFF) == 0);
   reg = reg - n;
 }
 
@@ -1990,7 +2012,7 @@ uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
 }
 
 void InstructionSet::add16(uint16_t &destination, uint16_t &value) {
-  // you are here
+  // DONE
   uint32_t result = destination + value;
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->set_flag(FLAG_CARRY, result > 0xFFFF);
@@ -2105,19 +2127,24 @@ void InstructionSet::add8_mem(uint8_t destination, uint8_t value) {
 }
 
 void InstructionSet::rra() {
-  bool msb = cpu->A & 0x01;
-  cpu->A   = cpu->A >> 1;
-  if (msb) {
+  // DONE
+  // Before: C = c, A = 76543210
+  // After: A = c7654321, C = 0
+  bool c  = cpu->F & FLAG_CARRY;
+  bool b0 = cpu->A & 1;
+
+  cpu->A  = cpu->A >> 1;
+  if (c) {
     cpu->A |= 0x80;
   }
-
   cpu->clear_flag(FLAG_ZERO);
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->clear_flag(FLAG_HALF_CARRY);
-  cpu->set_flag(FLAG_CARRY, msb);
+  cpu->set_flag(FLAG_CARRY, b0);
 }
-void dec_mem(uint8_t *value) { return; }
 
+// TODO
+void dec_mem(uint8_t *value) { return; }
 void InstructionSet::cp_(uint8_t *reg_1, uint8_t *reg_2) {
   uint16_t tmp = reg_1 - reg_2;
   cpu->set_flag(FLAG_ZERO, (reg_1 == reg_2));

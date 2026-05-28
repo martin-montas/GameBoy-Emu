@@ -6,6 +6,6 @@ dummy/*
 test_runner
 .map
 .sym
-#test/*
+test/*
 test/a.out
 gameboy

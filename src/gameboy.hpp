@@ -13,7 +13,6 @@
 #include "serial.hpp"
 #include "timer.hpp"
 
-using namespace std;
 class GameBoy {
 private:
   Cpu            *cpu;
@@ -23,11 +22,13 @@ private:
 
   InstructionSet *instructions;
   bool            emulationRunning;
+  uint8_t         _opcode;
+  int             cycle_count = 0;
 
 public:
   GameBoy(std::string filename);
   uint32_t calculateCyclesForFrame();
   void     run();
+  void     step();
 };
-
 #endif // SRC_GAME_BOY_HPP_

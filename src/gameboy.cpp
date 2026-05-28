@@ -21,19 +21,24 @@ GameBoy::GameBoy(std::string filename) {
 }
 
 void GameBoy::run() {
-  uint8_t _opcode;
-  int     cycle_count = 0;
-
   while (emulationRunning) {
-    _opcode = mmu->romData[cpu->PC];
-    instructions->execute(_opcode);
-    int current_cycle = cpu->opcode_cycles[_opcode];
-    cpu->cycle_count += current_cycle;
-    // serial->tick(current_cycle);
-    // TODO call timer.tick(curr_cycle) here
-    // TODO finish the rest of this loop:
-    // timer->tick(current_cycle);
+    if (!cpu->halted) {
+      step();
+    } else {
+      cpu->cycle_count += 4;
+    }
   }
 }
 
 uint32_t GameBoy::calculateCyclesForFrame() { return 0; }
+
+void     GameBoy::step() {
+  _opcode = mmu->romData[cpu->PC];
+  instructions->execute(_opcode);
+  int current_cycle = cpu->opcode_cycles[_opcode];
+  cpu->cycle_count += current_cycle;
+  // serial->tick(current_cycle);
+  // TODO call timer.tick(curr_cycle) here
+  // TODO finish the rest of this loop:
+  // timer->tick(current_cycle);
+}

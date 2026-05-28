@@ -4,6 +4,7 @@
 #include "instructions.hpp"
 #include "MBC.hpp"
 #include "MBC0.hpp"
+#include "cpu.hpp"
 
 #include <bitset>
 #include <cstdio>
@@ -274,6 +275,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x1F: {
+    // TODO: 0x1F
     // printf("RRA\n");
     rra();
     cpu->PC = cpu->PC + 1;
@@ -846,8 +848,9 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x76: {
-    // std::cout << "HALT" << std::endl;
-    cpu->PC = cpu->PC + 1;
+    std::cout << "HALT" << std::endl;
+    cpu->halted = true;
+    cpu->PC     = cpu->PC + 1;
     break;
   }
   case 0x77: {
@@ -2081,18 +2084,16 @@ void InstructionSet::dec_mem(uint16_t reg) {
 }
 
 void InstructionSet::rla() {
-  // DONE but should check
   printf("RLA\n");
-  bool     carry   = cpu->F & FLAG_CARRY;
-  uint16_t old_bit = (cpu->A >> 7) & 1;
-  cpu->A           = cpu->A << 1;
-  cpu->set_flag(FLAG_CARRY, cpu->A & 0x80);
-  if (carry) {
-    cpu->A |= 0x01;
-  }
+  uint8_t old_a     = cpu->A;
+  uint8_t old_carry = cpu->F & FLAG_CARRY;
+  uint8_t new_carry = (old_a >> 7) & 1;
+  cpu->A            = (old_a << 1) | old_carry;
+
+  cpu->set_flag(FLAG_CARRY, new_carry);
+  cpu->clear_flag(FLAG_ZERO);
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->clear_flag(FLAG_HALF_CARRY);
-  cpu->clear_flag(FLAG_ZERO);
 }
 
 void InstructionSet::add8_mem(uint8_t destination, uint8_t value) {

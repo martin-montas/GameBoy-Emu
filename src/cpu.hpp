@@ -35,6 +35,7 @@ public:
   uint32_t             execute_opcode(uint8_t opcode);
   void                 emulate_cycles(uint32_t cyclesToRun);
 
+  bool                 halted = false;
   void                 init_opcode_table();
 
   // t_cycles used

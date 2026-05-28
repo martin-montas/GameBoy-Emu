@@ -873,67 +873,113 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x70: {
-    printf("\n");
+    // DONE
+    printf("LD (HL), B\n");
+    mmu->write8(cpu->HL, cpu->B);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x71: {
-    printf("\n");
+    // DONE
+    printf("LD (HL), C\n");
+    mmu->write8(cpu->HL, cpu->C);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x72: {
-    printf("\n");
+    // DONE
+    printf("LD (HL), D\n");
+    mmu->write8(cpu->HL, cpu->D);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x73: {
-    printf("\n");
+    // DONE
+    printf("LD (HL), E\n");
+    mmu->write8(cpu->HL, cpu->E);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x74: {
-    printf("\n");
+    // DONE
+    printf("LD (HL), H\n");
+    mmu->write8(cpu->HL, cpu->H);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x75: {
-    printf("\n");
+    // DONE
+    printf("LD (HL), L\n");
+    mmu->write8(cpu->HL, cpu->L);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x76: {
-    printf("\n");
+    // DONE
+    cpu->halted = true;
+    cpu->PC     = cpu->PC + 1;
     break;
   }
   case 0x77: {
-    printf("\n");
+    // DONE
+    printf("LD (HL), A\n");
+    mmu->write8(cpu->HL, cpu->A);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x78: {
-    printf("\n");
+    // DONE
+    printf("LD A, B\n");
+    cpu->A  = cpu->B;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x79: {
-    printf("\n");
+    // DONE
+    printf("LD A, C\n");
+    cpu->A  = cpu->C;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7A: {
-    printf("\n");
+    // DONE
+    printf("LD A, D\n");
+    cpu->A  = cpu->D;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7B: {
-    printf("\n");
+    // DONE
+    printf("LD A, E\n");
+    cpu->A  = cpu->E;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7C: {
-    printf("\n");
+    // DONE
+    printf("LD A, H\n");
+    cpu->A  = cpu->H;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7D: {
-    printf("\n");
+    // DONE
+    printf("LD A, L\n");
+    cpu->A  = cpu->L;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7E: {
-    printf("\n");
+    // DONE
+    printf("LD A, (HL)\n");
+    cpu->A  = mmu->read8(cpu->HL);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7F: {
-    printf("\n");
+    // DONE
+    printf("LD A, A\n");
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x80: {

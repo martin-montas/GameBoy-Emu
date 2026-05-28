@@ -16,10 +16,7 @@ private:
   MMU *mmu;
 
 public:
-  ~InstructionSet() = default;
   void execute(uint8_t opcode);
-
-  void step();
 
   InstructionSet(MMU *mmu, Cpu *cpu);
 

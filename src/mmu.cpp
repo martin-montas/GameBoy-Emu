@@ -3,8 +3,8 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 //
 #include "mmu.hpp"
-#include "MBC.hpp"
-#include "MBC0.hpp"
+// #include "MBC.hpp"
+// #include "MBC0.hpp"
 #include "serial.hpp"
 #include "timer.hpp"
 
@@ -18,20 +18,20 @@ MMU::MMU(std::string filename, Timer *timer, Serial *serial) {
   this->timer  = timer;
   this->serial = serial;
   load_rom(filename);
-  check_rom_type();
+  //  check_rom_type();
 }
-void MMU::check_rom_type() {
-  uint8_t type = romData[0x0147];
-  switch (type) {
-  case 0x00:
-  case 0x01:
-    // More cases should be defined here.
-    mbc = std::make_unique<MBC0>(romData);
-    break;
-  default:
-    throw std::runtime_error("Unsupported cartridge");
-  }
-}
+// void MMU::check_rom_type() {
+//   uint8_t type = romData[0x0147];
+//   switch (type) {
+//   case 0x00:
+//   case 0x01:
+//     // More cases should be defined here.
+//     mbc = std::make_unique<MBC0>(romData);
+//     break;
+//   default:
+//     throw std::runtime_error("Unsupported cartridge");
+//   }
+// }
 
 void MMU::load_rom(const std::string &filename) {
   std::ifstream     file(filename, std::ios::binary);
@@ -56,8 +56,7 @@ uint8_t MMU::read8(uint16_t addr) {
   if (addr <= 0x7FFF) {
     return this->romData[addr];
   } else if (addr < 0x8000) {
-    uint32_t offset = (rom_bank * 0x4000) + (addr - 0x4000);
-    return this->romData[offset];
+    return this->romData[addr];
   } else if (addr >= 0x8000 && addr <= 0x9FFF) {
     return this->VRAM[addr - 0x8000];
   } else if (addr >= 0xA000 && addr <= 0xBFFF) {

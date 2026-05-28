@@ -10,7 +10,6 @@
 #include "serial.hpp"
 #include "timer.hpp"
 
-#include <cstdint>
 #include <memory>
 #include <stdint.h>
 #include <string>

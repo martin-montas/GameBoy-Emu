@@ -1,49 +1,27 @@
 SRC_DIR := ./src
-TEST_DIR := ./test
 
 CXX := g++
 CXXFLAGS := -I./src -std=c++20
 LDFLAGS :=
 
-# =====================================================
-# COMMON OBJECTS
-# =====================================================
+COMMON_OBJS := main.o gameboy.o cpu.o instructions.o \
+               extended-instructions.o mmu.o MBC.o \
+               MBC0.o timer.o serial.o
 
-COMMON_OBJS := cpu.o instructions.o extended-instructions.o \
-               mmu.o MBC.o MBC0.o timer.o serial.o
-
-# =====================================================
-# EMULATOR
-# =====================================================
-
-EMU_OBJS := emulator_main.o gameboy.o $(COMMON_OBJS)
-
-gameboy: $(EMU_OBJS)
-	$(CXX) $^ -o $@ $(LDFLAGS)
-
-# =====================================================
-# TEST RUNNER
-# =====================================================
-
-TEST_OBJS := test_main.o test_runner.o test_case.o $(COMMON_OBJS)
-
-test_runner: $(TEST_OBJS)
+gameboy: $(COMMON_OBJS)
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 # =====================================================
 # COMPILATION RULES
 # =====================================================
 
-emulator_main.o: ./test/main.cpp
-	$(CXX) -c $< $(CXXFLAGS) -o $@
-
-test_main.o: test/main.cpp
-	$(CXX) -c $< $(CXXFLAGS) -o $@
-
-cpu.o: src/cpu.cpp src/cpu.hpp
+main.o: main.cpp
 	$(CXX) -c $< $(CXXFLAGS)
 
 gameboy.o: src/gameboy.cpp src/gameboy.hpp
+	$(CXX) -c $< $(CXXFLAGS)
+
+cpu.o: src/cpu.cpp src/cpu.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
 instructions.o: src/instructions.cpp src/instructions.hpp
@@ -67,18 +45,12 @@ timer.o: src/timer.cpp src/timer.hpp
 serial.o: src/serial.cpp src/serial.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
-test_case.o: test/test_case.cpp test/test_case.hpp
-	$(CXX) -c $< $(CXXFLAGS)
-
-test_runner.o: test/test_runner.cpp test/test_case.hpp
-	$(CXX) -c $< $(CXXFLAGS)
-
 # =====================================================
 # UTILITIES
 # =====================================================
 
 clean:
-	rm -f *.o gameboy test_runner
+	rm -f *.o gameboy
 
 format:
 	find . \( -name "*.cpp" -o -name "*.hpp" \) | \

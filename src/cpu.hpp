@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "./../test/test_case.hpp"
 using namespace std;
 
 enum RegisterFlags {
@@ -104,20 +103,6 @@ public:
   // Program counter
   uint16_t PC;
   uint32_t cycle_count;
-
-  // for sst:
-  void     setState(const CPUState &s) {
-    A  = s.A;
-    F  = s.F;
-    B  = s.B;
-    C  = s.C;
-    D  = s.D;
-    E  = s.E;
-    H  = s.H;
-    L  = s.L;
-    PC = s.PC;
-    SP = s.SP;
-  }
 
 private:
   uint32_t cycle;

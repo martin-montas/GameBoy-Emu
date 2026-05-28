@@ -47,8 +47,8 @@ public:
   void    ldr(uint8_t &reg);
 
   void    ld_mem(uint8_t &reg, uint16_t addr); // for loading to 16 addresses
-  void    ld8(uint8_t &reg, uint8_t addr);     // for loading 8 bit addresses
-  void    ld16(uint16_t &reg, uint16_t addr);
+  void    ld(uint8_t &reg, uint8_t addr);      // for loading 8 bit addresses
+  void    ld(uint16_t &reg, uint16_t addr);
 
   // TODO(soon)
   // static void adc(uint8_t reg_1, uint8_t reg_2);

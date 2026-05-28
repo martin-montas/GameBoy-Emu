@@ -35,11 +35,9 @@ void InstructionSet::ld_mem(uint8_t &reg, uint16_t addr) { mmu->write8(addr, reg
 
 void InstructionSet::jump(bool condition, uint8_t offset) {
   // DONE:
-
-  // int8_t rel = (int8_t)offset;
   cpu->PC += 2;
   if (condition) {
-    cpu->PC += rel;
+    cpu->PC += offset;
   }
 }
 
@@ -547,400 +545,403 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x40: {
-    // std::cout << "LD B, B" << std::endl;
-    cpu->B  = cpu->B;
+    // DONE:
+    // printf("CCFLD B, B\n");
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x41: {
-    // std::cout << "LD B, C" << std::endl;
+    // DONE
+    // printf("LD B, C\n");
     cpu->B  = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x42: {
-    // std::cout << "LD B, D" << std::endl;
+    // DONE
+    // printf("LD B, D\n");
     cpu->B  = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x43: {
-    // std::cout << "LD B, E" << std::endl;
+    // printf("LD B, E\n";
     cpu->B  = cpu->E;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x44: {
-    // std::cout << "LD B, H" << std::endl;
+    // printf("LD B, H\n");
     cpu->B  = cpu->H;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x45: {
-    // std::cout << "LD B, L" << std::endl;
+    // printf("LD B, L\n");
     cpu->B  = cpu->L;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x46: {
-    // std::cout << "LD B, (HL)" << std::endl;
-    cpu->B  = mmu->romData[cpu->HL];
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    // printf("LD B, (HL)");
+    cpu->B  = mmu->read16(cpu->HL);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x47: {
-    // printf("LD B, A -- A: %X --", cpu->A);
+    // DONE
+    printf("LD B, A\n");
     cpu->B  = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x48: {
-    // std::cout << "LD C, B" << std::endl;
+    // DONE
+    printf("LD C, B\n");
     cpu->C  = cpu->B;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x49: {
-    // std::cout << "LD C, C" << std::endl;
-    cpu->C  = cpu->C;
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD C, C\n");
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4A: {
-    // std::cout << "LD C, D" << std::endl;
-    cpu->C  = cpu->D;
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD C, D\n");
+    cpu->C  = cpu->C;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4B: {
-    // std::cout << "LD C, E" << std::endl;
+    // DONE
+    printf("LD C, E\n");
     cpu->C  = cpu->E;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4C: {
-    // std::cout << "LD C, H" << std::endl;
+    // DONE
+    printf("LD C, H\n");
     cpu->C  = cpu->H;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4D: {
-    // std::cout << "LD C, L" << std::endl;
+    // DONE
+    printf("LD C, L\n");
     cpu->C  = cpu->L;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4E: {
-    // std::cout << "LD C, (HL)" << std::endl;
-    cpu->C  = mmu->romData[cpu->HL];
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD C, (HL)\n");
+    cpu->C  = mmu->read8(cpu->HL);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4F: {
-    // std::cout << "LD C, A" << std::endl;
+    // DONE
+    printf("LD C, A\n");
     cpu->C  = cpu->A;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x50: {
-    // std::cout << "LD D, B" << std::endl;
-    cpu->D  = cpu->B;
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD B, D\n");
+    cpu->B  = cpu->D;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x51: {
-    // std::cout << "LD D, C" << std::endl;
-    cpu->D  = cpu->C;
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD D, C\n");
+    cpu->B  = cpu->C;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x52: {
-    // std::cout << "LD D, D" << std::endl;
-    cpu->D  = cpu->D;
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD C, A\n");
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x53: {
-    // std::cout << "LD D, E" << std::endl;
-    cpu->D = cpu->E;
+    // DONE
+    printf("LD D, E\n");
+    cpu->D  = cpu->E;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x54: {
-    // std::cout << "LD D, H" << std::endl;
+    // DONE
+    printf("LD D, H\n");
     cpu->D  = cpu->H;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x55: {
-    // std::cout << "LD D, L" << std::endl;
+    // DONE
+    printf("LD D, L\n");
     cpu->D  = cpu->L;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x56: {
-    // std::cout << "LD D, (HL)" << std::endl;
-    cpu->D  = mmu->romData[cpu->HL];
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD D, (HL)\n");
+
+    cpu->D  = mmu->read8(cpu->HL);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x57: {
-    // std::cout << "LD D, A" << std::endl;
+    // DONE
+    printf("LD D, A\n");
     cpu->D  = cpu->A;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x58: {
-    // std::cout << "LD E, B" << std::endl;
-    cpu->E  = cpu->B;
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD D, B\n");
+    cpu->D  = cpu->B;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x59: {
-    // std::cout << "LD E, C" << std::endl;
+    // DONE
+    printf("LD E, C\n");
     cpu->E  = cpu->C;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5A: {
-    // std::cout << "LD E, D" << std::endl;
+    // DONE
+    printf("LD E, D\n");
     cpu->E  = cpu->D;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5B: {
-    // std::cout << "LD E, E" << std::endl;
-    cpu->E  = cpu->E;
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD D, B\n");
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5C: {
-    // std::cout << "LD E, H" << std::endl;
+    // DONE
+    printf("LD E, H\n");
     cpu->E  = cpu->H;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5D: {
-    // std::cout << "LD E, L" << std::endl;
+    // DONE
+    printf("LD E, L\n");
     cpu->E  = cpu->L;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5E: {
-    // std::cout << "LD E, (HL)" << std::endl;
-    cpu->E  = mmu->romData[cpu->HL];
-    cpu->PC = cpu->PC + 2;
+    // DONE
+    printf("LD E, L\n");
+    cpu->E  = mmu->read8(cpu->HL);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5F: {
-    // std::cout << "LD E, A" << std::endl;
+    // DONE
+    printf("LD E, A\n");
     cpu->E  = cpu->A;
-    cpu->PC = cpu->PC + 2;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x60: {
-    // std::cout << "LD H, B" << std::endl;
+    // DONE
+    printf("LD H, B\n");
     cpu->H  = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x61: {
-    // std::cout << "LD H, C" << std::endl;
+    // DONE
+    printf("LD H, C\n");
     cpu->H  = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x62: {
-    // std::cout << "LD H, D" << std::endl;
+    // DONE
+    printf("LD H, D\n");
     cpu->H  = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x63: {
-    // std::cout << "LD H, E" << std::endl;
+    // DONE
+    printf("LD H, E\n");
     cpu->H  = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x64: {
-    // std::cout << "LD H, H" << std::endl;
-    cpu->H  = cpu->H;
+    // DONE
+    printf("LD H, H\n");
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x65: {
-    // std::cout << "LD H, L" << std::endl;
+    // DONE
+    printf("LD H, L\n");
     cpu->H  = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x66: {
-    // std::cout << "LD H, (HL)" << std::endl;
-    cpu->H  = mmu->romData[cpu->HL];
+    // DONE
+    printf("LD H, (HL)\n");
+    cpu->H  = mmu->read8(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x67: {
-    // std::cout << "LD H, A" << std::endl;
+    // DONE
+    printf("LD H, A\n");
     cpu->H  = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x68: {
-    // std::cout << "LD L, B" << std::endl;
+    // DONE
+    printf("LD L, B\n");
     cpu->L  = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x69: {
-    // std::cout << "LD L, C" << std::endl;
+    // DONE
+    printf("LD L, C\n");
     cpu->L  = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6A: {
-    // std::cout << "LD L, D" << std::endl;
+    // DONE
+    printf("LD L, D\n");
     cpu->L  = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6B: {
-    // std::cout << "LD L, E" << std::endl;
+    // DONE
+    printf("LD L, E\n");
     cpu->L  = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6C: {
-    // std::cout << "LD L, H" << std::endl;
+    // DONE
+    printf("LD L, H\n");
     cpu->L  = cpu->H;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6D: {
-    // std::cout << "LD L, L" << std::endl;
-    cpu->L  = cpu->L;
+    // DONE
+    printf("LD L, L\n");
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6E: {
-    // std::cout << "LD L, (HL)" << std::endl;
-    cpu->L  = mmu->romData[cpu->HL];
+    // DONE
+    printf("LD L, (LH)\n");
+    cpu->L  = mmu->read8(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6F: {
-    // std::cout << "LD L, A" << std::endl;
+    // DONE
+    printf("LD L, A\n");
     cpu->L  = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x70: {
-    // std::cout << "LD (HL), B" << std::endl;
-    mmu->romData[cpu->HL] = cpu->B;
-    cpu->PC               = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x71: {
-    // std::cout << "LD (HL), C" << std::endl;
-    mmu->romData[cpu->HL] = cpu->C;
-    cpu->PC               = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x72: {
-    // std::cout << "LD (HL), D" << std::endl;
-    mmu->romData[cpu->HL] = cpu->D;
-    cpu->PC               = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x73: {
-    // std::cout << "LD (HL), E" << std::endl;
-    mmu->romData[cpu->HL] = cpu->E;
-    cpu->PC               = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x74: {
-    // std::cout << "LD (HL), H" << std::endl;
-    mmu->romData[cpu->HL] = cpu->H;
-    cpu->PC               = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x75: {
-    // std::cout << "LD (HL), L" << std::endl;
-    mmu->romData[cpu->HL] = cpu->L;
-    cpu->PC               = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x76: {
-    printf("");
-    cpu->halted = true;
-    cpu->PC     = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x77: {
-    // DONE:
-    mmu->write8(cpu->HL, cpu->A);
-    cpu->PC = cpu->PC + 1;
-    // printf("LD (HL), A: 0x%X 0x77\n", cpu->A);
+    printf("\n");
     break;
   }
   case 0x78: {
-    // std::cout << "LD A, B" << std::endl;
-    cpu->A  = cpu->B;
-    cpu->PC = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x79: {
-    // std::cout << "LD A, C" << std::endl;
-    cpu->A  = cpu->C;
-    cpu->PC = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x7A: {
-    // std::cout << "LD A, D" << std::endl;
-    cpu->A  = cpu->D;
-    cpu->PC = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x7B: {
-    // std::cout << "LD A, E" << std::endl;
-    cpu->A  = cpu->E;
-    cpu->PC = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x7C: {
-    // std::cout << "LD A, H" << std::endl;
-    cpu->A  = cpu->H;
-    cpu->PC = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x7D: {
-    // std::cout << "LD A, L" << std::endl;
-    cpu->A  = cpu->L;
-    cpu->PC = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x7E: {
-    // DONE:
-    cpu->A  = mmu->read8(cpu->HL);
-    // printf("LD A, (HL) 0x%X 0x7E\n", cpu->A);
-    cpu->PC = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x7F: {
-    // std::cout << "LD A, A" << std::endl;
-    cpu->A  = cpu->A;
-    cpu->PC = cpu->PC + 1;
+    printf("\n");
     break;
   }
   case 0x80: {
-    uint8_t r = add8(cpu->A, cpu->B);
-    cpu->A    = cpu->A + cpu->B;
-    cpu->PC   = cpu->PC + 1;
-    // printf("ADD A, B: 0x80 %X\n", r);
+    printf("\n");
     break;
   }
   case 0x81: {
-    add8(cpu->A, cpu->C);
-    cpu->PC = cpu->PC + 1;
+    printf("\n");
     break;
   }
 

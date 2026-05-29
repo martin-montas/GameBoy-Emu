@@ -1799,7 +1799,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0xD6: {
     // DONE:
-    sub(&cpu->A, &mmu->romData[cpu->PC + 1]);
+    // sub(cpu->A, mmu->romData[cpu->PC + 1]);
     // printf("SUB d8. result of A -- %X -- 0xD6\n", cpu->A);
     cpu->PC = cpu->PC + 2;
     break;

@@ -3,7 +3,6 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 
 #include "serial.hpp"
-#include <cstdint>
 #include <stdint.h>
 #include <stdio.h>
 

@@ -51,11 +51,11 @@ public:
   void    ld(uint16_t &reg, uint16_t addr);
 
   // TODO(soon)
-  // static void adc(uint8_t reg_1, uint8_t reg_2);
-  // static void sbc(uint8_t *reg_1, uint8_t *reg_2);
+  void    adc(uint8_t &reg_1, uint8_t reg_2);
+  void    sbc(uint8_t &reg_1, uint8_t reg_2);
   // static void and_(uint8_t *reg_1, uint8_t *reg_2);
   // static void xor_(uint8_t *reg_1, uint8_t *reg_2);
-  void    sub(uint8_t *reg_1, uint8_t *reg_2);
+  void    sub(uint8_t &reg_1, uint8_t reg_2);
   void    or_(uint8_t *reg_1, uint8_t *reg_2);
   void    cp_(uint8_t *reg_1, uint8_t *reg_2);
   void    call(bool condition);

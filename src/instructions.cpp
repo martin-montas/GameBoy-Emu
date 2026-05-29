@@ -19,15 +19,15 @@ InstructionSet::InstructionSet(MMU *mmu, Cpu *cpu) {
 
 void InstructionSet::ldr(uint16_t &reg) {
   // DONE
-  uint8_t  tmp_1 = this->mmu->romData[cpu->PC + 1];
-  uint8_t  tmp_2 = this->mmu->romData[cpu->PC + 2];
-  uint16_t tmp   = (tmp_2 << 8) | tmp_1;
-  reg            = tmp;
+  uint8_t tmp_1 = this->mmu->romData[cpu->PC + 1];
+  uint8_t tmp_2 = this->mmu->romData[cpu->PC + 2];
+  uint16_t tmp = (tmp_2 << 8) | tmp_1;
+  reg = tmp;
 }
 
 void InstructionSet::ldr(uint8_t &reg) {
   uint8_t tmp = this->mmu->romData[this->cpu->PC + 1];
-  reg         = tmp;
+  reg = tmp;
 }
 
 // DONE:
@@ -41,8 +41,8 @@ void InstructionSet::jump(bool condition, uint8_t offset) {
   }
 }
 
-void InstructionSet::ld8(uint8_t &reg, uint8_t addr) { reg = addr; }
-void InstructionSet::ld16(uint16_t &reg, uint16_t addr) { reg = addr; }
+void InstructionSet::ld(uint16_t &reg, uint16_t addr) { reg = addr; }
+void InstructionSet::ld(uint8_t &reg, uint8_t addr) { reg = addr; }
 
 void InstructionSet::execute(uint8_t opcode) {
   //  F flag storage:
@@ -57,12 +57,12 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x01: {
     // DONE
-    uint8_t  l   = mmu->romData[cpu->PC + 1];
-    uint8_t  h   = mmu->romData[cpu->PC + 2];
+    uint8_t l = mmu->romData[cpu->PC + 1];
+    uint8_t h = mmu->romData[cpu->PC + 2];
     uint16_t val = h << 8 | l;
     // printf("LD (BC), A 0x02 -- %X --\n", val);
-    cpu->BC      = val;
-    cpu->PC      = cpu->PC + 3;
+    cpu->BC = val;
+    cpu->PC = cpu->PC + 3;
     break;
   }
   case 0x02: {
@@ -96,14 +96,14 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x06: {
     // DONE:
     // printf("LD B, d8 0x06 --- before %X --\n", cpu->B);
-    cpu->B  = mmu->romData[cpu->PC + 1];
+    cpu->B = mmu->romData[cpu->PC + 1];
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x07: {
     // DONE
     uint16_t result = cpu->A << 1;
-    bool     b      = (cpu->A << 8) & 1;
+    bool b = (cpu->A << 8) & 1;
     // printf("RLCA -- %d --\n", b);
     if (b) {
       cpu->A |= 1;
@@ -117,18 +117,18 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x08: {
     // DONE. but check:
-    uint8_t  l       = mmu->romData[cpu->PC + 1];
-    uint8_t  h       = mmu->romData[cpu->PC + 2];
+    uint8_t l = mmu->romData[cpu->PC + 1];
+    uint8_t h = mmu->romData[cpu->PC + 2];
     uint16_t address = (h << 8) | l;
     // printf("LD (a16), SP -- %X --\n", address);
-    uint8_t  value   = cpu->SP & 0xFF;
+    uint8_t value = cpu->SP & 0xFF;
     mmu->write8(address, value);
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0x09: {
     // DONE. but check:
-    cpu->HL      = cpu->HL + cpu->BC;
+    cpu->HL = cpu->HL + cpu->BC;
     uint32_t tmp = cpu->HL + cpu->BC;
     // printf("ADD HL, BC -- %X --\n", cpu->HL);
     cpu->set_flag(FLAG_ZERO, 0);
@@ -140,7 +140,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x0A: {
     // DONE
     // printf("LD A, (BC)\n");
-    cpu->A  = mmu->read8(cpu->BC);
+    cpu->A = mmu->read8(cpu->BC);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -167,7 +167,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x0E: {
     // DONE
-    cpu->C  = mmu->romData[cpu->PC + 1];
+    cpu->C = mmu->romData[cpu->PC + 1];
     // printf("LD C, d8 -- %X --\n", cpu->C);
     cpu->PC = cpu->PC + 2;
     break;
@@ -222,7 +222,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x16: {
     // DONE
-    cpu->D  = mmu->romData[cpu->PC + 1];
+    cpu->D = mmu->romData[cpu->PC + 1];
     // printf("LD D, d8 -- %X --\n", cpu->D);
     cpu->PC = cpu->PC + 2;
     break;
@@ -252,7 +252,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x1A: {
     // DONE
-    cpu->A  = mmu->read8(cpu->DE);
+    cpu->A = mmu->read8(cpu->DE);
     // printf("LD A, (DE) -- %X --\n", cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
@@ -280,7 +280,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x1E: {
     // printf("LD E, d8");
-    cpu->E  = mmu->romData[cpu->PC + 1];
+    cpu->E = mmu->romData[cpu->PC + 1];
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -299,11 +299,11 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x21: {
     // DONE:
-    uint8_t  l = mmu->read8(cpu->PC + 1);
-    uint8_t  h = mmu->read8(cpu->PC + 2);
+    uint8_t l = mmu->read8(cpu->PC + 1);
+    uint8_t h = mmu->read8(cpu->PC + 2);
 
     uint16_t v = l | (h << 8);
-    ld16(cpu->HL, v);
+    ld(cpu->HL, v);
     // printf("LD HL, d16 0x21 -- (HL == %X) --\n", cpu->HL);
     cpu->PC = cpu->PC + 3;
     break;
@@ -339,7 +339,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x26: {
     // printf("LD H, d8");
-    ld8(cpu->H, mmu->read8(cpu->PC + 1));
+    ld(cpu->H, mmu->read8(cpu->PC + 1));
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -502,7 +502,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x3A: {
     // DONE
     // printf("LD A, (HL-)\n");
-    cpu->A  = mmu->read8(cpu->HL);
+    cpu->A = mmu->read8(cpu->HL);
     cpu->HL = cpu->HL - 1;
     cpu->PC = cpu->PC + 1;
     break;
@@ -530,7 +530,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x3E: {
     // DONE:
-    cpu->A  = mmu->read8(cpu->PC + 1);
+    cpu->A = mmu->read8(cpu->PC + 1);
     // printf("LD A, d8: 0x3E A: -- %X -- \n");
     cpu->PC = cpu->PC + 2;
     break;
@@ -553,53 +553,53 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x41: {
     // DONE
     // printf("LD B, C\n");
-    cpu->B  = cpu->C;
+    cpu->B = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x42: {
     // DONE
     // printf("LD B, D\n");
-    cpu->B  = cpu->D;
+    cpu->B = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x43: {
     // printf("LD B, E\n";
-    cpu->B  = cpu->E;
+    cpu->B = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x44: {
     // printf("LD B, H\n");
-    cpu->B  = cpu->H;
+    cpu->B = cpu->H;
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0x45: {
     // printf("LD B, L\n");
-    cpu->B  = cpu->L;
+    cpu->B = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x46: {
     // DONE
     // printf("LD B, (HL)");
-    cpu->B  = mmu->read16(cpu->HL);
+    cpu->B = mmu->read16(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x47: {
     // DONE
     printf("LD B, A\n");
-    cpu->B  = cpu->A;
+    cpu->B = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x48: {
     // DONE
     printf("LD C, B\n");
-    cpu->C  = cpu->B;
+    cpu->C = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -612,56 +612,56 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x4A: {
     // DONE
     printf("LD C, D\n");
-    cpu->C  = cpu->C;
+    cpu->C = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4B: {
     // DONE
     printf("LD C, E\n");
-    cpu->C  = cpu->E;
+    cpu->C = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4C: {
     // DONE
     printf("LD C, H\n");
-    cpu->C  = cpu->H;
+    cpu->C = cpu->H;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4D: {
     // DONE
     printf("LD C, L\n");
-    cpu->C  = cpu->L;
+    cpu->C = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4E: {
     // DONE
     printf("LD C, (HL)\n");
-    cpu->C  = mmu->read8(cpu->HL);
+    cpu->C = mmu->read8(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x4F: {
     // DONE
     printf("LD C, A\n");
-    cpu->C  = cpu->A;
+    cpu->C = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x50: {
     // DONE
     printf("LD B, D\n");
-    cpu->B  = cpu->D;
+    cpu->B = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x51: {
     // DONE
     printf("LD D, C\n");
-    cpu->B  = cpu->C;
+    cpu->B = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -674,21 +674,21 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x53: {
     // DONE
     printf("LD D, E\n");
-    cpu->D  = cpu->E;
+    cpu->D = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x54: {
     // DONE
     printf("LD D, H\n");
-    cpu->D  = cpu->H;
+    cpu->D = cpu->H;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x55: {
     // DONE
     printf("LD D, L\n");
-    cpu->D  = cpu->L;
+    cpu->D = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -696,35 +696,35 @@ void InstructionSet::execute(uint8_t opcode) {
     // DONE
     printf("LD D, (HL)\n");
 
-    cpu->D  = mmu->read8(cpu->HL);
+    cpu->D = mmu->read8(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x57: {
     // DONE
     printf("LD D, A\n");
-    cpu->D  = cpu->A;
+    cpu->D = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x58: {
     // DONE
     printf("LD D, B\n");
-    cpu->D  = cpu->B;
+    cpu->D = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x59: {
     // DONE
     printf("LD E, C\n");
-    cpu->E  = cpu->C;
+    cpu->E = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5A: {
     // DONE
     printf("LD E, D\n");
-    cpu->E  = cpu->D;
+    cpu->E = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -737,56 +737,56 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x5C: {
     // DONE
     printf("LD E, H\n");
-    cpu->E  = cpu->H;
+    cpu->E = cpu->H;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5D: {
     // DONE
     printf("LD E, L\n");
-    cpu->E  = cpu->L;
+    cpu->E = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5E: {
     // DONE
     printf("LD E, L\n");
-    cpu->E  = mmu->read8(cpu->HL);
+    cpu->E = mmu->read8(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x5F: {
     // DONE
     printf("LD E, A\n");
-    cpu->E  = cpu->A;
+    cpu->E = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x60: {
     // DONE
     printf("LD H, B\n");
-    cpu->H  = cpu->B;
+    cpu->H = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x61: {
     // DONE
     printf("LD H, C\n");
-    cpu->H  = cpu->C;
+    cpu->H = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x62: {
     // DONE
     printf("LD H, D\n");
-    cpu->H  = cpu->D;
+    cpu->H = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x63: {
     // DONE
     printf("LD H, E\n");
-    cpu->H  = cpu->E;
+    cpu->H = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -799,56 +799,56 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x65: {
     // DONE
     printf("LD H, L\n");
-    cpu->H  = cpu->L;
+    cpu->H = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x66: {
     // DONE
     printf("LD H, (HL)\n");
-    cpu->H  = mmu->read8(cpu->HL);
+    cpu->H = mmu->read8(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x67: {
     // DONE
     printf("LD H, A\n");
-    cpu->H  = cpu->A;
+    cpu->H = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x68: {
     // DONE
     printf("LD L, B\n");
-    cpu->L  = cpu->B;
+    cpu->L = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x69: {
     // DONE
     printf("LD L, C\n");
-    cpu->L  = cpu->C;
+    cpu->L = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6A: {
     // DONE
     printf("LD L, D\n");
-    cpu->L  = cpu->D;
+    cpu->L = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6B: {
     // DONE
     printf("LD L, E\n");
-    cpu->L  = cpu->E;
+    cpu->L = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6C: {
     // DONE
     printf("LD L, H\n");
-    cpu->L  = cpu->H;
+    cpu->L = cpu->H;
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -861,14 +861,14 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x6E: {
     // DONE
     printf("LD L, (LH)\n");
-    cpu->L  = mmu->read8(cpu->HL);
+    cpu->L = mmu->read8(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x6F: {
     // DONE
     printf("LD L, A\n");
-    cpu->L  = cpu->A;
+    cpu->L = cpu->A;
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -917,7 +917,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x76: {
     // DONE
     cpu->halted = true;
-    cpu->PC     = cpu->PC + 1;
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x77: {
@@ -930,49 +930,49 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x78: {
     // DONE
     printf("LD A, B\n");
-    cpu->A  = cpu->B;
+    cpu->A = cpu->B;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x79: {
     // DONE
     printf("LD A, C\n");
-    cpu->A  = cpu->C;
+    cpu->A = cpu->C;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7A: {
     // DONE
     printf("LD A, D\n");
-    cpu->A  = cpu->D;
+    cpu->A = cpu->D;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7B: {
     // DONE
     printf("LD A, E\n");
-    cpu->A  = cpu->E;
+    cpu->A = cpu->E;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7C: {
     // DONE
     printf("LD A, H\n");
-    cpu->A  = cpu->H;
+    cpu->A = cpu->H;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7D: {
     // DONE
     printf("LD A, L\n");
-    cpu->A  = cpu->L;
+    cpu->A = cpu->L;
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x7E: {
     // DONE
     printf("LD A, (HL)\n");
-    cpu->A  = mmu->read8(cpu->HL);
+    cpu->A = mmu->read8(cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -983,197 +983,231 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x80: {
-    printf("\n");
+    // DONE
+    printf("ADD A, B\n");
+    add8(cpu->A, cpu->B);
+    cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x81: {
-    printf("\n");
+    // DONE
+    printf("ADD A, C\n");
+    add8(cpu->A, cpu->C);
+    cpu->PC = cpu->PC + 1;
     break;
   }
-
   case 0x82: {
-    // std::cout << "ADD A, D" << std::endl;
+    // DONE
+    printf("ADD A, D\n");
     add8(cpu->A, cpu->D);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x83: {
-    // std::cout << "ADD A, E" << std::endl;
+    // DONE
+    printf("ADD A, E\n");
     add8(cpu->A, cpu->E);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x84: {
-    // std::cout << "ADD A, H" << std::endl;
+    // DONE
+    // printf("ADD A, H\n");
     add8(cpu->A, cpu->H);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x85: {
-    // std::cout << "ADD A, L" << std::endl;
+    // DONE
+    // printf("ADD A, L\n");
     add8(cpu->A, cpu->L);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x86: {
-    // std::cout << "ADD A, (HL)" << std::endl;
+    // DONE
+    // printf("ADD A, (HL)\n");
     add8_mem(cpu->A, mmu->romData[cpu->HL]);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x87: {
-    // std::cout << "ADD A, A" << std::endl;
-    add8(cpu->A, cpu->A);
+    // DONE
+    // printf("ADD A, A\n");
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x88: {
-    // std::cout << "ADC A, B" << std::endl;
-    //   adc(cpu->A, cpu->B);
+    // DONE
+    // printf("ADD A, B\n");
+    adc(cpu->A, cpu->B);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x89: {
-    // std::cout << "ADC A, C" << std::endl;
-    //   adc(cpu->A, cpu->C);
+    // DONE
+    // printf("ADC A, C\n");
+    adc(cpu->A, cpu->C);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x8A: {
-    // std::cout << "ADC A, D" << std::endl;
-    //   adc(cpu->A, cpu->D);
+    // DONE
+    // printf("ADC A, D\n");
+    adc(cpu->A, cpu->D);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x8B: {
-    // std::cout << "ADC A, E" << std::endl;
-    //   adc(cpu->A, cpu->E);
+    // DONE
+    // printf("ADC A, E\n");
+    adc(cpu->A, cpu->E);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x8C: {
-    // std::cout << "ADC A, H" << std::endl;
-    //   adc(cpu->A, cpu->H);
+    // DONE
+    printf("ADC A, H\n");
+    adc(cpu->A, cpu->H);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x8D: {
-    // std::cout << "ADC A, L" << std::endl;
-    //   adc(cpu->A, cpu->L);
+    // DONE
+    printf("ADC A, L\n");
+    adc(cpu->A, cpu->L);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x8E: {
-    // std::cout << "ADC A, (HL)" << std::endl;
-    //   adc(cpu->A, mmu->romData[cpu->HL]);
+    // DONE
+    // printf("ADC A, (HL)\n");
+    adc(cpu->A, mmu->read8(cpu->L));
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x8F: {
-    // std::cout << "ADC A, A" << std::endl;
-    //   adc(cpu->A, cpu->A);
+    // DONE
+    // printf("ADC A, L\n");
+    adc(cpu->A, cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x90: {
-    // std::cout << "SUB B" << std::endl;
-    sub(&cpu->A, &cpu->B);
+    // DONE
+    // printf("SUB A, L\n");
+    sub(cpu->A, cpu->B);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x91: {
-    // std::cout << "SUB C" << std::endl;
-    sub(&cpu->A, &cpu->C);
+    // DONE
+    // printf("SUB C\n");
+    sub(cpu->A, cpu->C);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x92: {
-    // std::cout << "SUB D" << std::endl;
-    sub(&cpu->A, &cpu->D);
+    // DONE
+    // printf("SUB D\n");
+    sub(cpu->A, cpu->D);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x93: {
-    // std::cout << "SUB E" << std::endl;
-    sub(&cpu->A, &cpu->E);
+    // DONE
+    // printf("SUB E\n");
+    sub(cpu->A, cpu->E);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x94: {
-    // std::cout << "SUB H" << std::endl;
-    sub(&cpu->A, &cpu->H);
+    // DONE
+    // printf("SUB H\n");
+    sub(cpu->A, cpu->H);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x95: {
-    // std::cout << "SUB L" << std::endl;
-    sub(&cpu->A, &cpu->L);
+    // DONE
+    // printf("SUB L\n");
+    sub(cpu->A, cpu->L);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x96: {
-    // std::cout << "SUB (HL)" << std::endl;
-    sub(&cpu->A, &mmu->romData[cpu->HL]);
+    // DONE
+    // printf("SUB (HL)\n");
+    sub(cpu->A, cpu->HL);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x97: {
-    // std::cout << "SUB A" << std::endl;
-    sub(&cpu->A, &cpu->A);
+    // DONE
+    // printf("SUB A\n");
+    sub(cpu->A, cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x98: {
-    // std::cout << "SBC A, B" << std::endl;
-    //   sbc(&cpu->A, &cpu->B);
+    // DONE
+    // printf("SBC A, B\n");
+    sbc(cpu->A, cpu->B);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x99: {
-    // std::cout << "SBC A, C" << std::endl;
-    //   sbc(&cpu->A, &cpu->C);
+    // DONE
+    // printf("SBC A, C\n");
+    sbc(cpu->A, cpu->C);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x9A: {
-    // std::cout << "SBC A, D" << std::endl;
-    //   sbc(&cpu->A, &cpu->D);
+    // DONE
+    // printf("SBC A, D\n");
+    sbc(cpu->A, cpu->D);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x9B: {
-    // std::cout << "SBC A, E" << std::endl;
-    //   sbc(&cpu->A, &cpu->E);
+    // DONE
+    // printf("SBC A, E\n");
+    sbc(cpu->A, cpu->E);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x9C: {
-    // std::cout << "SBC A, H" << std::endl;
-    //   sbc(&cpu->A, &cpu->H);
+    // DONE
+    // printf("SBC A, H\n");
+    sbc(cpu->A, cpu->H);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x9D: {
-    // std::cout << "SBC A, L" << std::endl;
-    //   sbc(&cpu->A, &cpu->L);
+    // DONE
+    // printf("SBC A, L\n");
+    sbc(cpu->A, cpu->L);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x9E: {
-    // std::cout << "SBC A, (HL)" << std::endl;
-    //   sbc(&cpu->A, &mmu->romData[cpu->HL]);
+    // DONE
+    // printf("SBC A, L\n");
+    sbc(cpu->A, mmu->read8(cpu->HL));
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0x9F: {
-    // std::cout << "SBC A, A" << std::endl;
-    //   sbc(&cpu->A, &cpu->A);
+    // DONE
+    // printf("SBC A, A\n");
+    sbc(cpu->A, cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
   }
   case 0xA0: {
-    // std::cout << "AND B" << std::endl;
-    //   and_(&cpu->A, &cpu->B);
+    // TODO: you are here
+    // printf("SBC A, A\n");
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -1393,7 +1427,7 @@ void InstructionSet::execute(uint8_t opcode) {
     uint16_t addr = mmu->read8(cpu->PC + 1) | (mmu->read8(cpu->PC + 2) << 8);
 
     // printf("JP u16: 0xC3 -- addr: %X PC: %X --\n", addr, cpu->PC);
-    cpu->PC       = addr; // overwrite PC
+    cpu->PC = addr; // overwrite PC
     break;
   }
   case 0xC4: {
@@ -1722,12 +1756,12 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0xCE: {
     // DONE:
-    uint16_t n           = mmu->romData[cpu->PC + 1];
+    uint16_t n = mmu->romData[cpu->PC + 1];
     // printf("ADC A,u8 -- %X --\n", n);
     uint16_t _carry_flag = ((cpu->F >> 4) & 0x1);
     cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0xf) + (n & 0xf) + _carry_flag > 0xf);
     uint16_t _result = cpu->A + n + _carry_flag;
-    cpu->A           = static_cast<uint8_t>(_result);
+    cpu->A = static_cast<uint8_t>(_result);
 
     cpu->set_flag(FLAG_ZERO, cpu->A == 0);
     cpu->set_flag(FLAG_SUBTRACT, 0);
@@ -1811,7 +1845,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xE0: {
-    cpu->A  = mmu->romData[cpu->PC + 1];
+    cpu->A = mmu->romData[cpu->PC + 1];
     // printf("  LDH(n), A -- %X --\n", cpu->A);
     cpu->PC = cpu->PC + 2;
     break;
@@ -1863,8 +1897,8 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0xEA: {
     // DONE:
-    uint8_t  l  = mmu->romData[cpu->PC + 1];
-    uint8_t  h  = mmu->romData[cpu->PC + 2];
+    uint8_t l = mmu->romData[cpu->PC + 1];
+    uint8_t h = mmu->romData[cpu->PC + 2];
     uint16_t nn = (h << 8) | l;
     // printf("LD(nn), A 0xEA nn: -- %X --\n", nn);
     mmu->write8(nn, cpu->A);
@@ -1983,7 +2017,7 @@ void InstructionSet::ret(bool condition) {
   if (condition) {
     cpu->SP += 2;
     uint16_t address = mmu->read16(cpu->SP);
-    cpu->PC          = address;
+    cpu->PC = address;
   }
 }
 
@@ -2009,9 +2043,9 @@ void InstructionSet::inc_mem(uint16_t reg) {
   // the value at the [reg],
   // and updates the F flag register
   // accordinly.
-  uint8_t tmp          = mmu->read8(reg);
+  uint8_t tmp = mmu->read8(reg);
   uint8_t nibble_carry = tmp & 0x0F;
-  tmp                  = tmp + 1;
+  tmp = tmp + 1;
   printf("-- Debug: 0x%X to 0x%X --\n", tmp, reg);
   mmu->write8(reg, tmp);
 
@@ -2023,7 +2057,7 @@ void InstructionSet::inc_mem(uint16_t reg) {
 void InstructionSet::inc(uint8_t &reg) {
   uint8_t old = reg;
 
-  reg         = old + 1;
+  reg = old + 1;
 
   cpu->set_flag(FLAG_ZERO, reg == 0);
   cpu->clear_flag(FLAG_SUBTRACT);
@@ -2033,7 +2067,7 @@ void InstructionSet::inc(uint8_t &reg) {
 void InstructionSet::inc(uint16_t &reg) {
   uint16_t old = reg;
 
-  reg          = old + 1;
+  reg = old + 1;
 
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->set_flag(FLAG_HALF_CARRY, ((old & 0x0FFF) + 1) > 0x0FFF);
@@ -2061,7 +2095,7 @@ void InstructionSet::dec(uint16_t &reg, uint8_t n) {
 
 uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
   // DONE:
-  uint8_t  result = reg_1 + reg_2;
+  uint8_t result = reg_1 + reg_2;
   uint16_t _carry = reg_1 + reg_2;
   cpu->set_flag(FLAG_ZERO, result == 0);
   cpu->set_flag(FLAG_SUBTRACT, false);
@@ -2080,17 +2114,17 @@ void InstructionSet::add16(uint16_t &destination, uint16_t &value) {
 }
 
 void ldhl(int8_t value) {}
-// TODO(martin-montas)
-// void InstructionSet::adc(uint8_t& reg_1, uint8_t reg_2) {
-//     uint8_t carry = cpu->get_flag(FLAG_CARRY) ? 1 : 0;
-//     uint16_t result = reg_1 + reg_2 + carry;
-//     reg_1 = result & 0xFF;
-//     cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
-//     cpu->set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F)
-//     + (reg_2 & 0x0F) + carry) > 0x0F);
-//     cpu->set_flag(FLAG_CARRY, (result > 0xFF));
-//     cpu->clear_flag(FLAG_SUBTRACT);
-// }
+void InstructionSet::adc(uint8_t &reg_1, uint8_t reg_2) {
+  uint8_t old = reg_1;
+  bool carry = (cpu->F & FLAG_CARRY);
+
+  uint16_t result = reg_1 + reg_2 + carry;
+  reg_1 = result & 0xFF;
+  cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
+  cpu->set_flag(FLAG_HALF_CARRY, ((old & 0x0F) + (reg_2 & 0x0F) + carry) > 0x0F);
+  cpu->set_flag(FLAG_CARRY, (result > 0xFF));
+  cpu->clear_flag(FLAG_SUBTRACT);
+}
 
 // TODO(martin-montas)
 // void sbc(uint8_t reg_1, uint8_t reg_2) {
@@ -2104,24 +2138,23 @@ void ldhl(int8_t value) {}
 //     cpu->set_flag(FLAG_CARRY, (result > 0xFF));
 // }
 
-void InstructionSet::sub(uint8_t *reg_1, uint8_t *reg_2) {
-  uint8_t  a      = *reg_1;
-  uint8_t  b      = *reg_2;
+void InstructionSet::sub(uint8_t &reg_1, uint8_t reg_2) {
+  uint8_t a = reg_1;
+  uint8_t b = reg_2;
 
   uint16_t result = a - b;
 
-  *reg_1          = result & 0xFF;
+  reg_1 = result & 0xFF;
 
-  cpu->set_flag(FLAG_ZERO, (*reg_1 == 0));
+  cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
   cpu->set_flag(FLAG_SUBTRACT, true);
-
   cpu->set_flag(FLAG_HALF_CARRY, (a & 0x0F) < (b & 0x0F));
   cpu->set_flag(FLAG_CARRY, a < b);
 }
 
 void InstructionSet::rlc(uint8_t reg) {
   bool msb = reg & 0x80;
-  reg      = (reg << 1) | (msb >> 7);
+  reg = (reg << 1) | (msb >> 7);
 
   cpu->set_flag(FLAG_CARRY, msb);
 
@@ -2134,7 +2167,7 @@ void InstructionSet::rlc(uint8_t reg) {
 void InstructionSet::rrca(uint8_t *reg) {
   // DONE
   bool least_sig_bit = *reg & 1;
-  *reg               = *reg >> 1;
+  *reg = *reg >> 1;
   if (least_sig_bit) {
     *reg |= 128;
   }
@@ -2154,9 +2187,9 @@ void InstructionSet::rrca(uint8_t *reg) {
 
 void InstructionSet::dec_mem(uint16_t reg) {
   // To be DONE
-  uint8_t tmp          = mmu->read8(reg);
+  uint8_t tmp = mmu->read8(reg);
   uint8_t nibble_carry = tmp & 0x0F;
-  tmp                  = tmp - 1;
+  tmp = tmp - 1;
   mmu->write8(reg, tmp);
 
   cpu->set_flag(FLAG_HALF_CARRY, nibble_carry == 0);
@@ -2166,10 +2199,10 @@ void InstructionSet::dec_mem(uint16_t reg) {
 
 void InstructionSet::rla() {
   printf("RLA\n");
-  uint8_t old_a     = cpu->A;
+  uint8_t old_a = cpu->A;
   uint8_t old_carry = cpu->F & FLAG_CARRY;
   uint8_t new_carry = (old_a >> 7) & 1;
-  cpu->A            = (old_a << 1) | old_carry;
+  cpu->A = (old_a << 1) | old_carry;
 
   cpu->set_flag(FLAG_CARRY, new_carry);
   cpu->clear_flag(FLAG_ZERO);
@@ -2189,10 +2222,10 @@ void InstructionSet::rra() {
   // DONE
   // Before: C = c, A = 76543210
   // After: A = c7654321, C = 0
-  bool c  = cpu->F & FLAG_CARRY;
+  bool c = cpu->F & FLAG_CARRY;
   bool b0 = cpu->A & 1;
 
-  cpu->A  = cpu->A >> 1;
+  cpu->A = cpu->A >> 1;
   if (c) {
     cpu->A |= 0x80;
   }
@@ -2224,6 +2257,19 @@ void InstructionSet::call(bool condition) {
   }
 }
 
+void InstructionSet::sbc(uint8_t &reg_1, uint8_t reg_2) {
+  uint8_t old = reg_1;
+  uint8_t a = reg_1;
+  uint8_t b = reg_2;
+  bool c = (cpu->F & FLAG_CARRY);
+  uint16_t result = a - b - c;
+
+  reg_1 = result & 0xFF;
+  cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
+  cpu->set_flag(FLAG_SUBTRACT, true);
+  cpu->set_flag(FLAG_HALF_CARRY, (old & 0x0F) < (b & 0x0F) + c);
+  cpu->set_flag(FLAG_CARRY, old < (reg_2 + c));
+}
 void InstructionSet::execute_call() {
   uint16_t address = mmu->read16(cpu->PC);
   cpu->PC += 2;

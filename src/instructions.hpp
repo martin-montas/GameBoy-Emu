@@ -53,7 +53,6 @@ public:
 
   void adc(uint8_t &reg_1, uint8_t reg_2);
   void sbc(uint8_t &reg_1, uint8_t reg_2);
-  // TODO(soon)
   void and_(uint8_t &reg_1, uint8_t reg_2);
   void xor_(uint8_t &reg_1, uint8_t reg_2);
   void sub(uint8_t &reg_1, uint8_t reg_2);
@@ -69,13 +68,14 @@ public:
   void cpl(uint8_t &reg);
   void rlc(uint8_t reg);
 
-  void rlc_extended(uint8_t *reg);
-  void rlc_extended_mem(uint16_t *reg); // TODO(soon)
-  void sla_extended(uint8_t *reg);
+  void rlc_extended(uint8_t &reg);
+  void sla_extended(uint8_t &reg);
   void rcc_extended(uint8_t *reg);
-  void rr_extended(uint8_t *reg);
-  void rl_extended(uint8_t *reg);
-  void sra_extended(uint8_t *reg);
+  void rrc_extended(uint8_t &reg);
+  void rl_extended(uint8_t &reg);
+
+  void rr_extended(uint8_t &reg);
+  void sra_extended(uint8_t &reg);
   void swap_extended(uint8_t *reg);
   void srl_extended(uint8_t *reg);
 };

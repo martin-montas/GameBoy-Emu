@@ -11,6 +11,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/types.h>
 
 InstructionSet::InstructionSet(MMU *mmu, Cpu *cpu) {
   this->cpu = cpu;
@@ -1500,6 +1501,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xC8: {
+    // DONE
     // printf("RET Z\n");
     if (cpu->F & FLAG_ZERO) {
       ret(true);
@@ -1509,204 +1511,374 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xC9: {
+    // DONE
     // printf("RET\n");
     pop_(true, cpu->PC);
     break;
   }
   case 0xCA: {
-    // printf("JP Z, nn 0xCA");
+    // DONE
+    // printf("JP Z, nn 0xCA\n");
     if (cpu->F & FLAG_ZERO) {
-      cpu->PC = mmu->read16(cpu->PC + 1);
+      u_int8_t l = mmu->read8(cpu->PC + 1);
+      u_int8_t h = mmu->read8(cpu->PC + 2);
+      cpu->PC = (h << 8) | l;
+    } else {
+      cpu->PC += 3;
     }
     break;
   }
   case 0xCB: {
-    // std::cout << " ---  PREFIX CB NOTDONE 0xCB -- " << std::endl;
+    // printf("--- PREFIX CB NOTDONE 0xCB -- \n");
     switch (mmu->read8(cpu->PC + 1)) {
-    case 0x00:
-      // rlc_extended(&cpu->B);
+    case 0x00: {
+      // DONE
+      // printf("RLC B\n");
+      rlc_extended(cpu->B);
+      cpu->PC += 2;
       break;
-    case 0x01: // rlc c
-      // std::cout << "rlc c" << std::endl;
-      //  rlc_extended(&cpu->C);
+    }
+    case 0x01: {
+      // DONE
+      // printf("RLC c\n");
+      rlc_extended(cpu->C);
+      cpu->PC += 2;
       break;
-    case 0x02: // rlc d
-      // std::cout << "rlc d" << std::endl;
-      //  rlc_extended(&cpu->D);
+    }
+    case 0x02: {
+      // DONE
+      //  printf("rlc d\n");
+      rlc_extended(cpu->D);
+      cpu->PC += 2;
       break;
-    case 0x03: // RLC E
-      // std::cout << "RLC E" << std::endl;
-      //  rlc_extended(&cpu->E);
+    }
+    case 0x03: {
+      // DONE
+      // printf("RLC E\n");
+      rlc_extended(cpu->E);
+      cpu->PC += 2;
       break;
-    case 0x04: // RLC H
-      // std::cout << "RLC H" << std::endl;
-      //  rlc_extended(&cpu->H);
+    }
+    case 0x04: {
+      // DONE
+      // printf("RLC H\n");
+      rlc_extended(cpu->H);
+      cpu->PC += 2;
       break;
-    case 0x05: // RLC L
-      // std::cout << "RLC L" << std::endl;
-      //  rlc_extended(&cpu->L);
+    }
+    case 0x05: {
+      // DONE
+      // printf("RLC L\n");
+      rlc_extended(cpu->L);
+      cpu->PC += 2;
       break;
-    case 0x06: // RLC (HL)
-      // std::cout << "RLC (HL)" << std::endl;
-      //  TODO(martin-montas)
-      //  rlc_extended_mem(&cpu->HL);
+    }
+    case 0x06: {
+      // DONE
+      // printf("RLC (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      rlc_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
       break;
-    case 0x07: // RLC A
-      // std::cout << "RLC A" << std::endl;
-      //  rlc_extended(&cpu->A);
+    }
+    case 0x07: {
+      // DONE
+      // printf("RLC A\n");
+      rlc_extended(cpu->A);
+      cpu->PC += 2;
       break;
-    case 0x08: // RRC B
-      // std::cout << "RRC B" << std::endl;
-      //  rcc_extended(&cpu->B);
+    }
+    case 0x08: {
+      // DONE
+      // printf("RRC B\n");
+      rrc_extended(cpu->B);
+      cpu->PC += 2;
       break;
-    case 0x09: // RRC C
-      // std::cout << "RRC C" << std::endl;
-      //  rcc_extended(&cpu->C);
+    }
+    case 0x09: {
+      // DONE
+      // printf("RRC C\n");
+      rrc_extended(cpu->C);
+      cpu->PC += 2;
       break;
-    case 0x0A: // RRC D
-      // std::cout << "RRC D" << std::endl;
-      //  rcc_extended(&cpu->D);
+    }
+    case 0x0A: {
+      // DONE
+      // printf("RRC D\n");
+      rrc_extended(cpu->D);
+      cpu->PC += 2;
       break;
-    case 0x0B: // RRC E
-      // std::cout << "RRC E" << std::endl;
-      //  rcc_extended(&cpu->E);
+    }
+    case 0x0B: {
+      // DONE
+      // printf("RRC E\n");
+      rrc_extended(cpu->E);
+      cpu->PC += 2;
       break;
-    case 0x0C: // RRC H
-      // std::cout << "RRC H" << std::endl;
-      //  rcc_extended(&cpu->H);
+    }
+    case 0x0C: {
+      // DONE
+      // printf("RRC H\n");
+      rrc_extended(cpu->H);
+      cpu->PC += 2;
       break;
-    case 0x0D: // RRC L
-      // std::cout << "RRC L" << std::endl;
-      //  rcc_extended(&cpu->L);
+    }
+    case 0x0D: {
+      // DONE
+      // printf("RRC L\n");
+      rrc_extended(cpu->L);
+      cpu->PC += 2;
       break;
-    case 0x0E: // RRC (HL)
-      // std::cout << "RRC (HL)" << std::endl;
-      //   TODO(martin-montas)
+    }
+    case 0x0E: {
+      // DONE
+      // printf("RRC (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      rrc_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
       break;
-    case 0x0F: // RRC A
-      // std::cout << "RRC A" << std::endl;
-      //  rcc_extended(&cpu->A);
+    }
+    case 0x0F: {
+      // DONE
+      // printf("RL B\n");
+      rrc_extended(cpu->A);
+      cpu->PC += 2;
       break;
-    case 0x10: // RL B
-      // std::cout << "RL B " << std::endl;
-      //  rl_extended(&cpu->B);
+    }
+    case 0x10: {
+      // DONE
+      // printf("RL B \n");
+      rl_extended(cpu->B);
+      cpu->PC += 2;
       break;
-    case 0x11: // RL C
-      // std::cout << "RL C" << std::endl;
-      rl_extended(&cpu->A);
+    }
+    case 0x11: {
+      // DONE
+      // printf("RL C\n");
+      rl_extended(cpu->C);
+      cpu->PC += 2;
       break;
-    case 0x12: // RL D
-      // std::cout << "RL D" << std::endl;
-      rl_extended(&cpu->A);
+    }
+    case 0x12: {
+      // DONE
+      // printf"RL D\n");
+      rl_extended(cpu->D);
+      cpu->PC += 2;
       break;
-    case 0x13: // RL E
-      // std::cout << "RL E" << std::endl;
-      rl_extended(&cpu->A);
+    }
+    case 0x13: {
+      // DONE
+      // printf("RL E\n");
+      rl_extended(cpu->E);
+      cpu->PC += 2;
       break;
-    case 0x14: // RL H
-      // std::cout << "RL H" << std::endl;
-      rl_extended(&cpu->A);
+    }
+    case 0x14: {
+      // DONE
+      // printf("RL H\n");
+      rl_extended(cpu->H);
+      cpu->PC += 2;
       break;
-    case 0x15: //  RL L
-      // std::cout << "RL L " << std::endl;
-      rl_extended(&cpu->A);
+    }
+    case 0x15: {
+      // DONE
+      // printf("RL L \n");
+      rl_extended(cpu->L);
+      cpu->PC += 2;
       break;
-    case 0x16: // RL (HL)
-      // std::cout << "RL (HL)" << std::endl;
-      //   TODO(martin-montas)
+    }
+    case 0x16: {
+      // DONE
+      // printf("RL (HL)");
+      uint8_t v = mmu->read8(cpu->HL);
+      rl_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
       break;
-    case 0x17: // RL A
-      // std::cout << "RL A" << std::endl;
-      rl_extended(&cpu->A);
+    }
+    case 0x17: {
+      // DONE
+      // printf("RL A\n");
+      rl_extended(cpu->A);
+      cpu->PC += 2;
       break;
-    case 0x19: // RR B
-      rr_extended(&cpu->B);
-      // std::cout << "RR B" << std::endl;
+    }
+    case 0x18: {
+      // DONE
+      // printf("RR B\n");
+      rr_extended(cpu->B);
+      cpu->PC += 2;
       break;
-    case 0x1A: // RR C
-      rr_extended(&cpu->C);
-      // std::cout << "RR C" << std::endl;
+    }
+    case 0x19: {
+      // DONE
+      // printf("RR B\n");
+      rr_extended(cpu->C);
+      cpu->PC += 2;
       break;
-    case 0x1B: // RR D
-      rr_extended(&cpu->D);
-      // std::cout << "RR D" << std::endl;
+    }
+    case 0x1A: {
+      // DONE
+      // printf("RR D\n");
+      rr_extended(cpu->D);
+      cpu->PC += 2;
       break;
-    case 0x1C: // RR E
-      rr_extended(&cpu->E);
-      // std::cout << "RR E" << std::endl;
+    }
+    case 0x1B: {
+      // DONE
+      // printf("RR D\n");
+      rr_extended(cpu->E);
+      cpu->PC += 2;
       break;
-    case 0x1D: // RR H
-      rr_extended(&cpu->H);
-      // std::cout << "RR H" << std::endl;
+    }
+    case 0x1C: {
+      // DONE
+      // printf("RR H\n");
+      rr_extended(cpu->H);
+      cpu->PC += 2;
       break;
-    case 0x1E: // RR L
-      rr_extended(&cpu->L);
-      // std::cout << "RR L" << std::endl;
+    }
+    case 0x1D: {
+      // done
+      // printf("RR L\n");
+      rr_extended(cpu->L);
+      cpu->PC += 2;
       break;
-    case 0x1F: // RR A
-      // std::cout << "RR A" << std::endl;
-      rr_extended(&cpu->A);
+    }
+    case 0x1E: {
+      // done
+      // printf("RR L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      rr_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
       break;
-    case 0x20: // SLA B
-      // std::cout << "SLA B" << std::endl;
-      sla_extended(&cpu->B);
+    }
+    case 0x1F: {
+      // done
+      // printf("RR A\n");
+      rr_extended(cpu->A);
+      cpu->PC += 2;
       break;
-    case 0x21: // SLA C
-      // std::cout << "SLA C" << std::endl;
-      sla_extended(&cpu->C);
+    }
+    case 0x20: {
+      // done
+      // printf("SLA B\n");
+      sla_extended(cpu->B);
+      cpu->PC += 2;
       break;
-    case 0x22: // SLA D
-      // std::cout << "SLA D" << std::endl;
-      sla_extended(&cpu->D);
+    }
+    case 0x21: {
+      // DONE
+      // printf("SLA C\n");
+      sla_extended(cpu->C);
+      cpu->PC += 2;
       break;
-    case 0x23: // SLA E
-      // std::cout << "SLA E" << std::endl;
-      sla_extended(&cpu->E);
+    }
+    case 0x22: {
+      // DONE
+      // printf("SLA D\n");
+      sla_extended(cpu->D);
+      cpu->PC += 2;
       break;
-    case 0x24: // SLA H
-      // std::cout << "SLA H" << std::endl;
-      sla_extended(&cpu->H);
+    }
+    case 0x23: {
+      // DONE
+      // printf("SLA E\n");
+      sla_extended(cpu->E);
+      cpu->PC += 2;
       break;
-    case 0x25: // SLA L
-      // std::cout << "SLA L" << std::endl;
-      sla_extended(&cpu->L);
+    }
+    case 0x24: {
+      // DONE
+      // printf("SLA H\n");
+      sla_extended(cpu->H);
+      cpu->PC += 2;
       break;
-    case 0x26: // SLA (HL)
-      // std::cout << "SLA (HL)" << std::endl;
-      //   TODO(martin-montas)
+    }
+    case 0x25: {
+      // DONE
+      // printf("SLA L\n");
+      sla_extended(cpu->L);
+      cpu->PC += 2;
       break;
-    case 0x27: // SLA A
-      // std::cout << "SLA A" << std::endl;
-      sla_extended(&cpu->A);
+    }
+    case 0x26: {
+      // DONE
+      // printf("SLA (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      sla_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
       break;
-    case 0x29: // SRA B
-      // std::cout << "SRA B" << std::endl;
-      sra_extended(&cpu->B);
+    }
+    case 0x27: {
+      // DONE
+      // printf("SLA A\n");
+      sla_extended(cpu->A);
+      cpu->PC += 2;
       break;
-    case 0x2A: // SRA C
-      // std::cout << "SRA C" << std::endl;
-      sra_extended(&cpu->C);
+    }
+    case 0x28: {
+      // DONE
+      // printf("SLA B\n");
+      sra_extended(cpu->B);
+      cpu->PC += 2;
       break;
-    case 0x2B: // SRA D
-      // std::cout << "SRA D" << std::endl;
-      sra_extended(&cpu->D);
+    }
+    case 0x29: {
+      // TODO
+      // printf("SRA C\n");
+      sra_extended(cpu->C);
+      cpu->PC += 2;
       break;
-    case 0x2C: // SRA E
-      // std::cout << "SRA E" << std::endl;
-      sra_extended(&cpu->E);
+    }
+    case 0x2A: {
+      // TODO
+      // printf("SRA C\n");
+      sra_extended(cpu->C);
+      cpu->PC += 2;
       break;
-    case 0x2D: // SRA H
-      // std::cout << "SRA H" << std::endl;
-      sra_extended(&cpu->H);
+    }
+    case 0x2B: {
+      // TODO
+      // printf("SRA D\n");
+      sra_extended(cpu->D);
+      cpu->PC += 2;
       break;
-    case 0x2E: // SRA L
-      // std::cout << "SRA L" << std::endl;
-      sra_extended(&cpu->L);
+    }
+    case 0x2C: {
+      // done
+      // printf("SRA E\n");
+      sra_extended(cpu->E);
+      cpu->PC += 2;
       break;
-    case 0x2F: // SRA A
-      // std::cout << "SRA A" << std::endl;
-      sra_extended(&cpu->A);
+    }
+    case 0x2D: {
+      // todo
+      // printf("SRA L\n");
+      sra_extended(cpu->L);
+      cpu->PC += 2;
       break;
+    }
+    case 0x2E: {
+      // todo
+      // printf("SRA (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      sra_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x2F: {
+      // todo
+      // printf("SRA A\n");
+      sra_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
     case 0x30: // SWAP B
       // std::cout << "SWAP B" << std::endl;
       swap_extended(&cpu->B);

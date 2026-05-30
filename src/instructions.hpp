@@ -25,6 +25,7 @@ public:
   void rrca(uint8_t *reg);
   void rra();
   void rla();
+  void pop_(bool condition, uint16_t &reg);
   void ret(bool condition);
 
   void generate_mbc();
@@ -53,17 +54,18 @@ public:
   void adc(uint8_t &reg_1, uint8_t reg_2);
   void sbc(uint8_t &reg_1, uint8_t reg_2);
   // TODO(soon)
-  // void and_(uint8_t &reg_1, uint8_t reg_2);
-  // void xor_(uint8_t &reg_1, uint8_t reg_2);
+  void and_(uint8_t &reg_1, uint8_t reg_2);
+  void xor_(uint8_t &reg_1, uint8_t reg_2);
   void sub(uint8_t &reg_1, uint8_t reg_2);
-  void or_(uint8_t *reg_1, uint8_t *reg_2);
-  void cp_(uint8_t *reg_1, uint8_t *reg_2);
+  void or_(uint8_t &reg_1, uint8_t reg_2);
+  void cp_(uint8_t reg_1, uint8_t reg_2);
   void call(bool condition);
 
   void execute_call();
   void jump(bool condition, uint8_t offset);
   void jump_add(bool condition);
   void cp_n(uint8_t value);
+  void push_(uint16_t reg);
   void cpl(uint8_t &reg);
   void rlc(uint8_t reg);
 

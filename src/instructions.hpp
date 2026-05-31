@@ -73,10 +73,13 @@ public:
   void rcc_extended(uint8_t *reg);
   void rrc_extended(uint8_t &reg);
   void rl_extended(uint8_t &reg);
+  void srl_extended(uint8_t &reg);
 
   void rr_extended(uint8_t &reg);
   void sra_extended(uint8_t &reg);
+
   void swap_extended(uint8_t &reg);
+
   void bit0_extended(uint8_t &reg);
   void bit1_extended(uint8_t &reg);
   void bit2_extended(uint8_t &reg);
@@ -85,6 +88,7 @@ public:
   void bit5_extended(uint8_t &reg);
   void bit6_extended(uint8_t &reg);
   void bit7_extended(uint8_t &reg);
+
   void res0_extended(uint8_t &reg);
   void res1_extended(uint8_t &reg);
   void res2_extended(uint8_t &reg);
@@ -94,6 +98,13 @@ public:
   void res6_extended(uint8_t &reg);
   void res7_extended(uint8_t &reg);
 
-  void srl_extended(uint8_t &reg);
+  void set0_extended(uint8_t &reg);
+  void set1_extended(uint8_t &reg);
+  void set2_extended(uint8_t &reg);
+  void set3_extended(uint8_t &reg);
+  void set4_extended(uint8_t &reg);
+  void set5_extended(uint8_t &reg);
+  void set6_extended(uint8_t &reg);
+  void set7_extended(uint8_t &reg);
 };
 #endif // SRC_INSTRUCTIONS_HPP_

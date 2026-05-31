@@ -200,6 +200,7 @@ void InstructionSet::bit7_extended(uint8_t &reg) {
   cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
 
+// DONE:
 void InstructionSet::res0_extended(uint8_t &reg) { reg &= ~0x01; }
 void InstructionSet::res1_extended(uint8_t &reg) { reg &= ~0x02; }
 void InstructionSet::res2_extended(uint8_t &reg) { reg &= ~0x04; }
@@ -208,3 +209,13 @@ void InstructionSet::res4_extended(uint8_t &reg) { reg &= ~0x16; }
 void InstructionSet::res5_extended(uint8_t &reg) { reg &= ~0x32; }
 void InstructionSet::res6_extended(uint8_t &reg) { reg &= ~0x64; }
 void InstructionSet::res7_extended(uint8_t &reg) { reg &= ~0x80; }
+
+// DONE:
+void InstructionSet::set0_extended(uint8_t &reg) { reg |= 0x01; }
+void InstructionSet::set1_extended(uint8_t &reg) { reg |= 0x02; }
+void InstructionSet::set2_extended(uint8_t &reg) { reg |= 0x04; }
+void InstructionSet::set3_extended(uint8_t &reg) { reg |= 0x08; }
+void InstructionSet::set4_extended(uint8_t &reg) { reg |= 0x16; }
+void InstructionSet::set5_extended(uint8_t &reg) { reg |= 0x32; }
+void InstructionSet::set6_extended(uint8_t &reg) { reg |= 0x64; }
+void InstructionSet::set7_extended(uint8_t &reg) { reg |= 0x80; }

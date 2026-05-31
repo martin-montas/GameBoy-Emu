@@ -1938,14 +1938,58 @@ void InstructionSet::execute(uint8_t opcode) {
       break;
     }
     case 0x38: {
-      // todo
-      printf(" \n");
+      // DONE
+      printf("SRL B\n");
+      srl_extended(cpu->B);
+      cpu->PC += 2;
       break;
     }
     case 0x39: {
+      // DONE
+      printf("SRL C\n");
+      srl_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x3A: {
+      // DONE
+      printf("SRL D\n");
+      srl_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x3B: {
+      // DONE
+      printf("SRL E\n");
+      srl_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x3C: {
+      // DONE
+      printf("SRL H\n");
+      srl_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x3D: {
+      // DONE
+      printf("SRL L\n");
+      srl_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x3E: {
+      // DONE
+      printf("SRL L\n");
+      srl_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x3F: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x40: {
       // todo
@@ -1993,6 +2037,36 @@ void InstructionSet::execute(uint8_t opcode) {
       break
     }
     case 0x49: {
+      // todo
+      printf(" \n");
+      break
+    }
+    case 0x4A: {
+      // todo
+      printf(" \n");
+      break
+    }
+    case 0x4B: {
+      // todo
+      printf(" \n");
+      break
+    }
+    case 0x4C: {
+      // todo
+      printf(" \n");
+      break
+    }
+    case 0x4D: {
+      // todo
+      printf(" \n");
+      break
+    }
+    case 0x4E: {
+      // todo
+      printf(" \n");
+      break
+    }
+    case 0x4F: {
       // todo
       printf(" \n");
       break
@@ -2047,471 +2121,411 @@ void InstructionSet::execute(uint8_t opcode) {
       printf(" \n");
       break
     }
-    case 0x60: {
+    case 0x5A: {
       // todo
       printf(" \n");
       break
     }
-    case 0x61: {
+    case 0x5B: {
       // todo
       printf(" \n");
       break
     }
-    case 0x62: {
+    case 0x5C: {
       // todo
       printf(" \n");
       break
     }
-    case 0x63: {
+    case 0x5D: {
       // todo
       printf(" \n");
       break
     }
-    case 0x64: {
+    case 0x5E: {
       // todo
       printf(" \n");
       break
     }
-    case 0x65: {
-      // todo
-      printf(" \n");
-      break
     }
-    case 0x66: {
-      // todo
-      printf(" \n");
-      break
+  case 0xCC: {
+    // std::cout << "CALL nn" << std::endl;
+    if (cpu->F & FLAG_ZERO) {
+      execute_call();
+    } else {
+      cpu->PC = cpu->PC + 2;
     }
-    case 0x67: {
-      // todo
-      printf(" \n");
-      break
-    }
-    case 0x68: {
-      // todo
-      printf(" \n");
-      break
-    }
-    case 0x69: {
-      // todo
-      printf(" \n");
-      break
-    }
-    case 0x70: {
-      // todo
-      printf(" \n");
-      break
-    }
-    case 0x71: {
-      // todo
-      printf(" \n");
-      break
-    }
-    case 0x72: {
-      // todo
-      printf(" \n");
-      break
-    }
-    case 0x73: {
-      // todo
-      printf(" \n");
-      break
-    }
-    case 0x74: {
-      // todo
-      printf(" \n");
-      break
-    }
-    case 0x75: {
-      // todo
-      printf(" \n");
-      break
-    }
-    case 0x76: {
-      // todo
-      printf(" \n");
-      break
-    }
+    break;
+  }
+  case 0xCD: {
+    // std::cout << "CALL a16" << std::endl;
+    //  uint16_t address =  mmu->read16(mmu->romData[cpu->PC +1]);
+    //  cpu->PC = address;
+    //  // bool carry_flag =  ((result >> 4) & 0x1);
+    //  /
+    //  //
+    //  // bit:  7 6 5 4 3 2 1 0
+    //  //       Z N H C 0 0 0 0
+    //  cpu->F = ((cpu-F) << );
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xCE: {
+    // DONE:
+    uint16_t n = mmu->romData[cpu->PC + 1];
+    // printf("ADC A,u8 -- %X --\n", n);
+    uint16_t _carry_flag = ((cpu->F >> 4) & 0x1);
+    cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0xf) + (n & 0xf) + _carry_flag > 0xf);
+    uint16_t _result = cpu->A + n + _carry_flag;
+    cpu->A = static_cast<uint8_t>(_result);
 
-    case 0xCC: {
-      // std::cout << "CALL nn" << std::endl;
-      if (cpu->F & FLAG_ZERO) {
-        execute_call();
-      } else {
-        cpu->PC = cpu->PC + 2;
-      }
-      break;
-    }
-    case 0xCD: {
-      // std::cout << "CALL a16" << std::endl;
-      //  uint16_t address =  mmu->read16(mmu->romData[cpu->PC +1]);
-      //  cpu->PC = address;
-      //  // bool carry_flag =  ((result >> 4) & 0x1);
-      //  /
-      //  //
-      //  // bit:  7 6 5 4 3 2 1 0
-      //  //       Z N H C 0 0 0 0
-      //  cpu->F = ((cpu-F) << );
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xCE: {
-      // DONE:
-      uint16_t n = mmu->romData[cpu->PC + 1];
-      // printf("ADC A,u8 -- %X --\n", n);
-      uint16_t _carry_flag = ((cpu->F >> 4) & 0x1);
-      cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0xf) + (n & 0xf) + _carry_flag > 0xf);
-      uint16_t _result = cpu->A + n + _carry_flag;
-      cpu->A = static_cast<uint8_t>(_result);
+    cpu->set_flag(FLAG_ZERO, cpu->A == 0);
+    cpu->set_flag(FLAG_SUBTRACT, 0);
+    cpu->set_flag(FLAG_CARRY, _result > 0xff);
 
-      cpu->set_flag(FLAG_ZERO, cpu->A == 0);
-      cpu->set_flag(FLAG_SUBTRACT, 0);
-      cpu->set_flag(FLAG_CARRY, _result > 0xff);
+    // std::bitset<8> f_debug = cpu->F;
 
-      // std::bitset<8> f_debug = cpu->F;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xCF: {
+    // std::cout << "RST 08H" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xD0: {
+    // std::cout << " RET NC" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xD3: {
+    // std::cout << "  OUT(n), A" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xD4: {
+    // std::cout << "  CALLNC, nn" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xD5: {
+    // std::cout << " PUSH DE" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xD6: {
+    // DONE:
+    // sub(cpu->A, mmu->romData[cpu->PC + 1]);
+    // printf("SUB d8. result of A -- %X -- 0xD6\n", cpu->A);
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xD7: {
+    // std::cout << " RST 10H" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xD8: {
+    // std::cout << " RET C" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xD9: {
+    // std::cout << " RETI" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xDA: {
+    // std::cout << "  JPC, nn" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xDB: {
+    // std::cout << "   INA, (n)" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xDD: {
+    // std::cout << "  CALLC, nn" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xDE: {
+    // std::cout << " SBC nn" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xDF: {
+    // std::cout << " RST 18H" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE0: {
+    cpu->A = mmu->romData[cpu->PC + 1];
+    // printf("  LDH(n), A -- %X --\n", cpu->A);
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE1: {
+    // std::cout << " POP HL" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE2: {
+    // std::cout << "  LD(C), A" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE3: {
+    // std::cout << " XOR nn" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE4: {
+    // std::cout << " PUSH HL" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE5: {
+    // std::cout << " AND nn" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE6: {
+    // std::cout << " XOR nn" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE7: {
+    // std::cout << " RST 20H" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE8: {
+    // std::cout << "  ADDSP, r8" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xE9: {
+    // std::cout << "  JP(HL)" << std::endl;
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xEA: {
+    // DONE:
+    uint8_t l = mmu->romData[cpu->PC + 1];
+    uint8_t h = mmu->romData[cpu->PC + 2];
+    uint16_t nn = (h << 8) | l;
+    // printf("LD(nn), A 0xEA nn: -- %X --\n", nn);
+    mmu->write8(nn, cpu->A);
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xEB: {
+    // std::cout << " XOR nn" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xED: {
+    // std::cout << " CALL nn" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xEE: {
+    // std::cout << " XOR nn" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xEF: {
+    // std::cout << " RST 28H" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF0: {
+    // std::cout << "  LDHA, (n)" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF1: {
+    // std::cout << " POP AF" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF2: {
+    // std::cout << "  LDA, (C)" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF3: {
+    // std::cout << " DI" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF4: {
+    // std::cout << " PUSH AF" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF5: {
+    // std::cout << " OR nn" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF6: {
+    // std::cout << " OR nn" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF7: {
+    // std::cout << " RST 30H" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF8: {
+    // std::cout << "  LD HL, SP+ r8" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xF9: {
+    // std::cout << "  LDSP, HL" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xFA: {
+    // std::cout << "  LD A, (nn)" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xFB: {
+    // std::cout << " EI" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xFD: {
+    // std::cout << " CALL nn" << std::endl;
+    cpu->PC = cpu->PC + 3;
+    break;
+  }
+  case 0xFE: {
+    // DONE:
+    uint8_t n = mmu->romData[cpu->PC + 1];
+    // printf("CP A,n8 opcode:0xFE, n8:%X\n", n);
+    cpu->set_flag(FLAG_ZERO, n == cpu->A);
+    cpu->set_flag(FLAG_SUBTRACT, 1);
+    cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0x0F) < (n & 0x0F));
+    cpu->set_flag(FLAG_CARRY, cpu->A < n);
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  case 0xFF: {
+    // printf("RST 38H");
+    cpu->PC = cpu->PC + 2;
+    break;
+  }
+  default: {
+    std::cerr << "Unknown opcode: 0x" << opcode << std::hex;
+    break;
+  }
+  }
+  }
 
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xCF: {
-      // std::cout << "RST 08H" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xD0: {
-      // std::cout << " RET NC" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xD3: {
-      // std::cout << "  OUT(n), A" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xD4: {
-      // std::cout << "  CALLNC, nn" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xD5: {
-      // std::cout << " PUSH DE" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xD6: {
-      // DONE:
-      // sub(cpu->A, mmu->romData[cpu->PC + 1]);
-      // printf("SUB d8. result of A -- %X -- 0xD6\n", cpu->A);
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xD7: {
-      // std::cout << " RST 10H" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xD8: {
-      // std::cout << " RET C" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xD9: {
-      // std::cout << " RETI" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xDA: {
-      // std::cout << "  JPC, nn" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xDB: {
-      // std::cout << "   INA, (n)" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xDD: {
-      // std::cout << "  CALLC, nn" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xDE: {
-      // std::cout << " SBC nn" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xDF: {
-      // std::cout << " RST 18H" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE0: {
-      cpu->A = mmu->romData[cpu->PC + 1];
-      // printf("  LDH(n), A -- %X --\n", cpu->A);
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE1: {
-      // std::cout << " POP HL" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE2: {
-      // std::cout << "  LD(C), A" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE3: {
-      // std::cout << " XOR nn" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE4: {
-      // std::cout << " PUSH HL" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE5: {
-      // std::cout << " AND nn" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE6: {
-      // std::cout << " XOR nn" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE7: {
-      // std::cout << " RST 20H" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE8: {
-      // std::cout << "  ADDSP, r8" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xE9: {
-      // std::cout << "  JP(HL)" << std::endl;
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xEA: {
-      // DONE:
-      uint8_t l = mmu->romData[cpu->PC + 1];
-      uint8_t h = mmu->romData[cpu->PC + 2];
-      uint16_t nn = (h << 8) | l;
-      // printf("LD(nn), A 0xEA nn: -- %X --\n", nn);
-      mmu->write8(nn, cpu->A);
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xEB: {
-      // std::cout << " XOR nn" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xED: {
-      // std::cout << " CALL nn" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xEE: {
-      // std::cout << " XOR nn" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xEF: {
-      // std::cout << " RST 28H" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF0: {
-      // std::cout << "  LDHA, (n)" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF1: {
-      // std::cout << " POP AF" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF2: {
-      // std::cout << "  LDA, (C)" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF3: {
-      // std::cout << " DI" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF4: {
-      // std::cout << " PUSH AF" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF5: {
-      // std::cout << " OR nn" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF6: {
-      // std::cout << " OR nn" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF7: {
-      // std::cout << " RST 30H" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF8: {
-      // std::cout << "  LD HL, SP+ r8" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xF9: {
-      // std::cout << "  LDSP, HL" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xFA: {
-      // std::cout << "  LD A, (nn)" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xFB: {
-      // std::cout << " EI" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xFD: {
-      // std::cout << " CALL nn" << std::endl;
-      cpu->PC = cpu->PC + 3;
-      break;
-    }
-    case 0xFE: {
-      // DONE:
-      uint8_t n = mmu->romData[cpu->PC + 1];
-      // printf("CP A,n8 opcode:0xFE, n8:%X\n", n);
-      cpu->set_flag(FLAG_ZERO, n == cpu->A);
-      cpu->set_flag(FLAG_SUBTRACT, 1);
-      cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0x0F) < (n & 0x0F));
-      cpu->set_flag(FLAG_CARRY, cpu->A < n);
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    case 0xFF: {
-      // printf("RST 38H");
-      cpu->PC = cpu->PC + 2;
-      break;
-    }
-    default: {
-      std::cerr << "Unknown opcode: 0x" << opcode << std::hex;
-      break;
-    }
+  void InstructionSet::pop_(bool condition, uint16_t &reg) {
+    uint8_t l = mmu->read8(cpu->SP & 0xFF);
+    cpu->SP += 1;
+    uint8_t h = mmu->read8((cpu->SP >> 8) & 0xFF);
+    cpu->SP += 1;
+    reg = (h << 8) | l;
+  }
+
+  void InstructionSet::ret(bool condition) {
+    if (condition) {
+      uint8_t l = mmu->read8(cpu->SP);
+      l += 1;
+      uint8_t h = mmu->read8(cpu->SP);
+      h += 1;
+      cpu->PC = (h << 8) | l;
     }
   }
 
-    void InstructionSet::pop_(bool condition, uint16_t &reg) {
-      uint8_t l = mmu->read8(cpu->SP & 0xFF);
-      cpu->SP += 1;
-      uint8_t h = mmu->read8((cpu->SP >> 8) & 0xFF);
-      cpu->SP += 1;
-      reg = (h << 8) | l;
-    }
+  void InstructionSet::or_(uint8_t & reg_1, uint8_t reg_2) {
+    uint8_t tmp = reg_1 | reg_2;
+    cpu->set_flag(FLAG_ZERO, (tmp == 0));
+    cpu->clear_flag(FLAG_SUBTRACT);
+    cpu->clear_flag(FLAG_HALF_CARRY);
+    cpu->clear_flag(FLAG_CARRY);
+    reg_1 = tmp;
+  }
 
-    void InstructionSet::ret(bool condition) {
-      if (condition) {
-        uint8_t l = mmu->read8(cpu->SP);
-        l += 1;
-        uint8_t h = mmu->read8(cpu->SP);
-        h += 1;
-        cpu->PC = (h << 8) | l;
-      }
-    }
+  void InstructionSet::cp_(uint8_t reg_1, uint8_t reg_2) {
+    uint16_t tmp = reg_1 - reg_2;
+    cpu->set_flag(FLAG_ZERO, tmp == 0);
+    cpu->set_flag(FLAG_SUBTRACT, true);
+    cpu->set_flag(FLAG_HALF_CARRY, (reg_1 & 0x0F) < (reg_2 & 0x0F));
+    cpu->set_flag(FLAG_CARRY, tmp > 0xFF);
+  }
 
-    void InstructionSet::or_(uint8_t & reg_1, uint8_t reg_2) {
-      uint8_t tmp = reg_1 | reg_2;
-      cpu->set_flag(FLAG_ZERO, (tmp == 0));
-      cpu->clear_flag(FLAG_SUBTRACT);
-      cpu->clear_flag(FLAG_HALF_CARRY);
-      cpu->clear_flag(FLAG_CARRY);
-      reg_1 = tmp;
-    }
+  void InstructionSet::call(bool condition) {
+    if (condition) {
+      uint8_t l = mmu->read8(cpu->PC + 1);
+      uint8_t h = mmu->read8(cpu->PC + 2);
+      uint16_t t = (h << 8) | l;
+      uint16_t ret = cpu->PC += 3;
 
-    void InstructionSet::cp_(uint8_t reg_1, uint8_t reg_2) {
-      uint16_t tmp = reg_1 - reg_2;
-      cpu->set_flag(FLAG_ZERO, tmp == 0);
-      cpu->set_flag(FLAG_SUBTRACT, true);
-      cpu->set_flag(FLAG_HALF_CARRY, (reg_1 & 0x0F) < (reg_2 & 0x0F));
-      cpu->set_flag(FLAG_CARRY, tmp > 0xFF);
-    }
-
-    void InstructionSet::call(bool condition) {
-      if (condition) {
-        uint8_t l = mmu->read8(cpu->PC + 1);
-        uint8_t h = mmu->read8(cpu->PC + 2);
-        uint16_t t = (h << 8) | l;
-        uint16_t ret = cpu->PC += 3;
-
-        cpu->SP -= 1;
-        mmu->write8(cpu->SP, ret >> 8);
-        cpu->SP -= 1;
-        mmu->write8(cpu->SP, ret & 0xFF);
-        cpu->PC = t;
-      } else {
-        cpu->PC += 3;
-      }
-    }
-
-    void InstructionSet::and_(uint8_t & reg_1, uint8_t reg_2) {
-      reg_1 = reg_1 & reg_2;
-      cpu->set_flag(FLAG_ZERO, reg_1 == 0);
-      cpu->set_flag(FLAG_HALF_CARRY, 1);
-      cpu->clear_flag(FLAG_SUBTRACT);
-      cpu->clear_flag(FLAG_CARRY);
-    }
-
-    void InstructionSet::sbc(uint8_t & reg_1, uint8_t reg_2) {
-      uint8_t old = reg_1;
-      uint8_t a = reg_1;
-      uint8_t b = reg_2;
-      bool c = (cpu->F & FLAG_CARRY);
-      uint16_t result = a - b - c;
-
-      reg_1 = result & 0xFF;
-      cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
-      cpu->set_flag(FLAG_SUBTRACT, true);
-      cpu->set_flag(FLAG_HALF_CARRY, (old & 0x0F) < (b & 0x0F) + c);
-      cpu->set_flag(FLAG_CARRY, old < (reg_2 + c));
-    }
-    void InstructionSet::execute_call() {
-      uint16_t address = mmu->read16(cpu->PC);
-      cpu->PC += 2;
-      cpu->SP -= 2;
-      mmu->write16(cpu->SP, cpu->PC);
-      cpu->PC = address;
-    }
-
-    void InstructionSet::xor_(uint8_t & reg_1, uint8_t reg_2) {
-      reg_1 ^= reg_2;
-
-      cpu->set_flag(FLAG_ZERO, reg_1 == 0);
-      cpu->set_flag(FLAG_HALF_CARRY, false);
-      cpu->set_flag(FLAG_CARRY, false);
-      cpu->set_flag(FLAG_SUBTRACT, false);
-    }
-
-    void InstructionSet::push_(uint16_t reg) {
       cpu->SP -= 1;
-      uint8_t h = reg >> 8;
-      mmu->write8(cpu->SP, h);
+      mmu->write8(cpu->SP, ret >> 8);
       cpu->SP -= 1;
-      uint8_t l = reg & 0xFF;
-      mmu->write8(cpu->SP, l);
+      mmu->write8(cpu->SP, ret & 0xFF);
+      cpu->PC = t;
+    } else {
+      cpu->PC += 3;
     }
+  }
+
+  void InstructionSet::and_(uint8_t & reg_1, uint8_t reg_2) {
+    reg_1 = reg_1 & reg_2;
+    cpu->set_flag(FLAG_ZERO, reg_1 == 0);
+    cpu->set_flag(FLAG_HALF_CARRY, 1);
+    cpu->clear_flag(FLAG_SUBTRACT);
+    cpu->clear_flag(FLAG_CARRY);
+  }
+
+  void InstructionSet::sbc(uint8_t & reg_1, uint8_t reg_2) {
+    uint8_t old = reg_1;
+    uint8_t a = reg_1;
+    uint8_t b = reg_2;
+    bool c = (cpu->F & FLAG_CARRY);
+    uint16_t result = a - b - c;
+
+    reg_1 = result & 0xFF;
+    cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
+    cpu->set_flag(FLAG_SUBTRACT, true);
+    cpu->set_flag(FLAG_HALF_CARRY, (old & 0x0F) < (b & 0x0F) + c);
+    cpu->set_flag(FLAG_CARRY, old < (reg_2 + c));
+  }
+  void InstructionSet::execute_call() {
+    uint16_t address = mmu->read16(cpu->PC);
+    cpu->PC += 2;
+    cpu->SP -= 2;
+    mmu->write16(cpu->SP, cpu->PC);
+    cpu->PC = address;
+  }
+
+  void InstructionSet::xor_(uint8_t & reg_1, uint8_t reg_2) {
+    reg_1 ^= reg_2;
+
+    cpu->set_flag(FLAG_ZERO, reg_1 == 0);
+    cpu->set_flag(FLAG_HALF_CARRY, false);
+    cpu->set_flag(FLAG_CARRY, false);
+    cpu->set_flag(FLAG_SUBTRACT, false);
+  }
+
+  void InstructionSet::push_(uint16_t reg) {
+    cpu->SP -= 1;
+    uint8_t h = reg >> 8;
+    mmu->write8(cpu->SP, h);
+    cpu->SP -= 1;
+    uint8_t l = reg & 0xFF;
+    mmu->write8(cpu->SP, l);
+  }
 
   // void InstructionSet::cpl(uint8_t &reg) {
   //   // DONE

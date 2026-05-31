@@ -74,6 +74,7 @@ void InstructionSet::sla_extended(uint8_t &reg) {
 void InstructionSet::sra_extended(uint8_t &reg) {
   // DONE
   bool b0 = reg & 0x01;
+
   bool b7 = reg & 0x80;
 
   reg >>= 1;

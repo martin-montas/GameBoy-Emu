@@ -76,7 +76,7 @@ public:
 
   void rr_extended(uint8_t &reg);
   void sra_extended(uint8_t &reg);
-  void swap_extended(uint8_t *reg);
-  void srl_extended(uint8_t *reg);
+  void swap_extended(uint8_t &reg);
+  void srl_extended(uint8_t &reg);
 };
 #endif // SRC_INSTRUCTIONS_HPP_

@@ -85,6 +85,15 @@ public:
   void bit5_extended(uint8_t &reg);
   void bit6_extended(uint8_t &reg);
   void bit7_extended(uint8_t &reg);
+  void res0_extended(uint8_t &reg);
+  void res1_extended(uint8_t &reg);
+  void res2_extended(uint8_t &reg);
+  void res3_extended(uint8_t &reg);
+  void res4_extended(uint8_t &reg);
+  void res5_extended(uint8_t &reg);
+  void res6_extended(uint8_t &reg);
+  void res7_extended(uint8_t &reg);
+
   void srl_extended(uint8_t &reg);
 };
 #endif // SRC_INSTRUCTIONS_HPP_

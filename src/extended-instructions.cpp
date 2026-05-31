@@ -184,7 +184,7 @@ void InstructionSet::bit5_extended(uint8_t &reg) {
 
 void InstructionSet::bit6_extended(uint8_t &reg) {
   // DONE
-  bool b6 = reg & 0x32;
+  bool b6 = reg & 0x64;
 
   cpu->set_flag(FLAG_ZERO, !b6);
   cpu->clear_flag(FLAG_SUBTRACT);
@@ -193,9 +193,18 @@ void InstructionSet::bit6_extended(uint8_t &reg) {
 
 void InstructionSet::bit7_extended(uint8_t &reg) {
   // DONE
-  bool b7 = reg & 0x64;
+  bool b7 = reg & 0x80;
 
   cpu->set_flag(FLAG_ZERO, !b7);
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
+
+void InstructionSet::res0_extended(uint8_t &reg) { reg &= ~0x01; }
+void InstructionSet::res1_extended(uint8_t &reg) { reg &= ~0x02; }
+void InstructionSet::res2_extended(uint8_t &reg) { reg &= ~0x04; }
+void InstructionSet::res3_extended(uint8_t &reg) { reg &= ~0x08; }
+void InstructionSet::res4_extended(uint8_t &reg) { reg &= ~0x16; }
+void InstructionSet::res5_extended(uint8_t &reg) { reg &= ~0x32; }
+void InstructionSet::res6_extended(uint8_t &reg) { reg &= ~0x64; }
+void InstructionSet::res7_extended(uint8_t &reg) { reg &= ~0x80; }

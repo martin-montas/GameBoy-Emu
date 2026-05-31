@@ -2464,18 +2464,526 @@ void InstructionSet::execute(uint8_t opcode) {
       break;
     }
     case 0x80: {
-      // todo
-      // printf(" \n");
+      // DONE
+      // printf("RES0 B\n");
+      res0_extended(cpu->B);
+      cpu->PC += 2;
       break;
     }
     case 0x81: {
-      // todo
-      // printf(" \n");
+      // DONE
+      // printf("RES0 C\n");
+      res0_extended(cpu->C);
+      cpu->PC += 2;
       break;
     }
     case 0x82: {
+      // DONE
+      // printf("RES0 D\n");
+      res0_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x83: {
+      // DONE
+      // printf("RES0 E\n");
+      res0_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x84: {
+      // DONE
+      // printf("RES0 H\n");
+      res0_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x85: {
+      // DONE
+      // printf("RES0 L\n");
+      res0_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x86: {
+      // DONE
+      // printf("RES0 (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      res0_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x87: {
+      // DONE
+      // printf("RES0 L\n");
+      res0_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x88: {
+      // DONE
+      // printf("RES1 B\n");
+      res1_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x89: {
+      // DONE
+      // printf("RES1 C\n");
+      res1_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x8A: {
+      // DONE
+      // printf("RES1 D\n");
+      res1_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x8B: {
+      // DONE
+      // printf("RES1 E\n");
+      res1_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x8C: {
+      // DONE
+      // printf("RES1 E\n");
+      res1_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x8D: {
+      // DONE
+      // printf("RES1 L\n");
+      res1_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x8E: {
+      // DONE
+      // printf("RES1 (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      res1_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x8F: {
+      // DONE
+      // printf("RES1 A\n");
+      res1_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x90: {
+      // DONE
+      // printf("RES2 B\n");
+      res2_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x91: {
+      // DONE
+      // printf("RES2 C\n");
+      res2_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x92: {
+      // DONE
+      // printf("RES2 D\n");
+      res2_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x93: {
+      // DONE
+      // printf("RES2 E\n");
+      res2_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x94: {
+      // DONE
+      // printf("RES2 H\n");
+      res2_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x95: {
+      // DONE
+      // printf("RES2 L\n");
+      res2_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+
+    case 0x96: {
+      // DONE
+      // printf("RES2 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      res2_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x97: {
+      // DONE
+      // printf("RES2 A\n");
+      res2_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x98: {
+      // DONE
+      // printf("RES2 B\n");
+      res3_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x99: {
+      // DONE
+      // printf("RES2 C\n");
+      res3_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x9A: {
+      // DONE
+      // printf("RES2 D\n");
+      res3_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x9B: {
+      // DONE
+      // printf("RES2 E\n");
+      res3_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x9C: {
+      // DONE
+      // printf("RES2 H\n");
+      res3_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x9D: {
+      // DONE
+      // printf("RES2 L\n");
+      res3_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x9E: {
+      // DONE
+      // printf("RES2 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      res3_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x9F: {
+      // DONE
+      // printf("RES2 A\n");
+      res3_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xA0: {
       // todo
-      // printf(" \n");
+      printf(" \n");
+      break;
+    }
+    case 0xA1: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xA2: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xA3: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xA4: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xA5: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xA6: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xA7: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xA8: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xA9: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xAA: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xAB: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xAC: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xAD: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xAE: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xAF: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB0: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB1: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB2: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB3: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB4: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB5: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB6: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB7: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB8: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xB9: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xBA: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xBB: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xBC: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xBD: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xBE: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xBF: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC0: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC1: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC2: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC3: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC4: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC5: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC6: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC7: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC8: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xC9: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xCA: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xCB: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xCC: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xCD: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xCE: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xCF: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD0: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD1: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD2: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD3: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD4: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD5: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD6: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD7: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD8: {
+      // todo
+      printf(" \n");
+      break;
+    }
+    case 0xD9: {
+      // todo
+      printf(" \n");
       break;
     }
     }

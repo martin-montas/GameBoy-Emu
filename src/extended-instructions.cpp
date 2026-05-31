@@ -2,7 +2,7 @@
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 
-#include <cstdint>
+#include <stdint.h>
 #include <sys/types.h>
 
 #include <stdint.h>
@@ -62,7 +62,7 @@ void InstructionSet::rrc_extended(uint8_t &reg) {
 }
 
 void InstructionSet::sla_extended(uint8_t &reg) {
-  // done
+  // DONE
   bool b7 = reg & 0x80;
   reg <<= 1;
   cpu->set_flag(FLAG_ZERO, reg == 0);
@@ -122,4 +122,25 @@ void InstructionSet::srl_extended(uint8_t &reg) {
   cpu->set_flag(FLAG_ZERO, reg == 0);
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->clear_flag(FLAG_HALF_CARRY);
+}
+void InstructionSet::bit0_extended(uint8_t &reg) {
+  // DONE
+  bool b0 = reg & 0x01;
+
+  if (!b0) {
+    cpu->F |= 0x80;
+  } else {
+    cpu->F &= ~0x80;
+  }
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->set_flag(FLAG_HALF_CARRY, 1);
+}
+
+void InstructionSet::bit1_extended(uint8_t &reg) {
+  // DONE
+  bool b1 = (reg & 0x02);
+
+  cpu->set_flag(FLAG_ZERO, !01);
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->set_flag(FLAG_HALF_CARRY, 1);
 }

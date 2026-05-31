@@ -7,5 +7,6 @@ test_runner
 .map
 .sym
 test/*
+./gameboy-todo.md
 test/a.out
 gameboy

@@ -1939,7 +1939,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x38: {
       // DONE
-      printf("SRL B\n");
+      // printf("SRL B\n");
       srl_extended(cpu->B);
       cpu->PC += 2;
       break;
@@ -1953,198 +1953,237 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x3A: {
       // DONE
-      printf("SRL D\n");
+      // printf("SRL D\n");
       srl_extended(cpu->D);
       cpu->PC += 2;
       break;
     }
     case 0x3B: {
       // DONE
-      printf("SRL E\n");
+      // printf("SRL E\n");
       srl_extended(cpu->E);
       cpu->PC += 2;
       break;
     }
     case 0x3C: {
       // DONE
-      printf("SRL H\n");
+      // printf("SRL H\n");
       srl_extended(cpu->H);
       cpu->PC += 2;
       break;
     }
     case 0x3D: {
       // DONE
-      printf("SRL L\n");
+      // printf("SRL L\n");
       srl_extended(cpu->L);
       cpu->PC += 2;
       break;
     }
     case 0x3E: {
       // DONE
-      printf("SRL L\n");
-      srl_extended(cpu->L);
+      // printf("SRL (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      srl_extended(v);
+      mmu->write8(cpu->HL, v);
       cpu->PC += 2;
       break;
     }
     case 0x3F: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("SRL A\n");
+      srl_extended(cpu->A);
+      cpu->PC += 2;
       break;
     }
     case 0x40: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT0 B\n");
+      bit0_extended(cpu->B);
+      cpu->PC += 2;
+      break;
     }
     case 0x41: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT0 C\n");
+      bit0_extended(cpu->C);
+      cpu->PC += 2;
+      break;
     }
     case 0x42: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT0 D\n");
+      bit0_extended(cpu->D);
+      cpu->PC += 2;
+      break;
     }
     case 0x43: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT0 E\n");
+      bit0_extended(cpu->E);
+      cpu->PC += 2;
+      break;
     }
     case 0x44: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT0 H\n");
+      bit0_extended(cpu->H);
+      cpu->PC += 2;
+      break;
     }
     case 0x45: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT0 L\n");
+      bit0_extended(cpu->L);
+      cpu->PC += 2;
+      break;
     }
     case 0x46: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT0 (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      bit0_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
     }
     case 0x47: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT0 A\n");
+      bit0_extended(cpu->A);
+      cpu->PC += 2;
+      break;
     }
     case 0x48: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT1 B\n");
+      bit1_extended(cpu->B);
+      cpu->PC += 2;
+      break;
     }
     case 0x49: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT1 C\n");
+      bit1_extended(cpu->C);
+      cpu->PC += 2;
+      break;
     }
     case 0x4A: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT1 D\n");
+      bit1_extended(cpu->D);
+      cpu->PC += 2;
+      break;
     }
     case 0x4B: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT1 E\n");
+      bit1_extended(cpu->E);
+      cpu->PC += 2;
+      break;
     }
     case 0x4C: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT1 H\n");
+      bit1_extended(cpu->H);
+      cpu->PC += 2;
+      break;
     }
     case 0x4D: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT1 L\n");
+      bit1_extended(cpu->L);
+      cpu->PC += 2;
+      break;
     }
     case 0x4E: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      uint8_t v = mmu->read8(cpu->HL);
+      // printf("BIT1 (HL)\n");
+      bit1_extended(v);
+      mmu->write8(cpu->HL, v);
+      break;
     }
     case 0x4F: {
-      // todo
-      printf(" \n");
-      break
+      // DONE
+      // printf("BIT1 A\n");
+      bit1_extended(cpu->A);
+      cpu->PC += 2;
+      break;
     }
     case 0x50: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x51: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x52: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x53: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x54: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x55: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x56: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x57: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x58: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x59: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x5A: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x5B: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x5C: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x5D: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     case 0x5E: {
       // todo
       printf(" \n");
-      break
+      break;
     }
     }
   case 0xCC: {

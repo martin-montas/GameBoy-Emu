@@ -41,13 +41,14 @@ void InstructionSet::jump(bool condition, uint8_t offset) {
     cpu->PC += offset;
   }
 }
+void InstructionSet::inc(uint16_t &reg) {
+  uint16_t old = reg;
 
-void InstructionSet::inc_mem(uint16_t reg) {}
-void InstructionSet::inc_mem(uint8_t reg) {}
+  reg = old + 1;
 
-void InstructionSet::inc(uint16_t &reg) {}
-void InstructionSet::inc(uint8_t &reg) {}
-
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->set_flag(FLAG_HALF_CARRY, ((old & 0x0FFF) + 1) > 0x0FFF);
+}
 void InstructionSet::ld(uint16_t &reg, uint16_t addr) { reg = addr; }
 void InstructionSet::ld(uint8_t &reg, uint8_t addr) { reg = addr; }
 
@@ -96,7 +97,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x05: {
     // DONE
     // printf("DEC B 0x05 -- before %X --\n", cpu->B);
-    dec(cpu->B, 1);
+    dec(cpu->B);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -167,7 +168,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x0D: {
     // DONE
-    dec(cpu->C, 1);
+    dec(cpu->C);
     // printf("DEC C -- %X --", cpu->C);
     cpu->PC = cpu->PC + 1;
     break;
@@ -181,7 +182,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x0F: {
     // DONE
-    rrca(&cpu->A);
+    rrca(cpu->A);
     // printf("RRCA --%X --", cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
@@ -222,7 +223,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x15: {
     // DONE
-    dec(cpu->D, 1);
+    dec(cpu->D);
     // printf("DEC D -- %X --\n", cpu->D);
     cpu->PC = cpu->PC + 1;
     break;
@@ -280,7 +281,7 @@ void InstructionSet::execute(uint8_t opcode) {
   }
   case 0x1D: {
     // DONE
-    dec(cpu->E, 1);
+    dec(cpu->E);
     // printf("DEC E -- %X --\n", cpu->E);
     cpu->PC = cpu->PC + 1;
     break;
@@ -340,7 +341,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x25: {
     // soon
     // printf("DEC H");
-    dec(cpu->H, 1);
+    dec(cpu->H);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -417,7 +418,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x2D: {
     // DONE
     // printf("DEC L\n");
-    dec(cpu->L, 1);
+    dec(cpu->L);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -531,7 +532,7 @@ void InstructionSet::execute(uint8_t opcode) {
   case 0x3D: {
     // DONE
     // printf("DEC A TODO\n");
-    dec(cpu->A, 1);
+    dec(cpu->A);
     cpu->PC = cpu->PC + 1;
     break;
   }
@@ -3380,8 +3381,166 @@ void InstructionSet::push_(uint16_t reg) {
 //     cpu->set_flag(FLAG_CARRY, (tmp > 0xFF));
 //   }
 // }
+void InstructionSet::rlc(uint8_t reg) {
+  bool msb = reg & 0x80;
+  reg = (reg << 1) | (msb >> 7);
 
-void InstructionSet::dec(uint8_t &reg, uint8_t n) {}
-void InstructionSet::dec(uint16_t &reg, uint8_t n) {}
-void InstructionSet::dec_mem(uint16_t value) {}
-void InstructionSet::dec_mem(uint8_t value) {}
+  cpu->set_flag(FLAG_CARRY, msb);
+
+  cpu->set_flag(FLAG_ZERO, reg == 0);
+
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->clear_flag(FLAG_HALF_CARRY);
+}
+
+void InstructionSet::rrca(uint8_t &reg) {
+  // DONE
+  bool least_sig_bit = reg & 1;
+  reg = reg >> 1;
+  if (least_sig_bit) {
+    reg |= 128;
+  }
+  cpu->set_flag(FLAG_CARRY, least_sig_bit);
+  cpu->clear_flag(FLAG_ZERO);
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->clear_flag(FLAG_HALF_CARRY);
+}
+
+// void and_(uint8_t reg_1, uint8_t reg_2) {
+//     reg_1 = reg_1 & reg_2;
+//     cpu->set_flag(FLAG_ZERO, reg_1 == 0);
+//     cpu->clear_flag(FLAG_SUBTRACT);
+//     cpu->set_flag(FLAG_HALF_CARRY, 1);
+//     cpu->clear_flag(FLAG_CARRY);
+// }
+
+void InstructionSet::dec_mem(uint16_t &reg) {
+  // To be DONE
+  uint8_t tmp = mmu->read8(reg);
+  uint8_t nibble_carry = tmp & 0x0F;
+  tmp = tmp - 1;
+  mmu->write8(reg, tmp);
+}
+
+void InstructionSet::adc(uint8_t &reg_1, uint8_t reg_2) {
+  bool old_c = cpu->F & FLAG_CARRY;
+
+  uint16_t c = reg_1 + reg_2 + old_c;
+  cpu->set_flag(FLAG_ZERO, reg_1 == 0);
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) + (reg_2 & 0x0F) + old_c) > 0x0F);
+  cpu->set_flag(FLAG_CARRY, c > 0xFFF);
+}
+
+void InstructionSet::rra() {
+  // DONE
+  // Before: C = c, A = 76543210
+  // After: A = c7654321, C = 0
+  bool c = cpu->F & FLAG_CARRY;
+  bool b0 = cpu->A & 1;
+
+  cpu->A = cpu->A >> 1;
+  if (c) {
+    cpu->A |= 0x80;
+  }
+  cpu->clear_flag(FLAG_ZERO);
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->clear_flag(FLAG_HALF_CARRY);
+  cpu->set_flag(FLAG_CARRY, b0);
+}
+
+void InstructionSet::rla() {
+  printf("RLA\n");
+  uint8_t old_a = cpu->A;
+  uint8_t old_carry = cpu->F & FLAG_CARRY;
+  uint8_t new_carry = (old_a >> 7) & 1;
+  cpu->A = (old_a << 1) | old_carry;
+
+  cpu->set_flag(FLAG_CARRY, new_carry);
+  cpu->clear_flag(FLAG_ZERO);
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->clear_flag(FLAG_HALF_CARRY);
+}
+void InstructionSet::add8_mem(uint8_t destination, uint8_t value) {
+  mmu->write8(destination, destination + value);
+  cpu->set_flag(FLAG_ZERO, (destination + value) == 0);
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->set_flag(FLAG_HALF_CARRY, ((destination & 0x0F) + (value & 0x0F)) > 0x0F);
+  cpu->set_flag(FLAG_CARRY, (destination + value) > 0xFF);
+}
+uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
+  // DONE:
+  uint8_t result = reg_1 + reg_2;
+  uint16_t _carry = reg_1 + reg_2;
+  cpu->set_flag(FLAG_ZERO, result == 0);
+  cpu->set_flag(FLAG_SUBTRACT, false);
+  cpu->set_flag(FLAG_HALF_CARRY, (reg_1 & 0x0F) + (reg_2 & 0x0F) >= 0x10);
+  cpu->set_flag(FLAG_CARRY, _carry >= 0x0100);
+  return result;
+}
+void InstructionSet::sub(uint8_t &reg_1, uint8_t reg_2) {
+  uint8_t a = reg_1;
+  uint8_t b = reg_2;
+
+  uint16_t result = a - b;
+
+  reg_1 = result & 0xFF;
+
+  cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
+  cpu->set_flag(FLAG_SUBTRACT, true);
+
+  cpu->set_flag(FLAG_HALF_CARRY, (a & 0x0F) < (b & 0x0F));
+  cpu->set_flag(FLAG_CARRY, a < b);
+}
+void InstructionSet::add16(uint16_t &destination, uint16_t &value) {
+  // DONE
+  uint32_t result = destination + value;
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->set_flag(FLAG_CARRY, result > 0xFFFF);
+  cpu->set_flag(FLAG_HALF_CARRY, ((destination & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF);
+  destination = result & 0xFFFF;
+}
+
+void InstructionSet::inc(uint8_t &reg) {
+  uint8_t old = reg;
+
+  reg = old + 1;
+
+  cpu->set_flag(FLAG_ZERO, reg == 0);
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->set_flag(FLAG_HALF_CARRY, (old & 0x0F) == 0x0F);
+}
+
+void InstructionSet::dec(uint8_t &reg) {
+  // DONE
+
+  uint8_t r = reg - 1;
+  cpu->set_flag(FLAG_ZERO, r == 0);
+  cpu->set_flag(FLAG_SUBTRACT, true);
+  cpu->set_flag(FLAG_HALF_CARRY, (reg & 0x0F) == 0x00);
+  reg = r;
+}
+
+void InstructionSet::inc_mem(uint16_t &reg) {
+  // @brief this function increments
+  // the value at the [reg],
+  // and updates the F flag register
+  // accordinly.
+  uint8_t tmp = mmu->read8(reg);
+  uint8_t nibble_carry = tmp & 0x0F;
+  tmp = tmp + 1;
+  printf("-- Debug: 0x%X to 0x%X --\n", tmp, reg);
+  mmu->write8(reg, tmp);
+
+  cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
+  cpu->set_flag(FLAG_ZERO, (tmp == 0));
+  cpu->clear_flag(FLAG_SUBTRACT);
+}
+
+void InstructionSet::cpl(uint8_t &reg) {
+  // DONE
+  reg = ~reg;
+
+  cpu->set_flag(FLAG_SUBTRACT, true);
+  cpu->set_flag(FLAG_HALF_CARRY, true);
+}

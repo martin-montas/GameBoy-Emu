@@ -58,4 +58,7 @@ format:
 lint:
 	cpplint $(shell find . \( -name "*.cpp" -o -name "*.hpp" \))
 
+c:
+	find . \( -name "*.cpp" -o -name "*.hpp"  \) | xargs wc -l
+
 .PHONY: clean format lint

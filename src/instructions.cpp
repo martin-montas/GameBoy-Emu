@@ -42,6 +42,12 @@ void InstructionSet::jump(bool condition, uint8_t offset) {
   }
 }
 
+void InstructionSet::inc_mem(uint16_t reg) {}
+void InstructionSet::inc_mem(uint8_t reg) {}
+
+void InstructionSet::inc(uint16_t &reg) {}
+void InstructionSet::inc(uint8_t &reg) {}
+
 void InstructionSet::ld(uint16_t &reg, uint16_t addr) { reg = addr; }
 void InstructionSet::ld(uint8_t &reg, uint8_t addr) { reg = addr; }
 
@@ -2111,81 +2117,369 @@ void InstructionSet::execute(uint8_t opcode) {
       break;
     }
     case 0x50: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT2, B\n");
+      bit2_extended(cpu->B);
+      cpu->PC += 2;
       break;
     }
     case 0x51: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT2, C\n");
+      bit2_extended(cpu->C);
+      cpu->PC += 2;
       break;
     }
     case 0x52: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT2, D\n");
+      bit2_extended(cpu->D);
+      cpu->PC += 2;
       break;
     }
     case 0x53: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT2, E\n");
+      bit2_extended(cpu->E);
+      cpu->PC += 2;
       break;
     }
     case 0x54: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT2, H\n");
+      bit2_extended(cpu->H);
+      cpu->PC += 2;
       break;
     }
     case 0x55: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT2, L\n");
+      bit2_extended(cpu->L);
+      cpu->PC += 2;
       break;
     }
     case 0x56: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT2, L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      bit2_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
       break;
     }
     case 0x57: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT2 A\n");
+      bit2_extended(cpu->A);
+      cpu->PC += 2;
       break;
     }
     case 0x58: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT3 B\n");
+      bit3_extended(cpu->B);
+      cpu->PC += 2;
       break;
     }
     case 0x59: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT3 C\n");
+      bit3_extended(cpu->C);
+      cpu->PC += 2;
       break;
     }
     case 0x5A: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT3 D\n");
+      bit3_extended(cpu->D);
+      cpu->PC += 2;
       break;
     }
     case 0x5B: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT3 E\n");
+      bit3_extended(cpu->E);
+      cpu->PC += 2;
       break;
     }
     case 0x5C: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT3 H\n");
+      bit3_extended(cpu->H);
+      cpu->PC += 2;
       break;
     }
     case 0x5D: {
-      // todo
-      printf(" \n");
+      // DONE
+      // printf("BIT3 L\n");
+      bit3_extended(cpu->L);
+      cpu->PC += 2;
       break;
     }
     case 0x5E: {
+      // DONE
+      // printf("BIT3 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      bit3_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x5F: {
+      // DONE
+      // printf("BIT3 A\n");
+      bit3_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x60: {
+      // DONE
+      // printf("BIT4 B\n");
+      bit4_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x61: {
+      // DONE
+      // printf("BIT4 C\n");
+      bit4_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x62: {
+      // DONE
+      // printf("BIT4 D\n");
+      bit4_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x63: {
+      // DONE
+      // printf("BIT4 E\n");
+      bit4_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x64: {
+      // DONE
+      // printf("BIT4 H\n");
+      bit4_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x65: {
+      // DONE
+      // printf("BIT4 L\n");
+      bit4_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x66: {
+      // DONE
+      // printf("BIT4 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      bit4_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x67: {
+      // DONE
+      // printf("BIT4 A\n");
+      bit4_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x68: {
+      // DONE
+      // printf("BIT4 A\n");
+      bit4_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x69: {
+      // DONE
+      // printf("BIT5 B\n");
+      bit4_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x6A: {
+      // DONE
+      // printf("BIT5 C\n");
+      bit4_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x6B: {
+      // DONE
+      // printf("BIT5 D\n");
+      bit5_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x6C: {
+      // DONE
+      // printf("BIT5 E\n");
+      bit5_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x6D: {
+      // DONE
+      // printf("BIT5 L\n");
+      bit5_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x6E: {
+      // DONE
+      // printf("BIT5 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      bit5_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x6F: {
+      // DONE
+      // printf("BIT5 A\n");
+      bit5_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x70: {
+      // DONE
+      // printf("BIT6 A\n");
+      bit6_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x71: {
+      // DONE
+      // printf("BIT6 C\n");
+      bit6_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x72: {
+      // DONE
+      // printf("BIT6 D\n");
+      bit6_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x73: {
+      // DONE
+      // printf("BIT6 E\n");
+      bit6_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x74: {
+      // DONE
+      // printf("BIT6 H\n");
+      bit6_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x75: {
+      // DONE
+      // printf("BIT6 L\n");
+      bit6_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x76: {
+      // DONE
+      // printf("BIT6 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      bit6_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x77: {
+      // DONE
+      // printf("BIT6 A\n");
+      bit6_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x78: {
+      // DONE
+      // printf("BIT7 A\n");
+      bit7_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x79: {
+      // DONE
+      // printf("BIT7 C\n");
+      bit7_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x7A: {
+      // DONE
+      // printf("BIT7 D\n");
+      bit7_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x7B: {
+      // DONE
+      // printf("BIT7 E\n");
+      bit7_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x7C: {
+      // DONE
+      // printf("BIT7 H\n");
+      bit7_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x7D: {
+      // DONE
+      // printf("BIT7 L\n");
+      bit7_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x7E: {
+      // DONE
+      // printf("BIT7 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      bit7_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+    }
+    case 0x7F: {
+      // DONE
+      // printf("BIT7 A\n");
+      bit7_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0x80: {
       // todo
-      printf(" \n");
+      // printf(" \n");
+      break;
+    }
+    case 0x81: {
+      // todo
+      // printf(" \n");
+      break;
+    }
+    case 0x82: {
+      // todo
+      // printf(" \n");
       break;
     }
     }
+  }
   case 0xCC: {
     // std::cout << "CALL nn" << std::endl;
     if (cpu->F & FLAG_ZERO) {
@@ -2465,116 +2759,121 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   }
+}
+
+void InstructionSet::pop_(bool condition, uint16_t &reg) {
+  uint8_t l = mmu->read8(cpu->SP & 0xFF);
+  cpu->SP += 1;
+  uint8_t h = mmu->read8((cpu->SP >> 8) & 0xFF);
+  cpu->SP += 1;
+  reg = (h << 8) | l;
+}
+
+void InstructionSet::ret(bool condition) {
+  if (condition) {
+    uint8_t l = mmu->read8(cpu->SP);
+    l += 1;
+    uint8_t h = mmu->read8(cpu->SP);
+    h += 1;
+    cpu->PC = (h << 8) | l;
   }
+}
 
-  void InstructionSet::pop_(bool condition, uint16_t &reg) {
-    uint8_t l = mmu->read8(cpu->SP & 0xFF);
-    cpu->SP += 1;
-    uint8_t h = mmu->read8((cpu->SP >> 8) & 0xFF);
-    cpu->SP += 1;
-    reg = (h << 8) | l;
-  }
+void InstructionSet::or_(uint8_t &reg_1, uint8_t reg_2) {
+  uint8_t tmp = reg_1 | reg_2;
+  cpu->set_flag(FLAG_ZERO, (tmp == 0));
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->clear_flag(FLAG_HALF_CARRY);
+  cpu->clear_flag(FLAG_CARRY);
+  reg_1 = tmp;
+}
 
-  void InstructionSet::ret(bool condition) {
-    if (condition) {
-      uint8_t l = mmu->read8(cpu->SP);
-      l += 1;
-      uint8_t h = mmu->read8(cpu->SP);
-      h += 1;
-      cpu->PC = (h << 8) | l;
-    }
-  }
+void InstructionSet::cp_(uint8_t reg_1, uint8_t reg_2) {
+  uint16_t tmp = reg_1 - reg_2;
+  cpu->set_flag(FLAG_ZERO, tmp == 0);
+  cpu->set_flag(FLAG_SUBTRACT, true);
+  cpu->set_flag(FLAG_HALF_CARRY, (reg_1 & 0x0F) < (reg_2 & 0x0F));
+  cpu->set_flag(FLAG_CARRY, tmp > 0xFF);
+}
 
-  void InstructionSet::or_(uint8_t & reg_1, uint8_t reg_2) {
-    uint8_t tmp = reg_1 | reg_2;
-    cpu->set_flag(FLAG_ZERO, (tmp == 0));
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
-    cpu->clear_flag(FLAG_CARRY);
-    reg_1 = tmp;
-  }
+void InstructionSet::call(bool condition) {
+  if (condition) {
+    uint8_t l = mmu->read8(cpu->PC + 1);
+    uint8_t h = mmu->read8(cpu->PC + 2);
+    uint16_t t = (h << 8) | l;
+    uint16_t ret = cpu->PC += 3;
 
-  void InstructionSet::cp_(uint8_t reg_1, uint8_t reg_2) {
-    uint16_t tmp = reg_1 - reg_2;
-    cpu->set_flag(FLAG_ZERO, tmp == 0);
-    cpu->set_flag(FLAG_SUBTRACT, true);
-    cpu->set_flag(FLAG_HALF_CARRY, (reg_1 & 0x0F) < (reg_2 & 0x0F));
-    cpu->set_flag(FLAG_CARRY, tmp > 0xFF);
-  }
-
-  void InstructionSet::call(bool condition) {
-    if (condition) {
-      uint8_t l = mmu->read8(cpu->PC + 1);
-      uint8_t h = mmu->read8(cpu->PC + 2);
-      uint16_t t = (h << 8) | l;
-      uint16_t ret = cpu->PC += 3;
-
-      cpu->SP -= 1;
-      mmu->write8(cpu->SP, ret >> 8);
-      cpu->SP -= 1;
-      mmu->write8(cpu->SP, ret & 0xFF);
-      cpu->PC = t;
-    } else {
-      cpu->PC += 3;
-    }
-  }
-
-  void InstructionSet::and_(uint8_t & reg_1, uint8_t reg_2) {
-    reg_1 = reg_1 & reg_2;
-    cpu->set_flag(FLAG_ZERO, reg_1 == 0);
-    cpu->set_flag(FLAG_HALF_CARRY, 1);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_CARRY);
-  }
-
-  void InstructionSet::sbc(uint8_t & reg_1, uint8_t reg_2) {
-    uint8_t old = reg_1;
-    uint8_t a = reg_1;
-    uint8_t b = reg_2;
-    bool c = (cpu->F & FLAG_CARRY);
-    uint16_t result = a - b - c;
-
-    reg_1 = result & 0xFF;
-    cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
-    cpu->set_flag(FLAG_SUBTRACT, true);
-    cpu->set_flag(FLAG_HALF_CARRY, (old & 0x0F) < (b & 0x0F) + c);
-    cpu->set_flag(FLAG_CARRY, old < (reg_2 + c));
-  }
-  void InstructionSet::execute_call() {
-    uint16_t address = mmu->read16(cpu->PC);
-    cpu->PC += 2;
-    cpu->SP -= 2;
-    mmu->write16(cpu->SP, cpu->PC);
-    cpu->PC = address;
-  }
-
-  void InstructionSet::xor_(uint8_t & reg_1, uint8_t reg_2) {
-    reg_1 ^= reg_2;
-
-    cpu->set_flag(FLAG_ZERO, reg_1 == 0);
-    cpu->set_flag(FLAG_HALF_CARRY, false);
-    cpu->set_flag(FLAG_CARRY, false);
-    cpu->set_flag(FLAG_SUBTRACT, false);
-  }
-
-  void InstructionSet::push_(uint16_t reg) {
     cpu->SP -= 1;
-    uint8_t h = reg >> 8;
-    mmu->write8(cpu->SP, h);
+    mmu->write8(cpu->SP, ret >> 8);
     cpu->SP -= 1;
-    uint8_t l = reg & 0xFF;
-    mmu->write8(cpu->SP, l);
+    mmu->write8(cpu->SP, ret & 0xFF);
+    cpu->PC = t;
+  } else {
+    cpu->PC += 3;
   }
+}
 
-  // void InstructionSet::cpl(uint8_t &reg) {
-  //   // DONE
-  //   reg = ~reg;
-  //
-  //   cp_(uint8_t * reg_1, uint8_t * reg_2) {
-  //     uint16_t tmp = reg_1 - reg_2;
-  //     cpu->set_flag(FLAG_ZERO, (reg_1 == reg_2));
-  //     cpu->set_flag(FLAG_SUBTRACT, 1);
-  //     cpu->set_flag(FLAG_HALF_CARRY, ((*reg_1 & 0x0F) < (*reg_2 & 0x0F)));
-  //     cpu->set_flag(FLAG_CARRY, (tmp > 0xFF));
-  //   }
-  // }
+void InstructionSet::and_(uint8_t &reg_1, uint8_t reg_2) {
+  reg_1 = reg_1 & reg_2;
+  cpu->set_flag(FLAG_ZERO, reg_1 == 0);
+  cpu->set_flag(FLAG_HALF_CARRY, 1);
+  cpu->clear_flag(FLAG_SUBTRACT);
+  cpu->clear_flag(FLAG_CARRY);
+}
+
+void InstructionSet::sbc(uint8_t &reg_1, uint8_t reg_2) {
+  uint8_t old = reg_1;
+  uint8_t a = reg_1;
+  uint8_t b = reg_2;
+  bool c = (cpu->F & FLAG_CARRY);
+  uint16_t result = a - b - c;
+
+  reg_1 = result & 0xFF;
+  cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
+  cpu->set_flag(FLAG_SUBTRACT, true);
+  cpu->set_flag(FLAG_HALF_CARRY, (old & 0x0F) < (b & 0x0F) + c);
+  cpu->set_flag(FLAG_CARRY, old < (reg_2 + c));
+}
+void InstructionSet::execute_call() {
+  uint16_t address = mmu->read16(cpu->PC);
+  cpu->PC += 2;
+  cpu->SP -= 2;
+  mmu->write16(cpu->SP, cpu->PC);
+  cpu->PC = address;
+}
+
+void InstructionSet::xor_(uint8_t &reg_1, uint8_t reg_2) {
+  reg_1 ^= reg_2;
+
+  cpu->set_flag(FLAG_ZERO, reg_1 == 0);
+  cpu->set_flag(FLAG_HALF_CARRY, false);
+  cpu->set_flag(FLAG_CARRY, false);
+  cpu->set_flag(FLAG_SUBTRACT, false);
+}
+
+void InstructionSet::push_(uint16_t reg) {
+  cpu->SP -= 1;
+  uint8_t h = reg >> 8;
+  mmu->write8(cpu->SP, h);
+  cpu->SP -= 1;
+  uint8_t l = reg & 0xFF;
+  mmu->write8(cpu->SP, l);
+}
+
+// void InstructionSet::cpl(uint8_t &reg) {
+//   // DONE
+//   reg = ~reg;
+//
+//   cp_(uint8_t * reg_1, uint8_t * reg_2) {
+//     uint16_t tmp = reg_1 - reg_2;
+//     cpu->set_flag(FLAG_ZERO, (reg_1 == reg_2));
+//     cpu->set_flag(FLAG_SUBTRACT, 1);
+//     cpu->set_flag(FLAG_HALF_CARRY, ((*reg_1 & 0x0F) < (*reg_2 & 0x0F)));
+//     cpu->set_flag(FLAG_CARRY, (tmp > 0xFF));
+//   }
+// }
+
+void InstructionSet::dec(uint8_t &reg, uint8_t n) {}
+void InstructionSet::dec(uint16_t &reg, uint8_t n) {}
+void InstructionSet::dec_mem(uint16_t value) {}
+void InstructionSet::dec_mem(uint8_t value) {}

@@ -79,6 +79,12 @@ public:
   void swap_extended(uint8_t &reg);
   void bit0_extended(uint8_t &reg);
   void bit1_extended(uint8_t &reg);
+  void bit2_extended(uint8_t &reg);
+  void bit3_extended(uint8_t &reg);
+  void bit4_extended(uint8_t &reg);
+  void bit5_extended(uint8_t &reg);
+  void bit6_extended(uint8_t &reg);
+  void bit7_extended(uint8_t &reg);
   void srl_extended(uint8_t &reg);
 };
 #endif // SRC_INSTRUCTIONS_HPP_

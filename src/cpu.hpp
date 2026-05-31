@@ -11,35 +11,34 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 enum RegisterFlags {
-  FLAG_ZERO       = (1 << 7),
-  FLAG_SUBTRACT   = (1 << 6),
+  FLAG_ZERO = (1 << 7),
+  FLAG_SUBTRACT = (1 << 6),
   FLAG_HALF_CARRY = (1 << 5),
-  FLAG_CARRY      = (1 << 1)
+  FLAG_CARRY = (1 << 1)
 };
 
+using namespace std;
 class Cpu {
 public:
   // Cpu();
   ~Cpu() = default;
-  bool                 is_flag_set(uint8_t flag);
-  void                 set_flag(uint8_t flags, bool state);
-  void                 clear_flag(uint8_t flag);
-  void                 print_flags();
+  bool is_flag_set(uint8_t flag);
+  void set_flag(uint8_t flags, bool state);
+  void clear_flag(uint8_t flag);
+  void print_flags();
 
-  RegisterFlags       *flags;
-  void                 step();
+  RegisterFlags *flags;
+  void step();
   std::vector<uint8_t> load_rom(const std::string &filename);
-  uint32_t             execute_opcode(uint8_t opcode);
-  void                 emulate_cycles(uint32_t cyclesToRun);
+  uint32_t execute_opcode(uint8_t opcode);
+  void emulate_cycles(uint32_t cyclesToRun);
 
-  bool                 halted = false;
-  void                 init_opcode_table();
+  bool halted = false;
+  void init_opcode_table();
 
   // t_cycles used
-  const int            opcode_cycles[256] = {
+  const int opcode_cycles[256] = {
       4,  12, 8, 8,  4,  4,  8,  4,  20, 8,  8,  8, 4, 4,  8, 4,  // 0x0_
       4,  12, 8, 8,  4,  4,  8,  4,  12, 8,  8,  8, 4, 4,  8, 4,  // 0x1_
       0,  12, 8, 8,  4,  4,  8,  4,  0,  8,  8,  8, 4, 4,  8, 4,  // 0x2_
@@ -57,7 +56,7 @@ public:
       12, 12, 8, 0,  0,  16, 8,  16, 16, 4,  16, 0, 0, 0,  8, 16, // 0xe_
       12, 12, 8, 4,  0,  16, 8,  16, 12, 8,  16, 4, 0, 0,  8, 16  // 0xf_
   };
-  array<function<void()>, 256> opcode_table;
+  std::array<std::function<void()>, 256> opcode_table;
   struct {
     union {
       struct {

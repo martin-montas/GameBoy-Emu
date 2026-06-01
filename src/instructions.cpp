@@ -2549,109 +2549,403 @@ void InstructionSet::execute(uint8_t opcode) {
       break;
     }
     case 0xC0: {
-      printf("RES7 A\n");
-      res7_extended(cpu->A);
+      printf("SET0 B\n");
+      set0_extended(cpu->B);
       cpu->PC += 2;
       break;
     }
     case 0xC1: {
-      printf(" \n");
+      printf("SET0 C\n");
+      set0_extended(cpu->C);
+      cpu->PC += 2;
       break;
     }
     case 0xC2: {
-      printf(" \n");
+      printf("SET0 D\n");
+      set0_extended(cpu->D);
+      cpu->PC += 2;
       break;
     }
     case 0xC3: {
-      printf(" \n");
+      printf("SET0 E\n");
+      set0_extended(cpu->E);
+      cpu->PC += 2;
       break;
     }
     case 0xC4: {
-      printf(" \n");
+      printf("SET0 H\n");
+      set0_extended(cpu->H);
+      cpu->PC += 2;
       break;
     }
     case 0xC5: {
-      printf(" \n");
+      printf("SET0 L\n");
+      set0_extended(cpu->L);
+      cpu->PC += 2;
       break;
     }
     case 0xC6: {
-      printf(" \n");
+      printf("SET0 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      set0_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
       break;
     }
     case 0xC7: {
-      printf(" \n");
+      printf("SET0 A\n");
+      set0_extended(cpu->A);
+      cpu->PC += 2;
       break;
     }
     case 0xC8: {
-      printf(" \n");
+      printf("SET1 B\n");
+      set1_extended(cpu->B);
+      cpu->PC += 2;
       break;
     }
     case 0xC9: {
-      printf(" \n");
+      printf("SET1 C\n");
+      set1_extended(cpu->C);
+      cpu->PC += 2;
       break;
     }
     case 0xCA: {
-      printf(" \n");
+      printf("SET1 D\n");
+      set1_extended(cpu->D);
+      cpu->PC += 2;
       break;
     }
     case 0xCB: {
-      printf(" \n");
+      printf("SET1 E\n");
+      set1_extended(cpu->E);
+      cpu->PC += 2;
       break;
     }
     case 0xCC: {
-      printf(" \n");
+      printf("SET1 H\n");
+      set1_extended(cpu->H);
+      cpu->PC += 2;
       break;
     }
     case 0xCD: {
-      printf(" \n");
+      printf("SET1 L\n");
+      set1_extended(cpu->L);
+      cpu->PC += 2;
       break;
     }
     case 0xCE: {
-      printf(" \n");
+      printf("SET1 (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      set1_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
       break;
     }
     case 0xCF: {
-      printf(" \n");
+      printf("SET1 A\n");
+      set1_extended(cpu->A);
+      cpu->PC += 2;
       break;
     }
     case 0xD0: {
-      printf(" \n");
+      printf("SET2 B\n");
+      set2_extended(cpu->B);
+      cpu->PC += 2;
       break;
     }
     case 0xD1: {
-      printf(" \n");
+      printf("SET2 C\n");
+      set2_extended(cpu->C);
+      cpu->PC += 2;
       break;
     }
     case 0xD2: {
-      printf(" \n");
+      printf("SET2 D\n");
+      set2_extended(cpu->D);
+      cpu->PC += 2;
       break;
     }
     case 0xD3: {
-      printf(" \n");
+      printf("SET2 E\n");
+      set2_extended(cpu->E);
+      cpu->PC += 2;
       break;
     }
     case 0xD4: {
-      printf(" \n");
+      printf("SET2 D\n");
+      set2_extended(cpu->D);
+      cpu->PC += 2;
       break;
     }
     case 0xD5: {
-      printf(" \n");
+      printf("SET2 L\n");
+      set2_extended(cpu->L);
+      cpu->PC += 2;
       break;
     }
     case 0xD6: {
-      printf(" \n");
+      printf("SET2 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      set2_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
       break;
     }
     case 0xD7: {
-      printf(" \n");
+      printf("SET2 A\n");
+      set2_extended(cpu->A);
+      cpu->PC += 2;
       break;
     }
     case 0xD8: {
-      printf(" \n");
+      printf("SET3 B\n");
+      set3_extended(cpu->B);
+      cpu->PC += 2;
       break;
     }
     case 0xD9: {
-      printf(" \n");
+      printf("SET3 C\n");
+      set3_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xDA: {
+      printf("SET3 D\n");
+      set3_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xDB: {
+      printf("SET3 E\n");
+      set3_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xDC: {
+      printf("SET3 H\n");
+      set3_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xDD: {
+      printf("SET3 L\n");
+      set3_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xDE: {
+      printf("SET3 (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      set3_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xDF: {
+      printf("SET3 A\n");
+      set3_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE0: {
+      printf("SET4 B\n");
+      set4_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE1: {
+      printf("SET4 C\n");
+      set4_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE2: {
+      printf("SET4 D\n");
+      set4_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE3: {
+      printf("SET4 E\n");
+      set4_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE4: {
+      printf("SET4 H\n");
+      set4_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE5: {
+      printf("SET4 L\n");
+      set4_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE6: {
+      printf("SET4 (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      set4_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE7: {
+      printf("SET4 A\n");
+      set4_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE8: {
+      printf("SET5 B\n");
+      set5_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xE9: {
+      printf("SET5 C\n");
+      set5_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xEA: {
+      printf("SET5 D\n");
+      set5_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xEB: {
+      printf("SET5 E\n");
+      set5_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xEC: {
+      printf("SET5 H\n");
+      set5_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xED: {
+      printf("SET5 L\n");
+      set5_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xEE: {
+      printf("SET5 (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      set5_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xEF: {
+      printf("SET5 A\n");
+      set5_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF0: {
+      printf("SET6 B\n");
+      set6_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF1: {
+      printf("SET6 C\n");
+      set6_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF2: {
+      printf("SET6 D\n");
+      set6_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF3: {
+      printf("SET6 E\n");
+      set6_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF4: {
+      printf("SET6 H\n");
+      set6_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF5: {
+      printf("SET6 L\n");
+      set6_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF6: {
+      printf("SET6 (HL)\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      set6_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF7: {
+      printf("SET6 A\n");
+      set6_extended(cpu->A);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF8: {
+      printf("SET7 B\n");
+      set7_extended(cpu->B);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xF9: {
+      printf("SET7 C\n");
+      set7_extended(cpu->C);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xFA: {
+      printf("SET7 D\n");
+      set7_extended(cpu->D);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xFB: {
+      printf("SET7 E\n");
+      set7_extended(cpu->E);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xFC: {
+      printf("SET7 H\n");
+      set7_extended(cpu->H);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xFD: {
+      printf("SET7 L\n");
+      set7_extended(cpu->L);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xFE: {
+      printf("SET7 L\n");
+      uint8_t v = mmu->read8(cpu->HL);
+      set7_extended(v);
+      mmu->write8(cpu->HL, v);
+      cpu->PC += 2;
+      break;
+    }
+    case 0xFF: {
+      printf("SET7 A\n");
+      set7_extended(cpu->A);
+      cpu->PC += 2;
       break;
     }
     }

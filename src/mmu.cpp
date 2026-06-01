@@ -85,7 +85,7 @@ uint8_t MMU::read8(uint16_t addr) {
   } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
     return this->HRAM[addr - 0xFF80];
   } else {
-    std::cout << "Memory access out of bounds: " << addr << std::hex << std::endl;
+    printf("Memory access out of bounds: %X\n", addr);
     exit(1);
   }
   return 0xFF;
@@ -107,8 +107,6 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     this->WRAM[addr - 0xC000] = value;
   } else if (addr >= 0xE000 && addr <= 0xFDFF) {
     this->WRAM[addr - 0xE000] = value; // echo RAM
-  } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
-    return; // unusable
   } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
     this->OAM[addr - 0xFE00] = value;
   } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
@@ -122,6 +120,8 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     }
     if (addr == 0xFF44) {
       return;
+    } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
+      return; // unusable
     }
   } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
     this->HRAM[addr - 0xFF80] = value;

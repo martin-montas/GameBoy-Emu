@@ -11,11 +11,11 @@
 #include <stdint.h>
 
 GameBoy::GameBoy(std::string filename) {
-  serial           = new Serial();
-  cpu              = new Cpu();
-  timer            = new Timer();
-  mmu              = new MMU(filename, timer, serial);
-  instructions     = new InstructionSet(mmu, cpu);
+  serial = new Serial();
+  cpu = new Cpu();
+  timer = new Timer();
+  mmu = new MMU(filename, timer, serial);
+  instructions = new InstructionSet(mmu, cpu);
 
   emulationRunning = true;
 }
@@ -32,8 +32,8 @@ void GameBoy::run() {
 
 uint32_t GameBoy::calculateCyclesForFrame() { return 0; }
 
-void     GameBoy::step() {
-  _opcode = mmu->romData[cpu->PC];
+void GameBoy::step() {
+  _opcode = mmu->read8(cpu->PC);
   instructions->execute(_opcode);
   int current_cycle = cpu->opcode_cycles[_opcode];
   cpu->cycle_count += current_cycle;

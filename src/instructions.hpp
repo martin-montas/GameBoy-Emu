@@ -58,7 +58,7 @@ public:
   void call(bool condition);
 
   void execute_call();
-  void jump(bool condition, uint8_t offset);
+  void jump(bool condition, int8_t offset);
   void jump_add(bool condition);
   void cp_n(uint8_t value);
   void push_(uint16_t reg);

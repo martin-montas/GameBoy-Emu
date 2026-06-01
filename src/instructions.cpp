@@ -2950,19 +2950,18 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     }
   }
-
   case 0xCC: {
-    std::cout << "CALL nn" << std::endl;
+    printf("CALL Z, a16\n");
     if (cpu->F & FLAG_ZERO) {
       execute_call();
     } else {
-      cpu->PC = cpu->PC + 2;
+      cpu->PC = cpu->PC + 3;
     }
     break;
   }
   case 0xCD: {
+    printf("CALL a16\n");
     uint16_t address = mmu->read16(cpu->PC + 1);
-
     uint16_t return_address = cpu->PC + 3;
 
     cpu->SP -= 2;
@@ -2972,91 +2971,92 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xCE: {
-    uint16_t n = mmu->romData[cpu->PC + 1];
-    printf("ADC A,u8 -- %X --\n", n);
-    uint16_t _carry_flag = ((cpu->F >> 4) & 0x1);
-    cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0xf) + (n & 0xf) + _carry_flag > 0xf);
-    uint16_t _result = cpu->A + n + _carry_flag;
-    cpu->A = static_cast<uint8_t>(_result);
-
-    cpu->set_flag(FLAG_ZERO, cpu->A == 0);
-    cpu->set_flag(FLAG_SUBTRACT, 0);
-    cpu->set_flag(FLAG_CARRY, _result > 0xff);
-
-    std::bitset<8> f_debug = cpu->F;
-
+    adc(cpu->A, mmu->read8(cpu->PC + 1));
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xCF: {
-    std::cout << "RST 08H" << std::endl;
+    printf("RST 1\n");
+    uint16_t return_addr = cpu->PC + 1;
+    cpu->SP -= 1;
+    mmu->write16(cpu->SP, return_addr);
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xD0: {
-    std::cout << " RET NC" << std::endl;
-    cpu->PC = cpu->PC + 2;
+    printf("RET NC\n");
+    pop_(!(cpu->F & FLAG_CARRY), cpu->PC);
+    break;
+  }
+  case 0xD1: {
+    printf("POP DE\n");
+    pop_(true, cpu->DE);
+    break;
+  }
+  case 0xD2: {
+    printf("JP NC, a16\n");
+    pop_(!(cpu->F & FLAG_CARRY), cpu->PC);
     break;
   }
   case 0xD3: {
-    std::cout << "  OUT(n), A" << std::endl;
-    cpu->PC = cpu->PC + 2;
+    printf("-- NOT IMPLEMENTED --\n");
+    // cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xD4: {
-    std::cout << "  CALLNC, nn" << std::endl;
-    cpu->PC = cpu->PC + 2;
+    printf("  CALL NC, a16\n");
+    call((cpu->F & FLAG_CARRY));
     break;
   }
   case 0xD5: {
-    std::cout << " PUSH DE" << std::endl;
-    cpu->PC = cpu->PC + 2;
+    printf(" PUSH DE\n");
+    push_(cpu->DE);
+    cpu->PC += 1;
     break;
   }
   case 0xD6: {
-
     sub(cpu->A, mmu->romData[cpu->PC + 1]);
     printf("SUB d8. result of A -- %X -- 0xD6\n", cpu->A);
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xD7: {
-    std::cout << " RST 10H" << std::endl;
+    printf(" RST 10H\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xD8: {
-    std::cout << " RET C" << std::endl;
+    printf(" RET C\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xD9: {
-    std::cout << " RETI" << std::endl;
+    printf(" RETI\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xDA: {
-    std::cout << "  JPC, nn" << std::endl;
+    printf("  JPC, nn\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xDB: {
-    std::cout << "   INA, (n)" << std::endl;
+    printf("   INA, (n)\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xDD: {
-    std::cout << "  CALLC, nn" << std::endl;
+    printf("  CAALC, nn\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xDE: {
-    std::cout << " SBC nn" << std::endl;
+    printf(" SBC nn\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xDF: {
-    std::cout << " RST 18H" << std::endl;
+    printf(" RST 18H\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -3067,47 +3067,47 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xE1: {
-    std::cout << " POP HL" << std::endl;
+    printf(" POP HL\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xE2: {
-    std::cout << "  LD(C), A" << std::endl;
+    printf("  LD(C), A\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xE3: {
-    std::cout << " XOR nn" << std::endl;
+    printf(" XOR nn\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xE4: {
-    std::cout << " PUSH HL" << std::endl;
+    printf(" PUSH HL\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xE5: {
-    std::cout << " AND nn" << std::endl;
+    printf(" AND nn\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xE6: {
-    std::cout << " XOR nn" << std::endl;
+    printf(" XOR nn\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xE7: {
-    std::cout << " RST 20H" << std::endl;
+    printf(" RST 20H\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xE8: {
-    std::cout << "  ADDSP, r8" << std::endl;
+    printf("  ADDSP, r8\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xE9: {
-    std::cout << "  JP(HL)" << std::endl;
+    printf("  JP(HL)\n");
     cpu->PC = cpu->PC + 2;
     break;
   }
@@ -3122,87 +3122,87 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xEB: {
-    std::cout << " XOR nn" << std::endl;
+    printf(" XOR nn\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xED: {
-    std::cout << " CALL nn" << std::endl;
+    printf(" CALL nn\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xEE: {
-    std::cout << " XOR nn" << std::endl;
+    printf(" XOR nn\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xEF: {
-    std::cout << " RST 28H" << std::endl;
+    printf(" RST 28H\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF0: {
-    std::cout << "  LDHA, (n)" << std::endl;
+    printf("  LDHA, (n)\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF1: {
-    std::cout << " POP AF" << std::endl;
+    printf(" POP AF\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF2: {
-    std::cout << "  LDA, (C)" << std::endl;
+    printf("  LDA, (C)\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF3: {
-    std::cout << " DI" << std::endl;
+    printf(" DI\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF4: {
-    std::cout << " PUSH AF" << std::endl;
+    printf(" PUSH AF\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF5: {
-    std::cout << " OR nn" << std::endl;
+    printf(" OR nn\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF6: {
-    std::cout << " OR nn" << std::endl;
+    printf(" OR nn\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF7: {
-    std::cout << " RST 30H" << std::endl;
+    printf(" RST 30H\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF8: {
-    std::cout << "  LD HL, SP+ r8" << std::endl;
+    printf("  LD HL, SP+ r8\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xF9: {
-    std::cout << "  LDSP, HL" << std::endl;
+    printf("  LDSP, HL\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xFA: {
-    std::cout << "  LD A, (nn)" << std::endl;
+    printf("  LD A, (nn)\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xFB: {
-    std::cout << " EI" << std::endl;
+    printf(" EI\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
   case 0xFD: {
-    std::cout << " CALL nn" << std::endl;
+    printf(" CALL nn\n");
     cpu->PC = cpu->PC + 3;
     break;
   }
@@ -3229,11 +3229,13 @@ void InstructionSet::execute(uint8_t opcode) {
 }
 
 void InstructionSet::pop_(bool condition, uint16_t &reg) {
-  uint8_t l = mmu->read8(cpu->SP & 0xFF);
-  cpu->SP += 1;
-  uint8_t h = mmu->read8((cpu->SP >> 8) & 0xFF);
-  cpu->SP += 1;
-  reg = (h << 8) | l;
+  if (condition) {
+    uint8_t l = mmu->read8(cpu->SP);
+    cpu->SP += 1;
+    uint8_t h = mmu->read8(cpu->SP);
+    cpu->SP += 1;
+    reg = (h << 8) | l;
+  }
 }
 
 void InstructionSet::ret(bool condition) {
@@ -3302,7 +3304,7 @@ void InstructionSet::sbc(uint8_t &reg_1, uint8_t reg_2) {
   cpu->set_flag(FLAG_CARRY, old < (reg_2 + c));
 }
 void InstructionSet::execute_call() {
-  uint16_t address = mmu->read16(cpu->PC);
+  uint16_t address = mmu->read16(cpu->PC + 1);
   cpu->PC += 2;
   cpu->SP -= 2;
   mmu->write16(cpu->SP, cpu->PC);
@@ -3384,10 +3386,11 @@ void InstructionSet::adc(uint8_t &reg_1, uint8_t reg_2) {
   bool old_c = cpu->F & FLAG_CARRY;
 
   uint16_t c = reg_1 + reg_2 + old_c;
+  reg_1 = c;
   cpu->set_flag(FLAG_ZERO, reg_1 == 0);
   cpu->clear_flag(FLAG_SUBTRACT);
   cpu->set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) + (reg_2 & 0x0F) + old_c) > 0x0F);
-  cpu->set_flag(FLAG_CARRY, c > 0xFFF);
+  cpu->set_flag(FLAG_CARRY, c > 0xFF);
 }
 
 void InstructionSet::rra() {

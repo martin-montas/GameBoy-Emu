@@ -22,7 +22,7 @@ private:
   uint8_t  _tima_accumulator;
   uint16_t _div_counter;
 
-  int      curr_frequency = 256;
+  int curr_frequency = 256;
 
 public:
   Timer()
@@ -33,7 +33,7 @@ public:
    * @brief: this happens every iteration of the game loop
    * @param[in]: current m-cycle for the instruction
    */
-  void    tick(int cycles);
+  void tick(int cycles);
 
   // /*
   //  * @brief: the tag flag should be set if value paramenter has the
@@ -41,7 +41,7 @@ public:
   //  */
   // uin8_t get_tac_flag();
 
-  void    set_tac_flag(TAC_TIMER_CONTROL tac_timer);
+  void set_tac_flag(TAC_TIMER_CONTROL tac_timer);
 
   /*
    * @brief: When the the Gameboy changes speeds
@@ -49,7 +49,7 @@ public:
    * alters as well.
    * @returns: time per instruction number.
    */
-  int     get_time_frequency();
+  int get_time_frequency();
 
   /*
    * @brief: This method writes to the register.
@@ -57,7 +57,7 @@ public:
    * @param(in): Addresss to write to.
    * @param_2(in): value to write to any of the timing registers.
    */
-  void    write(uint16_t addr, uint8_t value);
+  void write(uint16_t addr, uint8_t value);
 
   /*
    * @brief: Reads the timing registers.

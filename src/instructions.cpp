@@ -395,7 +395,6 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x31: {
-
     printf("LD SP, d16\n");
     ldr(cpu->SP);
     cpu->PC = cpu->PC + 3;
@@ -424,7 +423,6 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0x35: {
-
     dec_mem(cpu->HL);
     printf("DEC (HL) 0x35 0x%X \n", mmu->read8(cpu->HL));
     cpu->PC = cpu->PC + 1;
@@ -3061,7 +3059,6 @@ void InstructionSet::execute(uint8_t opcode) {
     // cpu->PC = cpu->PC + 2;
     break;
   }
-
   case 0xDC: {
     printf("CALL C, a16\n");
     if (cpu->F & FLAG_CARRY) {
@@ -3537,4 +3534,3 @@ void InstructionSet::cpl(uint8_t &reg) {
 
   cpu->set_flag(FLAG_SUBTRACT, true);
   cpu->set_flag(FLAG_HALF_CARRY, true);
-}

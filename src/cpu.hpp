@@ -18,6 +18,14 @@ enum RegisterFlags {
   FLAG_CARRY = (1 << 1)
 };
 
+enum Interrupt {
+  FLAG_VBLANK = (1 << 0),
+  FLAG_STAT = (1 << 1),
+  FLAG_TIMER = (1 << 2),
+  FLAG_SERIAL = (1 << 3),
+  FLAG_JOY_PAD = (1 << 4)
+};
+
 using namespace std;
 class Cpu {
 public:
@@ -103,6 +111,8 @@ public:
   // Program counter
   uint16_t PC;
   uint32_t cycle_count;
+  bool _ime = false;        // interrupt master enable
+  bool ime_pending = false; // delayed enable (after EI)
 
 private:
   uint32_t cycle;

@@ -1311,7 +1311,7 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xC7: {
-    printf("RST 00h\n");
+    printf("RST 0\n");
     uint16_t ret = cpu->PC + 1;
     cpu->SP -= 1;
     mmu->write8(cpu->SP, (ret >> 8) & 0xFF);
@@ -3021,36 +3021,68 @@ void InstructionSet::execute(uint8_t opcode) {
     break;
   }
   case 0xD7: {
-    printf(" RST 10H\n");
-    cpu->PC = cpu->PC + 2;
+    printf("RST 10H\n");
+    uint16_t ret = cpu->PC + 1;
+    cpu->SP--;
+    mmu->write8(cpu->SP, (ret >> 8) & 0xFF);
+    cpu->SP--;
+    mmu->write8(cpu->SP, ret & 0xFF);
+    cpu->PC = 0x0010;
     break;
   }
   case 0xD8: {
-    printf(" RET C\n");
-    cpu->PC = cpu->PC + 2;
-    break;
+    if (cpu->F & FLAG_CARRY) {
+      ret(true);
+    } else {
+      cpu->PC += 1;
+    }
+    return;
   }
   case 0xD9: {
-    printf(" RETI\n");
-    cpu->PC = cpu->PC + 2;
-    break;
+    // TODO
+    printf("-- 0xD9 -- RETI NOT DONE \n");
+    // pop_();
+    // cpu->PC = cpu->PC + 2;
+    // break;
   }
   case 0xDA: {
-    printf("  JPC, nn\n");
-    cpu->PC = cpu->PC + 2;
+    printf("JP C, nn\n");
+    if (cpu->F & FLAG_CARRY) {
+      uint8_t l = mmu->read8(cpu->PC + 1);
+      uint8_t h = mmu->read8(cpu->PC + 2);
+      cpu->PC = (h << 8) | l;
+    } else {
+      cpu->PC = cpu->PC + 3;
+    }
     break;
   }
   case 0xDB: {
-    printf("   INA, (n)\n");
-    cpu->PC = cpu->PC + 2;
+    printf("-- NOT IMPLEMENTED --\n");
+    // cpu->PC = cpu->PC + 2;
+    break;
+  }
+
+  case 0xDC: {
+    printf("CALL C, a16\n");
+    if (cpu->F & FLAG_CARRY) {
+      uint16_t return_addr = cpu->PC + 3;
+      cpu->SP -= 1;
+      mmu->write8(cpu->SP, (return_addr >> 8));
+      cpu->SP -= 1;
+      mmu->write8(cpu->SP, return_addr & 0xFF);
+      cpu->PC = return_addr;
+    } else {
+      cpu->PC = cpu->PC + 3;
+    }
     break;
   }
   case 0xDD: {
-    printf("  CAALC, nn\n");
-    cpu->PC = cpu->PC + 2;
+    printf("-- NOT IMPLEMENTED --\n");
+    // cpu->PC = cpu->PC + 2;
     break;
   }
   case 0xDE: {
+    // you are here
     printf(" SBC nn\n");
     cpu->PC = cpu->PC + 2;
     break;

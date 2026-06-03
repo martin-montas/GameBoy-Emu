@@ -6,7 +6,7 @@
 #include "MBC0.hpp"
 #include "cpu.hpp"
 
-#include <bitset>
+#include <bit>
 #include <cstdint>
 #include <iostream>
 #include <stdint.h>
@@ -274,7 +274,8 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x20: {
         printf("JR NZ, s8\n");
-        jump(!(cpu->F & FLAG_ZERO), mmu->read8(cpu->PC + 1));
+        int8_t v = std::bit_cast<int8_t>(mmu->read8(cpu->PC + 1));
+        jump(!(cpu->F & FLAG_ZERO), v);
         break;
     }
     case 0x21: {

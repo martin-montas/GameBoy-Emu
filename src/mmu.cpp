@@ -95,12 +95,7 @@ uint8_t MMU::read8(uint16_t addr) {
 void MMU::write8(uint16_t addr, uint8_t value) {
     if (addr >= 0x0000 && addr <= 0x7FFF) {
         return;
-    }
-    // if (addr <= 0x1FFF) {
-    //   ram_enabled = ((value & 0x0F) == 0x0A);
-    //   return;
-    // }
-    else if (addr >= 0x8000 && addr <= 0x9FFF) {
+    } else if (addr >= 0x8000 && addr <= 0x9FFF) {
         this->VRAM[addr - 0x8000] = value;
     } else if (addr >= 0xA000 && addr <= 0xBFFF) {
         this->EXTERNAL_RAM[addr - 0xA000] = value;
@@ -113,6 +108,7 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
             serial->write(addr, value); // serial register reads
+            return;
         }
         if (addr >= 0xFF04 && addr <= 0xFF07) {
             timer->write(addr, value);

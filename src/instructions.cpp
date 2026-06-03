@@ -62,7 +62,7 @@ void InstructionSet::execute(uint8_t opcode) {
     switch (opcode) {
     case 0x00: {
         cpu->PC += 1;
-        printf("NOP  -- %X --\n", cpu->PC);
+        // printf("NOP  -- %X --\n", cpu->PC);
         break;
     }
     case 0x01: {

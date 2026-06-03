@@ -7,8 +7,14 @@
 #include <stdio.h>
 
 void Serial::write(uint16_t addr, uint8_t value) {
-    // stubbed
-    printf("%c", (char)value);
+    if (addr == 0xFF01) {
+        _sb = value;
+    }
+
+    if (addr == 0xFF02 && value == 0x81) {
+        printf("%c", _sb);
+        fflush(stdout);
+    }
 }
 
 void Serial::tick(int cycle) {

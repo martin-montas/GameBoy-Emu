@@ -238,15 +238,11 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x11: {
-    case 0x2A: {
-        uint8_t memory_value = mmu->read8(cpu->HL);
-        cpu->A               = memory_value;
-        printf("LD A, (HL+)\n");
-        cpu->HL += 1;
-        cpu->PC += 1;
+        ldr(cpu->DE);
+        printf("LD (DE), d16 -- %X --\n", cpu->DE);
+        cpu->PC = cpu->PC + 3;
         break;
     }
-
     case 0x12: {
         printf("LD (DE), A -- %X --\n", cpu->DE);
         mmu->write8(cpu->DE, cpu->A);
@@ -334,9 +330,9 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x20: {
-        int8_t v = (int8_t)mmu->read8(cpu->PC + 1);
+        printf("JR NZ, s8\n");
+        int8_t v = (int8_t)(mmu->read8(cpu->PC + 1));
         jump(!(cpu->F & FLAG_ZERO), v);
-        printf("JR NZ, s8 -- %d\n", v);
         break;
     }
     case 0x21: {
@@ -344,7 +340,7 @@ void InstructionSet::execute(uint8_t opcode) {
         uint8_t h = mmu->read8(cpu->PC + 2);
 
         uint16_t v = (h << 8) | l;
-        cpu->HL    = v;
+        ld(cpu->HL, v);
         printf("LD HL, d16 0x21 -- (HL == %X) --\n", cpu->HL);
         cpu->PC = cpu->PC + 3;
         break;
@@ -3381,7 +3377,6 @@ void InstructionSet::execute(uint8_t opcode) {
     default: {
         std::cerr << "Unknown opcode: 0x" << opcode << std::hex;
         break;
-    }
     }
     }
 }

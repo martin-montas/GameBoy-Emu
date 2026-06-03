@@ -6,27 +6,30 @@
 #include <stdint.h>
 #include <stdio.h>
 
-void Serial::write(uint16_t addr, uint8_t value) { printf("%c", (char)value); }
+void Serial::write(uint16_t addr, uint8_t value) {
+    // stubbed
+    printf("%c", (char)value);
+}
 
 void Serial::tick(int cycle) {
-  if (_transfer_active) {
-    _acc += cycle;
-    while (_acc >= 512) {
-      _acc -= 512;
-      shift_one_bit();
+    if (_transfer_active) {
+        _acc += cycle;
+        while (_acc >= 512) {
+            _acc -= 512;
+            shift_one_bit();
+        }
     }
-  }
 }
 
 void Serial::shift_one_bit() {
-  uint8_t bit = (_shift_reg & 0x80) ? 1 : 0;
-  printf("%d", bit);
-  _shift_reg <<= 1;
+    uint8_t bit = (_shift_reg & 0x80) ? 1 : 0;
+    printf("%d", bit);
+    _shift_reg <<= 1;
 }
 
 uint8_t Serial::read(uint16_t addr) {
-  if (addr == 0xFF01)
-    return 0xFF;
-  else
-    return 0xFF;
+    if (addr == 0xFF01)
+        return 0xFF;
+    else
+        return 0xFF;
 }

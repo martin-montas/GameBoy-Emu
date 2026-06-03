@@ -73,15 +73,16 @@ uint8_t MMU::read8(uint16_t addr) {
         return this->OAM[addr - 0xFE00];
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
-            return serial->read(addr); // serial register reads
+            return serial->read(addr);
         }
         if (addr >= 0xFF04 && addr <= 0xFF07) {
-            return timer->read(addr); // timer registers
-        }
-        if (addr == 0xFF44) { // stubbed for now
-            return 0x90;
+            return timer->read(addr);
+        } else if (addr == 0xFF44) {
+            static uint8_t fake_ly = 0;
+            fake_ly                = (fake_ly + 1) % 154;
+            return fake_ly;
         } else {
-            return IO_REG[addr - 0xFF00];
+            return IO_REGISTERS[addr - 0xFF00];
         }
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
         return this->HRAM[addr - 0xFF80];
@@ -102,27 +103,27 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     } else if (addr >= 0xC000 && addr <= 0xDFFF) {
         this->WRAM[addr - 0xC000] = value;
     } else if (addr >= 0xE000 && addr <= 0xFDFF) {
-        this->WRAM[addr - 0xE000] = value; // echo RAM
+        this->WRAM[addr - 0xE000] = value;
     } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
         this->OAM[addr - 0xFE00] = value;
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
-            serial->write(addr, value); // serial register reads
+            serial->write(addr, value);
             return;
-        }
-        if (addr >= 0xFF04 && addr <= 0xFF07) {
+        } else if (addr >= 0xFF04 && addr <= 0xFF07) {
             timer->write(addr, value);
             return;
-        }
-        if (addr == 0xFF44) {
-            return;
         } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
-            return; // unusable
+            return; // unused
+        } else if (addr == 0xFF44) {
+            return;
+        } else {
+            this->IO_REGISTERS[0xFF00 - value];
         }
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
         this->HRAM[addr - 0xFF80] = value;
     } else if (addr == 0xFFFF) {
-        return;
+
     } else {
         printf("Memory access out of bounds: %X\n", addr);
         exit(1);

@@ -13,6 +13,63 @@
 #include <stdio.h>
 #include <sys/types.h>
 
+void InstructionSet::post_boot_state() {
+    // 1. CPU Registers
+    cpu->PC = 0x0100;
+    cpu->SP = 0xFFFE;
+    cpu->AF = 0x01B0;
+    cpu->BC = 0x0013;
+    cpu->DE = 0x00D8;
+    cpu->HL = 0x014D;
+
+    mmu->write8(0xFF01, 0x00); // SB (Serial Link Data Buffer)
+    mmu->write8(0xFF02, 0x7E); // SC (Serial Link Control - Unused bits read as 1)
+
+    // 2. Timers & System Interrupts
+    mmu->write8(0xFF04, 0xAB); // DIV (Divider Register)
+    mmu->write8(0xFF05, 0x00); // TIMA
+    mmu->write8(0xFF06, 0x00); // TMA
+    mmu->write8(0xFF07, 0x00); // TAC
+    mmu->write8(0xFF0F, 0xE1); // IF (Interrupt Flag - Top 3 bits always 1)
+
+    // 3. Audio Registers (APU)
+    mmu->write8(0xFF10, 0x80);
+    mmu->write8(0xFF11, 0xBF);
+    mmu->write8(0xFF12, 0xF3);
+    mmu->write8(0xFF14, 0xBF);
+    mmu->write8(0xFF16, 0x3F);
+    mmu->write8(0xFF17, 0x00);
+    mmu->write8(0xFF19, 0xBF);
+    mmu->write8(0xFF1A, 0x7F);
+    mmu->write8(0xFF1B, 0xFF);
+    mmu->write8(0xFF1C, 0x9F);
+    mmu->write8(0xFF1E, 0xBF);
+    mmu->write8(0xFF20, 0xFF);
+    mmu->write8(0xFF21, 0x00);
+    mmu->write8(0xFF22, 0x00);
+    mmu->write8(0xFF23, 0xBF); // Fixed duplicate typo here
+    mmu->write8(0xFF24, 0x77);
+    mmu->write8(0xFF25, 0xF3);
+    mmu->write8(0xFF26, 0xF1);
+
+    // 4. Graphics Registers (PPU) - CRITICAL ADDITIONS
+    mmu->write8(0xFF40, 0x91); // LCDC (Turns LCD Main Display ON)
+    mmu->write8(0xFF42, 0x00); // SCY (Scroll Y)
+    mmu->write8(0xFF43, 0x00); // SCX (Scroll X)
+    mmu->write8(0xFF45, 0x00); // LYC
+    mmu->write8(0xFF47, 0xFC); // BGP (Background Palette mapping)
+    mmu->write8(0xFF48, 0xFF); // OBP0 (Object Palette 0)
+    mmu->write8(0xFF49, 0xFF); // OBP1 (Object Palette 1)
+    mmu->write8(0xFF4A, 0x00); // WY (Window Y)
+    mmu->write8(0xFF4B, 0x00); // WX (Window X)
+
+    // 5. Unmap Boot ROM
+    mmu->write8(0xFF50, 0x01); // Unmaps Boot ROM, enabling Cartridge mapping
+
+    // 6. Interrupt Enable
+    mmu->write8(0xFFFF, 0x00); // IE (Disable all interrupts at boot)
+}
+
 InstructionSet::InstructionSet(MMU* mmu, Cpu* cpu) {
     this->cpu = cpu;
     this->mmu = mmu;
@@ -66,9 +123,9 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x01: {
-        uint8_t  l   = mmu->romData[cpu->PC + 1];
-        uint8_t  h   = mmu->romData[cpu->PC + 2];
-        uint16_t val = h << 8 | l;
+        uint8_t  l   = mmu->read8(cpu->PC + 1);
+        uint8_t  h   = mmu->read8(cpu->PC + 2);
+        uint16_t val = (h << 8) | l;
         printf("LD (BC), A 0x02 -- %X --\n", val);
         cpu->BC = val;
         cpu->PC = cpu->PC + 3;
@@ -181,11 +238,15 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x11: {
-        ldr(cpu->DE);
-        printf("LD (DE), d16 -- %X --\n", cpu->DE);
-        cpu->PC = cpu->PC + 3;
+    case 0x2A: {
+        uint8_t memory_value = mmu->read8(cpu->HL);
+        cpu->A               = memory_value;
+        printf("LD A, (HL+)\n");
+        cpu->HL += 1;
+        cpu->PC += 1;
         break;
     }
+
     case 0x12: {
         printf("LD (DE), A -- %X --\n", cpu->DE);
         mmu->write8(cpu->DE, cpu->A);
@@ -273,9 +334,9 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x20: {
-        printf("JR NZ, s8\n");
-        int8_t v = std::bit_cast<int8_t>(mmu->read8(cpu->PC + 1));
+        int8_t v = (int8_t)mmu->read8(cpu->PC + 1);
         jump(!(cpu->F & FLAG_ZERO), v);
+        printf("JR NZ, s8 -- %d\n", v);
         break;
     }
     case 0x21: {
@@ -283,7 +344,7 @@ void InstructionSet::execute(uint8_t opcode) {
         uint8_t h = mmu->read8(cpu->PC + 2);
 
         uint16_t v = (h << 8) | l;
-        ld(cpu->HL, v);
+        cpu->HL    = v;
         printf("LD HL, d16 0x21 -- (HL == %X) --\n", cpu->HL);
         cpu->PC = cpu->PC + 3;
         break;
@@ -3320,6 +3381,7 @@ void InstructionSet::execute(uint8_t opcode) {
     default: {
         std::cerr << "Unknown opcode: 0x" << opcode << std::hex;
         break;
+    }
     }
     }
 }

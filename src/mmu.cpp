@@ -124,7 +124,7 @@ void MMU::write8(uint16_t addr, uint8_t value) {
         } else if (addr == 0xFF44) {
             return;
         } else {
-            this->IO_REGISTERS[addr - 0xFF00];
+            this->IO_REGISTERS[addr - 0xFF00] = value;
             return;
         }
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {

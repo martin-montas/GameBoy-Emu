@@ -115,54 +115,54 @@ void InstructionSet::ld(uint8_t& reg, uint8_t addr) {
 }
 
 void InstructionSet::execute(uint8_t opcode) {
-    // printf("A:%02X F:%02X B:%02X C:%02X D:%02X E:%02X H:%02X L:%02X "
-    //        "SP:%04X PC:%04X "
-    //        "PCMEM:%02X,%02X,%02X,%02X\n",
-    //        cpu->A, cpu->F, cpu->B, cpu->C, cpu->D, cpu->E, cpu->H, cpu->L, cpu->SP, cpu->PC,
-    //        mmu->read8(cpu->PC), mmu->read8(cpu->PC + 1), mmu->read8(cpu->PC + 2),
-    //        mmu->read8(cpu->PC + 3));
-    printf("PC:%04X HL:%04X ", cpu->PC, cpu->HL);
+    printf("A:%02X F:%02X B:%02X C:%02X D:%02X E:%02X H:%02X L:%02X "
+           "SP:%04X PC:%04X "
+           "PCMEM:%02X,%02X,%02X,%02X\n",
+           cpu->A, cpu->F, cpu->B, cpu->C, cpu->D, cpu->E, cpu->H, cpu->L, cpu->SP, cpu->PC,
+           mmu->read8(cpu->PC), mmu->read8(cpu->PC + 1), mmu->read8(cpu->PC + 2),
+           mmu->read8(cpu->PC + 3));
+    // printf("PC:%04X HL:%04X ", cpu->PC, cpu->HL);
     switch (opcode) {
     case 0x00: {
         cpu->PC += 1;
-        printf("NOP  -- %X --\n", cpu->PC);
+        // printf("NOP  -- %X --\n", cpu->PC);
         break;
     }
     case 0x01: {
         uint8_t  l   = mmu->read8(cpu->PC + 1);
         uint8_t  h   = mmu->read8(cpu->PC + 2);
         uint16_t val = (h << 8) | l;
-        printf("LD (BC), A 0x01 -- %X --\n", val);
+        // printf("LD (BC), A 0x01 -- %X --\n", val);
         cpu->BC = val;
         cpu->PC = cpu->PC + 3;
         break;
     }
     case 0x02: {
         mmu->write8(cpu->BC, cpu->A);
-        printf("LD (BC), A 0x02 -- %X --\n", cpu->BC);
+        // printf("LD (BC), A 0x02 -- %X --\n", cpu->BC);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x03: {
-        printf("INC BC 0x03 -- before %X --\n", cpu->BC);
+        // printf("INC BC 0x03 -- before %X --\n", cpu->BC);
         cpu->BC = cpu->BC + 1;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x04: {
-        printf("INC B 0x04 -- before %X --\n", cpu->B);
+        // printf("INC B 0x04 -- before %X --\n", cpu->B);
         inc(cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x05: {
-        printf("DEC B 0x05 -- before %X --\n", cpu->B);
+        // printf("DEC B 0x05 -- before %X --\n", cpu->B);
         dec(cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x06: {
-        printf("LD B, d8 0x06 --- before %X --\n", cpu->B);
+        // printf("LD B, d8 0x06 --- before %X --\n", cpu->B);
         cpu->B  = mmu->romData[cpu->PC + 1];
         cpu->PC = cpu->PC + 2;
         break;
@@ -170,7 +170,7 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0x07: {
         uint16_t result = cpu->A << 1;
         bool     b      = (cpu->A << 8) & 1;
-        printf("RLCA -- %d --\n", b);
+        // printf("RLCA -- %d --\n", b);
         if (b) {
             cpu->A |= 1;
             cpu->set_flag(FLAG_CARRY, 1);
@@ -186,7 +186,7 @@ void InstructionSet::execute(uint8_t opcode) {
         uint8_t  h    = mmu->read8(cpu->PC + 2);
         uint16_t addr = (h << 8) | l;
 
-        printf("LD (a16), SP -- %04X --\n", addr);
+        // printf("LD (a16), SP -- %04X --\n", addr);
 
         uint16_t sp = cpu->SP;
 
@@ -199,7 +199,7 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0x09: {
         cpu->HL      = cpu->HL + cpu->BC;
         uint32_t tmp = cpu->HL + cpu->BC;
-        printf("ADD HL, BC -- %X --\n", cpu->HL);
+        // printf("ADD HL, BC -- %X --\n", cpu->HL);
         cpu->set_flag(FLAG_ZERO, 0);
         cpu->set_flag(FLAG_CARRY, tmp > 0xFFFF);
         cpu->set_flag(FLAG_SUBTRACT, ((cpu->HL & 0x0FFF) + (cpu->BC & 0x0FFF)) > 0x0FFF);
@@ -207,85 +207,85 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x0A: {
-        printf("LD A, (BC)\n");
+        // printf("LD A, (BC)\n");
         cpu->A  = mmu->read8(cpu->BC);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x0B: {
         cpu->BC = cpu->BC - 1;
-        printf("DEC BC -- %X --\n", cpu->BC);
+        // printf("DEC BC -- %X --\n", cpu->BC);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x0C: {
         inc(cpu->C);
-        printf("INC C -- %X --\n", cpu->C);
+        // printf("INC C -- %X --\n", cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x0D: {
         dec(cpu->C);
-        printf("DEC C -- %X --\n", cpu->C);
+        // printf("DEC C -- %X --\n", cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x0E: {
         cpu->C = mmu->romData[cpu->PC + 1];
-        printf("LD C, d8 -- %X --\n", cpu->C);
+        // printf("LD C, d8 -- %X --\n", cpu->C);
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x0F: {
         rrca(cpu->A);
-        printf("RRCA --%X --", cpu->A);
+        // printf("RRCA --%X --", cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x10: {
         // this one should be checked out
-        printf("STOP 0x10 \n");
+        // printf("STOP 0x10 \n");
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x11: {
         ldr(cpu->DE);
-        printf("LD (DE), d16 -- %X --\n", cpu->DE);
+        // printf("LD (DE), d16 -- %X --\n", cpu->DE);
         cpu->PC = cpu->PC + 3;
         break;
     }
     case 0x12: {
-        printf("LD (DE), A -- %X --\n", cpu->DE);
+        // printf("LD (DE), A -- %X --\n", cpu->DE);
         mmu->write8(cpu->DE, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x13: {
         cpu->DE = cpu->DE + 1;
-        printf("INC DE -- %X --\n", cpu->DE);
+        // printf("INC DE -- %X --\n", cpu->DE);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x14: {
         inc(cpu->D);
-        printf("INC D, -- %X --\n", cpu->D);
+        // printf("INC D, -- %X --\n", cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x15: {
         dec(cpu->D);
-        printf("DEC D -- %X --\n", cpu->D);
+        // printf("DEC D -- %X --\n", cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x16: {
         cpu->D = mmu->romData[cpu->PC + 1];
-        printf("LD D, d8 -- %X --\n", cpu->D);
+        // printf("LD D, d8 -- %X --\n", cpu->D);
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x17: {
-        printf("RLA\n");
+        // printf("RLA\n");
         rla();
         cpu->PC = cpu->PC + 1;
         break;
@@ -295,53 +295,53 @@ void InstructionSet::execute(uint8_t opcode) {
         offset = (int8_t)mmu->read8(cpu->PC + 1);
         cpu->PC += 2;
         cpu->PC += offset;
-        printf("JR r8 -- %X --\n", offset);
+        // printf("JR r8 -- %X --\n", offset);
         break;
     }
     case 0x19: {
         add16(cpu->HL, cpu->DE);
         cpu->PC = cpu->PC + 1;
-        printf("ADD HL, DE --%X --\n", cpu->HL);
+        // printf("ADD HL, DE --%X --\n", cpu->HL);
         break;
     }
     case 0x1A: {
         cpu->A = mmu->read8(cpu->DE);
-        printf("LD A, (DE) -- %X --\n", cpu->A);
+        // printf("LD A, (DE) -- %X --\n", cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x1B: {
         cpu->DE = cpu->DE - 1;
-        printf("DEC DE -- %X --\n", cpu->DE);
+        // printf("DEC DE -- %X --\n", cpu->DE);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x1C: {
         inc(cpu->E);
-        printf("INC E -- %X --\n", cpu->E);
+        // printf("INC E -- %X --\n", cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x1D: {
         dec(cpu->E);
-        printf("DEC E -- %X --\n", cpu->E);
+        // printf("DEC E -- %X --\n", cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x1E: {
-        printf("LD E, d8");
+        // printf("LD E, d8");
         cpu->E  = mmu->romData[cpu->PC + 1];
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x1F: {
-        printf("RRA\n");
+        // printf("RRA\n");
         rra();
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x20: {
-        printf("JR NZ, s8\n");
+        // printf("JR NZ, s8\n");
         int8_t offset = (int8_t)(mmu->read8(cpu->PC + 1));
         if (!(cpu->F & FLAG_ZERO))
             cpu->PC += 2 + offset;
@@ -355,43 +355,43 @@ void InstructionSet::execute(uint8_t opcode) {
 
         uint16_t v = (h << 8) | l;
         ld(cpu->HL, v);
-        printf("LD HL, d16 0x21 -- (HL == %X) --\n", cpu->HL);
+        // printf("LD HL, d16 0x21 -- (HL == %X) --\n", cpu->HL);
         cpu->PC = cpu->PC + 3;
         break;
     }
     case 0x22: {
-        printf("LD (HL+), A");
+        // printf("LD (HL+), A");
         mmu->write8(cpu->HL, cpu->A);
         cpu->HL += 1;
         cpu->PC += 1;
         break;
     }
     case 0x23: {
-        printf("INC HL 0x23\n");
+        // printf("INC HL 0x23\n");
         cpu->HL = cpu->HL + 1;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x24: {
-        printf("INC H\n");
+        // printf("INC H\n");
         inc(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x25: {
-        printf("DEC H");
+        // printf("DEC H");
         dec(cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x26: {
-        printf("LD H, d8");
+        // printf("LD H, d8");
         ld(cpu->H, mmu->read8(cpu->PC + 1));
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x27: {
-        printf("DAA");
+        // printf("DAA");
         uint8_t correction = 0;
         if (!(cpu->F & FLAG_SUBTRACT)) {
             if ((cpu->A & 0x0F) > 9 || cpu->F & FLAG_HALF_CARRY) {
@@ -417,7 +417,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x28: {
-        printf("JR Z, r8 0x28");
+        // printf("JR Z, r8 0x28");
         int8_t offset = (int8_t)mmu->read8(cpu->PC + 1);
 
         if (cpu->F & FLAG_ZERO)
@@ -428,13 +428,13 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x29: {
-        printf("ADD HL, HL\n");
+        // printf("ADD HL, HL\n");
         add16(cpu->HL, cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x2A: {
-        printf("LD A, (HL+)\n");
+        // printf("LD A, (HL+)\n");
         uint8_t n8 = mmu->read8(cpu->HL);
         cpu->A     = n8;
         cpu->HL += 1;
@@ -442,37 +442,37 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x2B: {
-        printf("DEC HL\n");
+        // printf("DEC HL\n");
         cpu->HL -= 1;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x2C: {
-        printf("INC L\n");
+        // printf("INC L\n");
         inc(cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x2D: {
-        printf("DEC L\n");
+        // printf("DEC L\n");
         dec(cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x2E: {
-        printf("LD L, d8\n");
+        // printf("LD L, d8\n");
         ld_mem(cpu->L, mmu->read8(cpu->PC + 1));
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x2F: {
-        printf("CPL\n");
+        // printf("CPL\n");
         cpl(cpu->A);
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x30: {
-        printf("JR NC,r8 -- --\n");
+        // printf("JR NC,r8 -- --\n");
         jump(!(cpu->F & FLAG_CARRY), mmu->read8(cpu->PC + 1));
         break;
     }
@@ -485,7 +485,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x32: {
-        printf("LD (HL-), A\n");
+        // printf("LD (HL-), A\n");
         mmu->write8(cpu->HL, cpu->A);
         cpu->HL -= 1;
         cpu->PC = cpu->PC + 1;
@@ -493,14 +493,14 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x33: {
 
-        printf("INC SP\n");
+        // printf("INC SP\n");
         cpu->SP = cpu->SP + 1;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x34: {
 
-        printf("INC (HL) 0x34\n");
+        // printf("INC (HL) 0x34\n");
         inc_mem(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
@@ -508,20 +508,20 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0x35: {
 
         dec_mem(cpu->HL);
-        printf("DEC (HL) 0x35 0x%X \n", mmu->read8(cpu->HL));
+        // printf("DEC (HL) 0x35 0x%X \n", mmu->read8(cpu->HL));
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x36: {
 
-        printf("LD (HL), d8\n");
+        // printf("LD (HL), d8\n");
         mmu->write8(cpu->HL, mmu->read8(cpu->PC + 1));
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x37: {
 
-        printf("SCF\n");
+        // printf("SCF\n");
         cpu->set_flag(FLAG_CARRY, true);
         cpu->clear_flag(FLAG_SUBTRACT);
         cpu->clear_flag(FLAG_HALF_CARRY);
@@ -530,37 +530,37 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x38: {
 
-        printf("JR C, r8 0x38\n");
+        // printf("JR C, r8 0x38\n");
         jump(cpu->F & FLAG_CARRY, mmu->read8(cpu->PC + 1));
         // don't change pc on jumps break;
     }
     case 0x39: {
-        printf("ADD HL, SP\n");
+        // printf("ADD HL, SP\n");
         add16(cpu->HL, cpu->SP);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x3A: {
-        printf("LD A, (HL-)\n");
+        // printf("LD A, (HL-)\n");
         cpu->A  = mmu->read8(cpu->HL);
         cpu->HL = cpu->HL - 1;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x3B: {
-        printf("DEC SP\n");
+        // printf("DEC SP\n");
         cpu->SP = cpu->SP - 1;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x3C: {
-        printf("INC A\n");
+        // printf("INC A\n");
         inc(cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x3D: {
-        printf("DEC A TODO\n");
+        // printf("DEC A TODO\n");
         dec(cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
@@ -568,13 +568,13 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0x3E: {
 
         cpu->A = mmu->read8(cpu->PC + 1);
-        printf("LD A, d8: 0x3E A: -- %X -- \n", cpu->A);
+        // printf("LD A, d8: 0x3E A: -- %X -- \n", cpu->A);
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x3F: {
 
-        printf("CCF\n");
+        // printf("CCF\n");
         bool carry = cpu->F & FLAG_CARRY;
         cpu->set_flag(FLAG_CARRY, !carry);
         cpu->set_flag(FLAG_SUBTRACT, false);
@@ -583,320 +583,320 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x40: {
 
-        printf("CCFLD B, B\n");
+        // printf("CCFLD B, B\n");
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x41: {
-        printf("LD B, C\n");
+        // printf("LD B, C\n");
         cpu->B  = cpu->C;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x42: {
-        printf("LD B, D\n");
+        // printf("LD B, D\n");
         cpu->B  = cpu->D;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x43: {
-        printf("LD B, E\n");
+        // printf("LD B, E\n");
         cpu->B  = cpu->E;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x44: {
-        printf("LD B, H\n");
+        // printf("LD B, H\n");
         cpu->B  = cpu->H;
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x45: {
-        printf("LD B, L\n");
+        // printf("LD B, L\n");
         cpu->B  = cpu->L;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x46: {
-        printf("LD B, (HL)");
+        // printf("LD B, (HL)");
         cpu->B  = mmu->read16(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x47: {
-        printf("LD B, A\n");
+        // printf("LD B, A\n");
         cpu->B  = cpu->A;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x48: {
-        printf("LD C, B\n");
+        // printf("LD C, B\n");
         cpu->C  = cpu->B;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x49: {
-        printf("LD C, C\n");
+        // printf("LD C, C\n");
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x4A: {
-        printf("LD C, D\n");
+        // printf("LD C, D\n");
         cpu->C  = cpu->C;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x4B: {
-        printf("LD C, E\n");
+        // printf("LD C, E\n");
         cpu->C  = cpu->E;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x4C: {
-        printf("LD C, H\n");
+        // printf("LD C, H\n");
         cpu->C  = cpu->H;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x4D: {
-        printf("LD C, L\n");
+        // printf("LD C, L\n");
         cpu->C  = cpu->L;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x4E: {
-        printf("LD C, (HL)\n");
+        // printf("LD C, (HL)\n");
         cpu->C  = mmu->read8(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x4F: {
-        printf("LD C, A\n");
+        // printf("LD C, A\n");
         cpu->C  = cpu->A;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x50: {
-        printf("LD B, D\n");
+        // printf("LD B, D\n");
         cpu->B  = cpu->D;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x51: {
-        printf("LD D, C\n");
+        // printf("LD D, C\n");
         cpu->B  = cpu->C;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x52: {
-        printf("LD C, A\n");
+        // printf("LD C, A\n");
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x53: {
-        printf("LD D, E\n");
+        // printf("LD D, E\n");
         cpu->D  = cpu->E;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x54: {
-        printf("LD D, H\n");
+        // printf("LD D, H\n");
         cpu->D  = cpu->H;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x55: {
-        printf("LD D, L\n");
+        // printf("LD D, L\n");
         cpu->D  = cpu->L;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x56: {
-        printf("LD D, (HL)\n");
+        // printf("LD D, (HL)\n");
 
         cpu->D  = mmu->read8(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x57: {
-        printf("LD D, A\n");
+        // printf("LD D, A\n");
         cpu->D  = cpu->A;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x58: {
-        printf("LD D, B\n");
+        // printf("LD D, B\n");
         cpu->D  = cpu->B;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x59: {
-        printf("LD E, C\n");
+        // printf("LD E, C\n");
         cpu->E  = cpu->C;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x5A: {
-        printf("LD E, D\n");
+        // printf("LD E, D\n");
         cpu->E  = cpu->D;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x5B: {
-        printf("LD D, B\n");
+        // printf("LD D, B\n");
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x5C: {
-        printf("LD E, H\n");
+        // printf("LD E, H\n");
         cpu->E  = cpu->H;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x5D: {
-        printf("LD E, L\n");
+        // printf("LD E, L\n");
         cpu->E  = cpu->L;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x5E: {
-        printf("LD E, L\n");
+        // printf("LD E, L\n");
         cpu->E  = mmu->read8(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x5F: {
-        printf("LD E, A\n");
+        // printf("LD E, A\n");
         cpu->E  = cpu->A;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x60: {
-        printf("LD H, B\n");
+        // printf("LD H, B\n");
         cpu->H  = cpu->B;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x61: {
-        printf("LD H, C\n");
+        // printf("LD H, C\n");
         cpu->H  = cpu->C;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x62: {
-        printf("LD H, D\n");
+        // printf("LD H, D\n");
         cpu->H  = cpu->D;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x63: {
-        printf("LD H, E\n");
+        // printf("LD H, E\n");
         cpu->H  = cpu->E;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x64: {
-        printf("LD H, H\n");
+        // printf("LD H, H\n");
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x65: {
-        printf("LD H, L\n");
+        // printf("LD H, L\n");
         cpu->H  = cpu->L;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x66: {
-        printf("LD H, (HL)\n");
+        // printf("LD H, (HL)\n");
         cpu->H  = mmu->read8(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x67: {
-        printf("LD H, A\n");
+        // printf("LD H, A\n");
         cpu->H  = cpu->A;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x68: {
-        printf("LD L, B\n");
+        // printf("LD L, B\n");
         cpu->L  = cpu->B;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x69: {
-        printf("LD L, C\n");
+        // printf("LD L, C\n");
         cpu->L  = cpu->C;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x6A: {
-        printf("LD L, D\n");
+        // printf("LD L, D\n");
         cpu->L  = cpu->D;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x6B: {
-        printf("LD L, E\n");
+        // printf("LD L, E\n");
         cpu->L  = cpu->E;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x6C: {
-        printf("LD L, H\n");
+        // printf("LD L, H\n");
         cpu->L  = cpu->H;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x6D: {
-        printf("LD L, L\n");
+        // printf("LD L, L\n");
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x6E: {
-        printf("LD L, (LH)\n");
+        // printf("LD L, (LH)\n");
         cpu->L  = mmu->read8(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x6F: {
-        printf("LD L, A\n");
+        // printf("LD L, A\n");
         cpu->L  = cpu->A;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x70: {
-        printf("LD (HL), B\n");
+        // printf("LD (HL), B\n");
         mmu->write8(cpu->HL, cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x71: {
-        printf("LD (HL), C\n");
+        // printf("LD (HL), C\n");
         mmu->write8(cpu->HL, cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x72: {
-        printf("LD (HL), D\n");
+        // printf("LD (HL), D\n");
         mmu->write8(cpu->HL, cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x73: {
-        printf("LD (HL), E\n");
+        // printf("LD (HL), E\n");
         mmu->write8(cpu->HL, cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x74: {
-        printf("LD (HL), H\n");
+        // printf("LD (HL), H\n");
         mmu->write8(cpu->HL, cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x75: {
-        printf("LD (HL), L\n");
+        // printf("LD (HL), L\n");
         mmu->write8(cpu->HL, cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
@@ -907,445 +907,445 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x77: {
-        printf("LD (HL), A\n");
+        // printf("LD (HL), A\n");
         mmu->write8(cpu->HL, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x78: {
-        printf("LD A, B\n");
+        // printf("LD A, B\n");
         cpu->A  = cpu->B;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x79: {
-        printf("LD A, C\n");
+        // printf("LD A, C\n");
         cpu->A  = cpu->C;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x7A: {
-        printf("LD A, D\n");
+        // printf("LD A, D\n");
         cpu->A  = cpu->D;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x7B: {
-        printf("LD A, E\n");
+        // printf("LD A, E\n");
         cpu->A  = cpu->E;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x7C: {
-        printf("LD A, H\n");
+        // printf("LD A, H\n");
         cpu->A  = cpu->H;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x7D: {
-        printf("LD A, L\n");
+        // printf("LD A, L\n");
         cpu->A  = cpu->L;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x7E: {
-        printf("LD A, (HL)\n");
+        // printf("LD A, (HL)\n");
         cpu->A  = mmu->read8(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x7F: {
-        printf("LD A, A\n");
+        // printf("LD A, A\n");
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x80: {
-        printf("ADD A, B\n");
+        // printf("ADD A, B\n");
         add8(cpu->A, cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x81: {
-        printf("ADD A, C\n");
+        // printf("ADD A, C\n");
         add8(cpu->A, cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x82: {
-        printf("ADD A, D\n");
+        // printf("ADD A, D\n");
         add8(cpu->A, cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x83: {
-        printf("ADD A, E\n");
+        // printf("ADD A, E\n");
         add8(cpu->A, cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x84: {
-        printf("ADD A, H\n");
+        // printf("ADD A, H\n");
         add8(cpu->A, cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x85: {
-        printf("ADD A, L\n");
+        // printf("ADD A, L\n");
         add8(cpu->A, cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x86: {
-        printf("ADD A, (HL)\n");
+        // printf("ADD A, (HL)\n");
         uint8_t value = mmu->read8(cpu->HL);
         add8_mem(cpu->A, value);
         cpu->PC += 1;
         break;
     }
     case 0x87: {
-        printf("ADD A, A\n");
+        // printf("ADD A, A\n");
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x88: {
-        printf("ADD A, B\n");
+        // printf("ADD A, B\n");
         adc(cpu->A, cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x89: {
-        printf("ADC A, C\n");
+        // printf("ADC A, C\n");
         adc(cpu->A, cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x8A: {
-        printf("ADC A, D\n");
+        // printf("ADC A, D\n");
         adc(cpu->A, cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x8B: {
-        printf("ADC A, E\n");
+        // printf("ADC A, E\n");
         adc(cpu->A, cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x8C: {
-        printf("ADC A, H\n");
+        // printf("ADC A, H\n");
         adc(cpu->A, cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x8D: {
-        printf("ADC A, L\n");
+        // printf("ADC A, L\n");
         adc(cpu->A, cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x8E: {
-        printf("ADC A, (HL)\n");
+        // printf("ADC A, (HL)\n");
         adc(cpu->A, mmu->read8(cpu->L));
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x8F: {
-        printf("ADC A, L\n");
+        // printf("ADC A, L\n");
         adc(cpu->A, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x90: {
-        printf("SUB A, L\n");
+        // printf("SUB A, L\n");
         sub(cpu->A, cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x91: {
-        printf("SUB C\n");
+        // printf("SUB C\n");
         sub(cpu->A, cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x92: {
-        printf("SUB D\n");
+        // printf("SUB D\n");
         sub(cpu->A, cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x93: {
-        printf("SUB E\n");
+        // printf("SUB E\n");
         sub(cpu->A, cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x94: {
-        printf("SUB H\n");
+        // printf("SUB H\n");
         sub(cpu->A, cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x95: {
-        printf("SUB L\n");
+        // printf("SUB L\n");
         sub(cpu->A, cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x96: {
-        printf("SUB (HL)\n");
+        // printf("SUB (HL)\n");
         sub(cpu->A, cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x97: {
-        printf("SUB A\n");
+        // printf("SUB A\n");
         sub(cpu->A, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x98: {
-        printf("SBC A, B\n");
+        // printf("SBC A, B\n");
         sbc(cpu->A, cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x99: {
-        printf("SBC A, C\n");
+        // printf("SBC A, C\n");
         sbc(cpu->A, cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x9A: {
-        printf("SBC A, D\n");
+        // printf("SBC A, D\n");
         sbc(cpu->A, cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x9B: {
-        printf("SBC A, E\n");
+        // printf("SBC A, E\n");
         sbc(cpu->A, cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x9C: {
-        printf("SBC A, H\n");
+        // printf("SBC A, H\n");
         sbc(cpu->A, cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x9D: {
-        printf("SBC A, L\n");
+        // printf("SBC A, L\n");
         sbc(cpu->A, cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x9E: {
-        printf("SBC A, L\n");
+        // printf("SBC A, L\n");
         sbc(cpu->A, mmu->read8(cpu->HL));
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x9F: {
-        printf("SBC A, A\n");
+        // printf("SBC A, A\n");
         sbc(cpu->A, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xA0: {
-        printf("AND A, B\n");
+        // printf("AND A, B\n");
         and_(cpu->A, cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xA1: {
-        printf("AND A, C\n");
+        // printf("AND A, C\n");
         and_(cpu->A, cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xA2: {
-        printf("AND A, C\n");
+        // printf("AND A, C\n");
         and_(cpu->A, cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xA3: {
-        printf("AND A, E\n");
+        // printf("AND A, E\n");
         and_(cpu->A, cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xA4: {
-        printf("AND A, H\n");
+        // printf("AND A, H\n");
         and_(cpu->A, cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xA5: {
-        printf("AND A, L\n");
+        // printf("AND A, L\n");
         and_(cpu->A, cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xA6: {
-        printf("AND A, (HL)\n");
+        // printf("AND A, (HL)\n");
         and_(cpu->A, mmu->read8(cpu->L));
         cpu->PC = cpu->PC + 1;
         break;
     }
 
     case 0xA7: {
-        printf("AND A, (HL)\n");
+        // printf("AND A, (HL)\n");
         and_(cpu->A, mmu->read8(cpu->L));
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xA8: {
-        printf("XOR A, B\n");
+        // printf("XOR A, B\n");
         xor_(cpu->A, cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xA9: {
-        printf("XOR A, C\n");
+        // printf("XOR A, C\n");
         xor_(cpu->A, cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xAA: {
-        printf("XOR A, D\n");
+        // printf("XOR A, D\n");
         xor_(cpu->A, cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xAB: {
-        printf("XOR A, E\n");
+        // printf("XOR A, E\n");
         xor_(cpu->A, cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xAC: {
-        printf("XOR A, H\n");
+        // printf("XOR A, H\n");
         xor_(cpu->A, cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xAD: {
-        printf("XOR A, L\n");
+        // printf("XOR A, L\n");
         xor_(cpu->A, cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xAE: {
-        printf("XOR A, (HL)\n");
+        // printf("XOR A, (HL)\n");
         xor_(cpu->A, mmu->read8(cpu->HL));
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xAF: {
-        printf("XOR A, A\n");
+        // printf("XOR A, A\n");
         xor_(cpu->A, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB0: {
-        printf("OR A, B\n");
+        // printf("OR A, B\n");
         or_(cpu->A, cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB1: {
-        printf("OR A, C\n");
+        // printf("OR A, C\n");
         or_(cpu->A, cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB2: {
-        printf("OR A, D\n");
+        // printf("OR A, D\n");
         or_(cpu->A, cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB3: {
-        printf("OR A, E\n");
+        // printf("OR A, E\n");
         or_(cpu->A, cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB4: {
-        printf("OR A, H\n");
+        // printf("OR A, H\n");
         or_(cpu->A, cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB5: {
-        printf("OR A, L\n");
+        // printf("OR A, L\n");
         or_(cpu->A, cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB6: {
-        printf("OR A, (HL)\n");
+        // printf("OR A, (HL)\n");
         or_(cpu->A, mmu->read8(cpu->HL));
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB7: {
-        printf("OR A, A\n");
+        // printf("OR A, A\n");
         or_(cpu->A, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB8: {
-        printf("CP B\n");
+        // printf("CP B\n");
         cp_(cpu->A, cpu->B);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xB9: {
-        printf("CP C\n");
+        // printf("CP C\n");
         cp_(cpu->A, cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xBA: {
-        printf("CP D\n");
+        // printf("CP D\n");
         cp_(cpu->A, cpu->D);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xBB: {
-        printf("CP E\n");
+        // printf("CP E\n");
         cp_(cpu->A, cpu->E);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xBC: {
-        printf("CP H\n");
+        // printf("CP H\n");
         cp_(cpu->A, cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xBD: {
-        printf("CP L\n");
+        // printf("CP L\n");
         cp_(cpu->A, cpu->L);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xBE: {
-        printf("CP (HL)\n");
+        // printf("CP (HL)\n");
         cp_(cpu->A, mmu->read8(cpu->HL));
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xBF: {
-        printf("CP A\n");
+        // printf("CP A\n");
         cp_(cpu->A, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xC0: {
-        printf("RET NZ\n");
+        // printf("RET NZ\n");
         if (!(cpu->F & FLAG_ZERO)) {
             ret(true);
         } else {
@@ -1354,7 +1354,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xC1: {
-        printf("POP BC\n");
+        // printf("POP BC\n");
         uint8_t l = mmu->read8(cpu->SP);
         cpu->SP += 1;
         uint8_t h = mmu->read8(cpu->SP);
@@ -1365,7 +1365,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xC2: {
-        printf("JP NZ, nn\n");
+        // printf("JP NZ, nn\n");
         if (!(cpu->F & FLAG_ZERO)) {
             cpu->PC = mmu->read8(cpu->PC) | mmu->read8(cpu->PC + 1) << 8;
         } else {
@@ -1377,28 +1377,28 @@ void InstructionSet::execute(uint8_t opcode) {
         uint8_t l = mmu->read8(cpu->PC + 1);
         uint8_t h = mmu->read8(cpu->PC + 2);
         cpu->PC   = (h << 8) | l;
-        printf("JP a16 -- %X --\n", cpu->PC);
+        // printf("JP a16 -- %X --\n", cpu->PC);
         break;
     }
     case 0xC4: {
-        printf("CALL nn 0xc4");
+        // printf("CALL nn 0xc4");
         call(!(cpu->F & FLAG_ZERO));
         break;
     }
     case 0xC5: {
-        printf("PUSH BC\n");
+        // printf("PUSH BC\n");
         push_(cpu->BC);
         cpu->PC += 1;
         break;
     }
     case 0xC6: {
-        printf("ADD A, d8\n");
+        // printf("ADD A, d8\n");
         add8(cpu->A, mmu->read8(cpu->PC + 1));
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xC7: {
-        printf("RST 0\n");
+        // printf("RST 0\n");
         uint16_t ret = cpu->PC + 1;
         cpu->SP -= 1;
         mmu->write8(cpu->SP, (ret >> 8) & 0xFF);
@@ -1409,7 +1409,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xC8: {
-        printf("RET Z\n");
+        // printf("RET Z\n");
         if (cpu->F & FLAG_ZERO) {
             ret(true);
         } else {
@@ -1418,12 +1418,12 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xC9: {
-        printf("RET\n");
+        // printf("RET\n");
         pop_(true, cpu->PC);
         break;
     }
     case 0xCA: {
-        printf("JP Z, nn 0xCA\n");
+        // printf("JP Z, nn 0xCA\n");
         if (cpu->F & FLAG_ZERO) {
             u_int8_t l = mmu->read8(cpu->PC + 1);
             u_int8_t h = mmu->read8(cpu->PC + 2);
@@ -1434,46 +1434,46 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xCB: {
-        printf("--- PREFIX CB NOT 0xCB -- \n");
+        // printf("--- PREFIX CB NOT 0xCB -- \n");
         switch (mmu->read8(cpu->PC + 1)) {
         case 0x00: {
-            printf("RLC B\n");
+            // printf("RLC B\n");
             rlc_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x01: {
-            printf("RLC c\n");
+            // printf("RLC c\n");
             rlc_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x02: {
-            printf("rlc d\n");
+            // printf("rlc d\n");
             rlc_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x03: {
-            printf("RLC E\n");
+            // printf("RLC E\n");
             rlc_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x04: {
-            printf("RLC H\n");
+            // printf("RLC H\n");
             rlc_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x05: {
-            printf("RLC L\n");
+            // printf("RLC L\n");
             rlc_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x06: {
-            printf("RLC (HL)\n");
+            // printf("RLC (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             rlc_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1481,49 +1481,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x07: {
-            printf("RLC A\n");
+            // printf("RLC A\n");
             rlc_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x08: {
-            printf("RRC B\n");
+            // printf("RRC B\n");
             rrc_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x09: {
-            printf("RRC C\n");
+            // printf("RRC C\n");
             rrc_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x0A: {
-            printf("RRC D\n");
+            // printf("RRC D\n");
             rrc_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x0B: {
-            printf("RRC E\n");
+            // printf("RRC E\n");
             rrc_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x0C: {
-            printf("RRC H\n");
+            // printf("RRC H\n");
             rrc_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x0D: {
-            printf("RRC L\n");
+            // printf("RRC L\n");
             rrc_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x0E: {
-            printf("RRC (HL)\n");
+            // printf("RRC (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             rrc_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1531,49 +1531,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x0F: {
-            printf("RL B\n");
+            // printf("RL B\n");
             rrc_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x10: {
-            printf("RL B \n");
+            // printf("RL B \n");
             rl_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x11: {
-            printf("RL C\n");
+            // printf("RL C\n");
             rl_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x12: {
-            printf("RL D\n");
+            // printf("RL D\n");
             rl_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x13: {
-            printf("RL E\n");
+            // printf("RL E\n");
             rl_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x14: {
-            printf("RL H\n");
+            // printf("RL H\n");
             rl_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x15: {
-            printf("RL L \n");
+            // printf("RL L \n");
             rl_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x16: {
-            printf("RL (HL)");
+            // printf("RL (HL)");
             uint8_t v = mmu->read8(cpu->HL);
             rl_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1581,49 +1581,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x17: {
-            printf("RL A\n");
+            // printf("RL A\n");
             rl_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x18: {
-            printf("RR B\n");
+            // printf("RR B\n");
             rr_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x19: {
-            printf("RR B\n");
+            // printf("RR B\n");
             rr_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x1A: {
-            printf("RR D\n");
+            // printf("RR D\n");
             rr_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x1B: {
-            printf("RR D\n");
+            // printf("RR D\n");
             rr_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x1C: {
-            printf("RR H\n");
+            // printf("RR H\n");
             rr_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x1D: {
-            printf("RR L\n");
+            // printf("RR L\n");
             rr_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x1E: {
-            printf("RR L\n");
+            // printf("RR L\n");
             uint8_t v = mmu->read8(cpu->HL);
             rr_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1631,49 +1631,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x1F: {
-            printf("RR A\n");
+            // printf("RR A\n");
             rr_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x20: {
-            printf("SLA B\n");
+            // printf("SLA B\n");
             sla_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x21: {
-            printf("SLA C\n");
+            // printf("SLA C\n");
             sla_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x22: {
-            printf("SLA D\n");
+            // printf("SLA D\n");
             sla_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x23: {
-            printf("SLA E\n");
+            // printf("SLA E\n");
             sla_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x24: {
-            printf("SLA H\n");
+            // printf("SLA H\n");
             sla_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x25: {
-            printf("SLA L\n");
+            // printf("SLA L\n");
             sla_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x26: {
-            printf("SLA (HL)\n");
+            // printf("SLA (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             sla_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1681,49 +1681,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x27: {
-            printf("SLA A\n");
+            // printf("SLA A\n");
             sla_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x28: {
-            printf("SLA B\n");
+            // printf("SLA B\n");
             sra_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x29: {
-            printf("SRA C\n");
+            // printf("SRA C\n");
             sra_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x2A: {
-            printf("SRA C\n");
+            // printf("SRA C\n");
             sra_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x2B: {
-            printf("SRA D\n");
+            // printf("SRA D\n");
             sra_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x2C: {
-            printf("SRA E\n");
+            // printf("SRA E\n");
             sra_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x2D: {
-            printf("SRA L\n");
+            // printf("SRA L\n");
             sra_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x2E: {
-            printf("SRA (HL)\n");
+            // printf("SRA (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             sra_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1731,49 +1731,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x2F: {
-            printf("SRA A\n");
+            // printf("SRA A\n");
             sra_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x30: {
-            printf("SWAP B\n");
+            // printf("SWAP B\n");
             swap_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x31: {
-            printf("SWAP C\n");
+            // printf("SWAP C\n");
             swap_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x32: {
-            printf("SWAP D\n");
+            // printf("SWAP D\n");
             swap_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x33: {
-            printf("SWAP E\n");
+            // printf("SWAP E\n");
             swap_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x34: {
-            printf("SWAP H\n");
+            // printf("SWAP H\n");
             swap_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x35: {
-            printf("SWAP L\n");
+            // printf("SWAP L\n");
             swap_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x36: {
-            printf("SWAP (HL)\n");
+            // printf("SWAP (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             swap_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1781,49 +1781,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x37: {
-            printf("SWAP A\n");
+            // printf("SWAP A\n");
             swap_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x38: {
-            printf("SRL B\n");
+            // printf("SRL B\n");
             srl_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x39: {
-            printf("SRL C\n");
+            // printf("SRL C\n");
             srl_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x3A: {
-            printf("SRL D\n");
+            // printf("SRL D\n");
             srl_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x3B: {
-            printf("SRL E\n");
+            // printf("SRL E\n");
             srl_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x3C: {
-            printf("SRL H\n");
+            // printf("SRL H\n");
             srl_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x3D: {
-            printf("SRL L\n");
+            // printf("SRL L\n");
             srl_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x3E: {
-            printf("SRL (HL)\n");
+            // printf("SRL (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             srl_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1831,49 +1831,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x3F: {
-            printf("SRL A\n");
+            // printf("SRL A\n");
             srl_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x40: {
-            printf("BIT0 B\n");
+            // printf("BIT0 B\n");
             bit0_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x41: {
-            printf("BIT0 C\n");
+            // printf("BIT0 C\n");
             bit0_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x42: {
-            printf("BIT0 D\n");
+            // printf("BIT0 D\n");
             bit0_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x43: {
-            printf("BIT0 E\n");
+            // printf("BIT0 E\n");
             bit0_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x44: {
-            printf("BIT0 H\n");
+            // printf("BIT0 H\n");
             bit0_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x45: {
-            printf("BIT0 L\n");
+            // printf("BIT0 L\n");
             bit0_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x46: {
-            printf("BIT0 (HL)\n");
+            // printf("BIT0 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             bit0_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1881,98 +1881,98 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x47: {
-            printf("BIT0 A\n");
+            // printf("BIT0 A\n");
             bit0_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x48: {
-            printf("BIT1 B\n");
+            // printf("BIT1 B\n");
             bit1_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x49: {
-            printf("BIT1 C\n");
+            // printf("BIT1 C\n");
             bit1_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x4A: {
-            printf("BIT1 D\n");
+            // printf("BIT1 D\n");
             bit1_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x4B: {
-            printf("BIT1 E\n");
+            // printf("BIT1 E\n");
             bit1_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x4C: {
-            printf("BIT1 H\n");
+            // printf("BIT1 H\n");
             bit1_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x4D: {
-            printf("BIT1 L\n");
+            // printf("BIT1 L\n");
             bit1_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x4E: {
             uint8_t v = mmu->read8(cpu->HL);
-            printf("BIT1 (HL)\n");
+            // printf("BIT1 (HL)\n");
             bit1_extended(v);
             mmu->write8(cpu->HL, v);
             break;
         }
         case 0x4F: {
-            printf("BIT1 A\n");
+            // printf("BIT1 A\n");
             bit1_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x50: {
-            printf("BIT2, B\n");
+            // printf("BIT2, B\n");
             bit2_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x51: {
-            printf("BIT2, C\n");
+            // printf("BIT2, C\n");
             bit2_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x52: {
-            printf("BIT2, D\n");
+            // printf("BIT2, D\n");
             bit2_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x53: {
-            printf("BIT2, E\n");
+            // printf("BIT2, E\n");
             bit2_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x54: {
-            printf("BIT2, H\n");
+            // printf("BIT2, H\n");
             bit2_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x55: {
-            printf("BIT2, L\n");
+            // printf("BIT2, L\n");
             bit2_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x56: {
-            printf("BIT2, L\n");
+            // printf("BIT2, L\n");
             uint8_t v = mmu->read8(cpu->HL);
             bit2_extended(v);
             mmu->write8(cpu->HL, v);
@@ -1980,49 +1980,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x57: {
-            printf("BIT2 A\n");
+            // printf("BIT2 A\n");
             bit2_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x58: {
-            printf("BIT3 B\n");
+            // printf("BIT3 B\n");
             bit3_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x59: {
-            printf("BIT3 C\n");
+            // printf("BIT3 C\n");
             bit3_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x5A: {
-            printf("BIT3 D\n");
+            // printf("BIT3 D\n");
             bit3_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x5B: {
-            printf("BIT3 E\n");
+            // printf("BIT3 E\n");
             bit3_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x5C: {
-            printf("BIT3 H\n");
+            // printf("BIT3 H\n");
             bit3_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x5D: {
-            printf("BIT3 L\n");
+            // printf("BIT3 L\n");
             bit3_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x5E: {
-            printf("BIT3 L\n");
+            // printf("BIT3 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             bit3_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2030,49 +2030,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x5F: {
-            printf("BIT3 A\n");
+            // printf("BIT3 A\n");
             bit3_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x60: {
-            printf("BIT4 B\n");
+            // printf("BIT4 B\n");
             bit4_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x61: {
-            printf("BIT4 C\n");
+            // printf("BIT4 C\n");
             bit4_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x62: {
-            printf("BIT4 D\n");
+            // printf("BIT4 D\n");
             bit4_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x63: {
-            printf("BIT4 E\n");
+            // printf("BIT4 E\n");
             bit4_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x64: {
-            printf("BIT4 H\n");
+            // printf("BIT4 H\n");
             bit4_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x65: {
-            printf("BIT4 L\n");
+            // printf("BIT4 L\n");
             bit4_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x66: {
-            printf("BIT4 L\n");
+            // printf("BIT4 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             bit4_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2080,49 +2080,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x67: {
-            printf("BIT4 A\n");
+            // printf("BIT4 A\n");
             bit4_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x68: {
-            printf("BIT4 A\n");
+            // printf("BIT4 A\n");
             bit4_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x69: {
-            printf("BIT5 B\n");
+            // printf("BIT5 B\n");
             bit4_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x6A: {
-            printf("BIT5 C\n");
+            // printf("BIT5 C\n");
             bit4_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x6B: {
-            printf("BIT5 D\n");
+            // printf("BIT5 D\n");
             bit5_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x6C: {
-            printf("BIT5 E\n");
+            // printf("BIT5 E\n");
             bit5_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x6D: {
-            printf("BIT5 L\n");
+            // printf("BIT5 L\n");
             bit5_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x6E: {
-            printf("BIT5 L\n");
+            // printf("BIT5 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             bit5_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2130,49 +2130,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x6F: {
-            printf("BIT5 A\n");
+            // printf("BIT5 A\n");
             bit5_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x70: {
-            printf("BIT6 A\n");
+            // printf("BIT6 A\n");
             bit6_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x71: {
-            printf("BIT6 C\n");
+            // printf("BIT6 C\n");
             bit6_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x72: {
-            printf("BIT6 D\n");
+            // printf("BIT6 D\n");
             bit6_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x73: {
-            printf("BIT6 E\n");
+            // printf("BIT6 E\n");
             bit6_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x74: {
-            printf("BIT6 H\n");
+            // printf("BIT6 H\n");
             bit6_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x75: {
-            printf("BIT6 L\n");
+            // printf("BIT6 L\n");
             bit6_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x76: {
-            printf("BIT6 L\n");
+            // printf("BIT6 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             bit6_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2180,98 +2180,98 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x77: {
-            printf("BIT6 A\n");
+            // printf("BIT6 A\n");
             bit6_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x78: {
-            printf("BIT7 A\n");
+            // printf("BIT7 A\n");
             bit7_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x79: {
-            printf("BIT7 C\n");
+            // printf("BIT7 C\n");
             bit7_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x7A: {
-            printf("BIT7 D\n");
+            // printf("BIT7 D\n");
             bit7_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x7B: {
-            printf("BIT7 E\n");
+            // printf("BIT7 E\n");
             bit7_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x7C: {
-            printf("BIT7 H\n");
+            // printf("BIT7 H\n");
             bit7_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x7D: {
-            printf("BIT7 L\n");
+            // printf("BIT7 L\n");
             bit7_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x7E: {
-            printf("BIT7 L\n");
+            // printf("BIT7 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             bit7_extended(v);
             mmu->write8(cpu->HL, v);
             cpu->PC += 2;
         }
         case 0x7F: {
-            printf("BIT7 A\n");
+            // printf("BIT7 A\n");
             bit7_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x80: {
-            printf("RES0 B\n");
+            // printf("RES0 B\n");
             res0_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x81: {
-            printf("RES0 C\n");
+            // printf("RES0 C\n");
             res0_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x82: {
-            printf("RES0 D\n");
+            // printf("RES0 D\n");
             res0_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x83: {
-            printf("RES0 E\n");
+            // printf("RES0 E\n");
             res0_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x84: {
-            printf("RES0 H\n");
+            // printf("RES0 H\n");
             res0_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x85: {
-            printf("RES0 L\n");
+            // printf("RES0 L\n");
             res0_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x86: {
-            printf("RES0 (HL)\n");
+            // printf("RES0 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             res0_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2279,49 +2279,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x87: {
-            printf("RES0 L\n");
+            // printf("RES0 L\n");
             res0_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x88: {
-            printf("RES1 B\n");
+            // printf("RES1 B\n");
             res1_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x89: {
-            printf("RES1 C\n");
+            // printf("RES1 C\n");
             res1_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x8A: {
-            printf("RES1 D\n");
+            // printf("RES1 D\n");
             res1_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x8B: {
-            printf("RES1 E\n");
+            // printf("RES1 E\n");
             res1_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x8C: {
-            printf("RES1 E\n");
+            // printf("RES1 E\n");
             res1_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x8D: {
-            printf("RES1 L\n");
+            // printf("RES1 L\n");
             res1_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x8E: {
-            printf("RES1 (HL)\n");
+            // printf("RES1 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             res1_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2329,50 +2329,50 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x8F: {
-            printf("RES1 A\n");
+            // printf("RES1 A\n");
             res1_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x90: {
-            printf("RES2 B\n");
+            // printf("RES2 B\n");
             res2_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x91: {
-            printf("RES2 C\n");
+            // printf("RES2 C\n");
             res2_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x92: {
-            printf("RES2 D\n");
+            // printf("RES2 D\n");
             res2_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x93: {
-            printf("RES2 E\n");
+            // printf("RES2 E\n");
             res2_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x94: {
-            printf("RES2 H\n");
+            // printf("RES2 H\n");
             res2_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x95: {
-            printf("RES2 L\n");
+            // printf("RES2 L\n");
             res2_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
 
         case 0x96: {
-            printf("RES2 L\n");
+            // printf("RES2 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             res2_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2380,49 +2380,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x97: {
-            printf("RES2 A\n");
+            // printf("RES2 A\n");
             res2_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0x98: {
-            printf("RES3 B\n");
+            // printf("RES3 B\n");
             res3_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0x99: {
-            printf("RES3 C\n");
+            // printf("RES3 C\n");
             res3_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0x9A: {
-            printf("RES3 D\n");
+            // printf("RES3 D\n");
             res3_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0x9B: {
-            printf("RES3 E\n");
+            // printf("RES3 E\n");
             res3_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0x9C: {
-            printf("RES3 H\n");
+            // printf("RES3 H\n");
             res3_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0x9D: {
-            printf("RES3 L\n");
+            // printf("RES3 L\n");
             res3_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0x9E: {
-            printf("RES3 L\n");
+            // printf("RES3 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             res3_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2430,49 +2430,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x9F: {
-            printf("RES3 A\n");
+            // printf("RES3 A\n");
             res3_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xA0: {
-            printf("RES4 A\n");
+            // printf("RES4 A\n");
             res4_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xA1: {
-            printf("RES4 C\n");
+            // printf("RES4 C\n");
             res4_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xA2: {
-            printf("RES4 D\n");
+            // printf("RES4 D\n");
             res4_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xA3: {
-            printf("RES4 E\n");
+            // printf("RES4 E\n");
             res4_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xA4: {
-            printf("RES4 H\n");
+            // printf("RES4 H\n");
             res4_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xA5: {
-            printf("RES4 L\n");
+            // printf("RES4 L\n");
             res4_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xA6: {
-            printf("RES4 L\n");
+            // printf("RES4 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             res4_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2480,49 +2480,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xA7: {
-            printf("RES4 A\n");
+            // printf("RES4 A\n");
             res4_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xA8: {
-            printf("RES5 B\n");
+            // printf("RES5 B\n");
             res5_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xA9: {
-            printf("RES5 C\n");
+            // printf("RES5 C\n");
             res5_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xAA: {
-            printf("RES5 D\n");
+            // printf("RES5 D\n");
             res5_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xAB: {
-            printf("RES5 E\n");
+            // printf("RES5 E\n");
             res5_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xAC: {
-            printf("RES5 H\n");
+            // printf("RES5 H\n");
             res5_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xAD: {
-            printf("RES5 L\n");
+            // printf("RES5 L\n");
             res5_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xAE: {
-            printf("RES5 (HL)\n");
+            // printf("RES5 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             res5_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2530,49 +2530,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xAF: {
-            printf("RES5 A\n");
+            // printf("RES5 A\n");
             res5_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xB0: {
-            printf("RES6 B\n");
+            // printf("RES6 B\n");
             res6_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xB1: {
-            printf("RES6 C\n");
+            // printf("RES6 C\n");
             res6_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xB2: {
-            printf("RES6 D\n");
+            // printf("RES6 D\n");
             res6_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xB3: {
-            printf("RES6 E\n");
+            // printf("RES6 E\n");
             res6_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xB4: {
-            printf("RES6 H\n");
+            // printf("RES6 H\n");
             res6_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xB5: {
-            printf("RES6 L\n");
+            // printf("RES6 L\n");
             res6_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xB6: {
-            printf("RES6 (HL)\n");
+            // printf("RES6 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             res6_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2580,49 +2580,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xB7: {
-            printf("RES6 A\n");
+            // printf("RES6 A\n");
             res6_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xB8: {
-            printf("RES7 B\n");
+            // printf("RES7 B\n");
             res7_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xB9: {
-            printf("RES7 C\n");
+            // printf("RES7 C\n");
             res7_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xBA: {
-            printf("RES7 D\n");
+            // printf("RES7 D\n");
             res7_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xBB: {
-            printf("RES7 E\n");
+            // printf("RES7 E\n");
             res7_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xBC: {
-            printf("RES7 H\n");
+            // printf("RES7 H\n");
             res7_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xBD: {
-            printf("RES7 L\n");
+            // printf("RES7 L\n");
             res7_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xBE: {
-            printf("RES7 (HL)\n");
+            // printf("RES7 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             res7_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2630,49 +2630,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xBF: {
-            printf("RES7 A\n");
+            // printf("RES7 A\n");
             res7_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xC0: {
-            printf("SET0 B\n");
+            // printf("SET0 B\n");
             set0_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xC1: {
-            printf("SET0 C\n");
+            // printf("SET0 C\n");
             set0_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xC2: {
-            printf("SET0 D\n");
+            // printf("SET0 D\n");
             set0_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xC3: {
-            printf("SET0 E\n");
+            // printf("SET0 E\n");
             set0_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xC4: {
-            printf("SET0 H\n");
+            // printf("SET0 H\n");
             set0_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xC5: {
-            printf("SET0 L\n");
+            // printf("SET0 L\n");
             set0_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xC6: {
-            printf("SET0 L\n");
+            // printf("SET0 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             set0_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2680,49 +2680,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xC7: {
-            printf("SET0 A\n");
+            // printf("SET0 A\n");
             set0_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xC8: {
-            printf("SET1 B\n");
+            // printf("SET1 B\n");
             set1_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xC9: {
-            printf("SET1 C\n");
+            // printf("SET1 C\n");
             set1_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xCA: {
-            printf("SET1 D\n");
+            // printf("SET1 D\n");
             set1_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xCB: {
-            printf("SET1 E\n");
+            // printf("SET1 E\n");
             set1_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xCC: {
-            printf("SET1 H\n");
+            // printf("SET1 H\n");
             set1_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xCD: {
-            printf("SET1 L\n");
+            // printf("SET1 L\n");
             set1_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xCE: {
-            printf("SET1 (HL)\n");
+            // printf("SET1 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             set1_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2730,49 +2730,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xCF: {
-            printf("SET1 A\n");
+            // printf("SET1 A\n");
             set1_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xD0: {
-            printf("SET2 B\n");
+            // printf("SET2 B\n");
             set2_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xD1: {
-            printf("SET2 C\n");
+            // printf("SET2 C\n");
             set2_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xD2: {
-            printf("SET2 D\n");
+            // printf("SET2 D\n");
             set2_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xD3: {
-            printf("SET2 E\n");
+            // printf("SET2 E\n");
             set2_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xD4: {
-            printf("SET2 D\n");
+            // printf("SET2 D\n");
             set2_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xD5: {
-            printf("SET2 L\n");
+            // printf("SET2 L\n");
             set2_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xD6: {
-            printf("SET2 L\n");
+            // printf("SET2 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             set2_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2780,49 +2780,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xD7: {
-            printf("SET2 A\n");
+            // printf("SET2 A\n");
             set2_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xD8: {
-            printf("SET3 B\n");
+            // printf("SET3 B\n");
             set3_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xD9: {
-            printf("SET3 C\n");
+            // printf("SET3 C\n");
             set3_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xDA: {
-            printf("SET3 D\n");
+            // printf("SET3 D\n");
             set3_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xDB: {
-            printf("SET3 E\n");
+            // printf("SET3 E\n");
             set3_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xDC: {
-            printf("SET3 H\n");
+            // printf("SET3 H\n");
             set3_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xDD: {
-            printf("SET3 L\n");
+            // printf("SET3 L\n");
             set3_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xDE: {
-            printf("SET3 (HL)\n");
+            // printf("SET3 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             set3_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2830,49 +2830,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xDF: {
-            printf("SET3 A\n");
+            // printf("SET3 A\n");
             set3_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xE0: {
-            printf("SET4 B\n");
+            // printf("SET4 B\n");
             set4_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xE1: {
-            printf("SET4 C\n");
+            // printf("SET4 C\n");
             set4_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xE2: {
-            printf("SET4 D\n");
+            // printf("SET4 D\n");
             set4_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xE3: {
-            printf("SET4 E\n");
+            // printf("SET4 E\n");
             set4_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xE4: {
-            printf("SET4 H\n");
+            // printf("SET4 H\n");
             set4_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xE5: {
-            printf("SET4 L\n");
+            // printf("SET4 L\n");
             set4_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xE6: {
-            printf("SET4 (HL)\n");
+            // printf("SET4 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             set4_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2880,49 +2880,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xE7: {
-            printf("SET4 A\n");
+            // printf("SET4 A\n");
             set4_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xE8: {
-            printf("SET5 B\n");
+            // printf("SET5 B\n");
             set5_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xE9: {
-            printf("SET5 C\n");
+            // printf("SET5 C\n");
             set5_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xEA: {
-            printf("SET5 D\n");
+            // printf("SET5 D\n");
             set5_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xEB: {
-            printf("SET5 E\n");
+            // printf("SET5 E\n");
             set5_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xEC: {
-            printf("SET5 H\n");
+            // printf("SET5 H\n");
             set5_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xED: {
-            printf("SET5 L\n");
+            // printf("SET5 L\n");
             set5_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xEE: {
-            printf("SET5 (HL)\n");
+            // printf("SET5 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             set5_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2930,49 +2930,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xEF: {
-            printf("SET5 A\n");
+            // printf("SET5 A\n");
             set5_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xF0: {
-            printf("SET6 B\n");
+            // printf("SET6 B\n");
             set6_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xF1: {
-            printf("SET6 C\n");
+            // printf("SET6 C\n");
             set6_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xF2: {
-            printf("SET6 D\n");
+            // printf("SET6 D\n");
             set6_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xF3: {
-            printf("SET6 E\n");
+            // printf("SET6 E\n");
             set6_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xF4: {
-            printf("SET6 H\n");
+            // printf("SET6 H\n");
             set6_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xF5: {
-            printf("SET6 L\n");
+            // printf("SET6 L\n");
             set6_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xF6: {
-            printf("SET6 (HL)\n");
+            // printf("SET6 (HL)\n");
             uint8_t v = mmu->read8(cpu->HL);
             set6_extended(v);
             mmu->write8(cpu->HL, v);
@@ -2980,49 +2980,49 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xF7: {
-            printf("SET6 A\n");
+            // printf("SET6 A\n");
             set6_extended(cpu->A);
             cpu->PC += 2;
             break;
         }
         case 0xF8: {
-            printf("SET7 B\n");
+            // printf("SET7 B\n");
             set7_extended(cpu->B);
             cpu->PC += 2;
             break;
         }
         case 0xF9: {
-            printf("SET7 C\n");
+            // printf("SET7 C\n");
             set7_extended(cpu->C);
             cpu->PC += 2;
             break;
         }
         case 0xFA: {
-            printf("SET7 D\n");
+            // printf("SET7 D\n");
             set7_extended(cpu->D);
             cpu->PC += 2;
             break;
         }
         case 0xFB: {
-            printf("SET7 E\n");
+            // printf("SET7 E\n");
             set7_extended(cpu->E);
             cpu->PC += 2;
             break;
         }
         case 0xFC: {
-            printf("SET7 H\n");
+            // printf("SET7 H\n");
             set7_extended(cpu->H);
             cpu->PC += 2;
             break;
         }
         case 0xFD: {
-            printf("SET7 L\n");
+            // printf("SET7 L\n");
             set7_extended(cpu->L);
             cpu->PC += 2;
             break;
         }
         case 0xFE: {
-            printf("SET7 L\n");
+            // printf("SET7 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             set7_extended(v);
             mmu->write8(cpu->HL, v);
@@ -3030,7 +3030,7 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0xFF: {
-            printf("SET7 A\n");
+            // printf("SET7 A\n");
             set7_extended(cpu->A);
             cpu->PC += 2;
             break;
@@ -3038,7 +3038,7 @@ void InstructionSet::execute(uint8_t opcode) {
         }
     }
     case 0xCC: {
-        printf("CALL Z, a16\n");
+        // printf("CALL Z, a16\n");
         if (cpu->F & FLAG_ZERO) {
             execute_call();
         } else {
@@ -3047,7 +3047,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xCD: {
-        printf("CALL a16\n");
+        // printf("CALL a16\n");
         uint16_t address        = mmu->read16(cpu->PC + 1);
         uint16_t return_address = cpu->PC + 3;
 
@@ -3063,7 +3063,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xCF: {
-        printf("RST 1\n");
+        // printf("RST 1\n");
         uint16_t return_addr = cpu->PC + 1;
         cpu->SP -= 1;
         mmu->write16(cpu->SP, return_addr);
@@ -3071,44 +3071,44 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xD0: {
-        printf("RET NC\n");
+        // printf("RET NC\n");
         pop_(!(cpu->F & FLAG_CARRY), cpu->PC);
         break;
     }
     case 0xD1: {
-        printf("POP DE\n");
+        // printf("POP DE\n");
         pop_(true, cpu->DE);
         break;
     }
     case 0xD2: {
-        printf("JP NC, a16\n");
+        // printf("JP NC, a16\n");
         pop_(!(cpu->F & FLAG_CARRY), cpu->PC);
         break;
     }
     case 0xD3: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         //  cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xD4: {
-        printf("  CALL NC, a16\n");
+        // printf("  CALL NC, a16\n");
         call((cpu->F & FLAG_CARRY));
         break;
     }
     case 0xD5: {
-        printf(" PUSH DE\n");
+        // printf(" PUSH DE\n");
         push_(cpu->DE);
         cpu->PC += 1;
         break;
     }
     case 0xD6: {
         sub(cpu->A, mmu->romData[cpu->PC + 1]);
-        printf("SUB d8. result of A -- %X -- 0xD6\n", cpu->A);
+        // printf("SUB d8. result of A -- %X -- 0xD6\n", cpu->A);
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xD7: {
-        printf("RST 10H\n");
+        // printf("RST 10H\n");
         uint16_t ret = cpu->PC + 1;
         cpu->SP--;
         mmu->write8(cpu->SP, (ret >> 8) & 0xFF);
@@ -3127,13 +3127,13 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xD9: {
         // TODO
-        printf("-- 0xD9 -- RETI NOT DONE \n");
+        // printf("-- 0xD9 -- RETI NOT DONE \n");
         // pop_();
         // cpu->PC = cpu->PC + 2;
         // break;
     }
     case 0xDA: {
-        printf("JP C, nn\n");
+        // printf("JP C, nn\n");
         if (cpu->F & FLAG_CARRY) {
             uint8_t l = mmu->read8(cpu->PC + 1);
             uint8_t h = mmu->read8(cpu->PC + 2);
@@ -3144,13 +3144,13 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xDB: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         //  cpu->PC = cpu->PC + 2;
         break;
     }
 
     case 0xDC: {
-        printf("CALL C, a16\n");
+        // printf("CALL C, a16\n");
         if (cpu->F & FLAG_CARRY) {
             uint16_t return_addr = cpu->PC + 3;
             cpu->SP -= 1;
@@ -3164,18 +3164,18 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xDD: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         //  cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xDE: {
-        printf("SBC A, d8\n");
+        // printf("SBC A, d8\n");
         sbc(cpu->A, mmu->read8(cpu->PC + 1));
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xDF: {
-        printf("RST 18H\n");
+        // printf("RST 18H\n");
         uint16_t return_addr = cpu->PC + 1;
 
         cpu->SP -= 1;
@@ -3196,7 +3196,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xE1: {
-        printf("POP HL\n");
+        // printf("POP HL\n");
         pop_(true, cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
@@ -3208,34 +3208,34 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xE3: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         break;
     }
     case 0xE4: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         break;
     }
     case 0xE5: {
-        printf("PUSH HL\n");
+        // printf("PUSH HL\n");
         push_(cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xE6: {
-        printf(" AND d8\n");
+        // printf(" AND d8\n");
         and_(cpu->A, mmu->read8(cpu->PC + 1));
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xE7: {
-        printf("RST 4\n");
+        // printf("RST 4\n");
         uint16_t n8 = cpu->PC + 1;
         push_(n8);
         cpu->PC = 0x0020;
         break;
     }
     case 0xE8: {
-        printf("ADD SP, r8\n");
+        // printf("ADD SP, r8\n");
         int8_t s8 = (int8_t)mmu->read8(cpu->PC + 1);
         cpu->clear_flag(FLAG_ZERO);
         cpu->clear_flag(FLAG_SUBTRACT);
@@ -3249,7 +3249,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xE9: {
-        printf("JP (HL)\n");
+        // printf("JP (HL)\n");
         cpu->PC = cpu->HL;
         break;
     }
@@ -3257,41 +3257,41 @@ void InstructionSet::execute(uint8_t opcode) {
         uint8_t  l  = mmu->romData[cpu->PC + 1];
         uint8_t  h  = mmu->romData[cpu->PC + 2];
         uint16_t nn = (h << 8) | l;
-        printf("LD(nn), A 0xEA nn: -- %X --\n", nn);
+        // printf("LD(nn), A 0xEA nn: -- %X --\n", nn);
         mmu->write8(nn, cpu->A);
         cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xEB: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xEC: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xED: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xEE: {
-        printf(" XOR d8\n");
+        // printf(" XOR d8\n");
         xor_(cpu->A, mmu->read8(cpu->PC + 1));
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xEF: {
-        printf(" RST 28H\n");
+        // printf(" RST 28H\n");
         uint16_t return_addr = cpu->PC + 1;
         push_(return_addr);
         cpu->PC = 0x0028;
         break;
     }
     case 0xF0: {
-        printf("LD A, (a8)\n");
+        // printf("LD A, (a8)\n");
         uint8_t  a8   = mmu->read8(cpu->PC + 1);
         uint16_t addr = 0xFF00 | a8;
         cpu->A        = mmu->read8(addr);
@@ -3300,49 +3300,49 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xF1: {
-        printf("POP AF\n");
+        // printf("POP AF\n");
         pop_(true, cpu->AF);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xF2: {
-        printf("LDA, (C)\n");
+        // printf("LDA, (C)\n");
         cpu->A  = mmu->read8(0xFF00 + cpu->C);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0xF3: {
-        printf(" DI\n");
+        // printf(" DI\n");
         cpu->_ime = 0;
         cpu->PC += 1;
     }
     case 0xF4: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xF5: {
-        printf("push AF\n");
+        // printf("push AF\n");
         //  cpu->PC = cpu->PC + 3;
         push_(cpu->AF);
         cpu->PC += 1;
         break;
     }
     case 0xF6: {
-        printf(" OR nn\n");
+        // printf(" OR nn\n");
         or_(cpu->A, mmu->read8(cpu->PC + 1));
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xF7: {
-        printf(" RST 30H\n");
+        // printf(" RST 30H\n");
         uint16_t n8 = cpu->PC + 1;
         push_(n8);
         cpu->PC = 0x0030;
         break;
     }
     case 0xF8: {
-        printf("LD HL, SP+s8\n");
+        // printf("LD HL, SP+s8\n");
         int8_t   s8 = mmu->read8(cpu->PC + 1);
         uint32_t r  = cpu->SP + s8;
         cpu->PC     = cpu->PC + 2;
@@ -3354,12 +3354,12 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xF9: {
-        printf("  LDSP, HL\n");
+        // printf("  LDSP, HL\n");
         cpu->SP = cpu->HL;
         break;
     }
     case 0xFA: {
-        printf("LD A, (a16)\n");
+        // printf("LD A, (a16)\n");
         uint8_t  l = mmu->read8(cpu->PC + 1);
         uint8_t  h = mmu->read8(cpu->PC + 2);
         uint16_t a = (h << 8) | l;
@@ -3368,24 +3368,24 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xFB: {
-        printf("EI\n");
+        // printf("EI\n");
         cpu->_ime = 1;
         cpu->PC += 1;
         break;
     }
     case 0xFC: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xFD: {
-        printf("-- NOT IMPLEMENTED --\n");
+        // printf("-- NOT IMPLEMENTED --\n");
         //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xFE: {
         uint8_t n = mmu->read8(cpu->PC + 1);
-        printf("CP A,n8  -- %X --\n", n);
+        // printf("CP A,n8  -- %X --\n", n);
         cpu->set_flag(FLAG_ZERO, n == cpu->A);
         cpu->set_flag(FLAG_SUBTRACT, 1);
         cpu->set_flag(FLAG_HALF_CARRY, (cpu->A & 0x0F) < (n & 0x0F));
@@ -3394,7 +3394,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xFF: {
-        printf("RST 38H");
+        // printf("RST 38H");
         uint16_t return_addr = cpu->PC + 1;
         push_(return_addr);
         cpu->PC = 0x0038;

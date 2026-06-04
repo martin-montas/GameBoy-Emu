@@ -55,7 +55,7 @@ uint16_t MMU::read16(uint16_t addr) {
 
 uint8_t MMU::read8(uint16_t addr) {
     if (addr == 0xD800) {
-        printf("[READ D800] = %02X\n", WRAM[0x0800]);
+        // printf("[READ D800] = %02X\n", WRAM[0x0800]);
         return WRAM[addr - 0xC000];
     } else if (addr < 0x8000) {
         return this->romData[addr];
@@ -102,7 +102,7 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     }
     if (addr >= 0xC000 && addr <= 0xDFFF) {
         if (addr == 0xD800) {
-            printf("[WRITE D800] = %02X \n", value);
+            // printf("[WRITE D800] = %02X \n", value);
         }
         WRAM[addr - 0xC000] = value;
         return;

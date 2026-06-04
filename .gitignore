@@ -10,3 +10,7 @@ test/*
 ./gameboy-todo.md
 test/a.out
 gameboy
+out.txt
+
+SameBoy
+gameboy-doctor/

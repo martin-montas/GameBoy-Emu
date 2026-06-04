@@ -54,23 +54,22 @@ uint16_t MMU::read16(uint16_t addr) {
 }
 
 uint8_t MMU::read8(uint16_t addr) {
-    if (addr <= 0x7FFF) {
+    if (addr == 0xD800) {
+        printf("[READ D800] = %02X\n", WRAM[0x0800]);
+        return WRAM[addr - 0xC000];
+    } else if (addr < 0x8000) {
         return this->romData[addr];
-        // }
-        // else if (addr <= 0x7FFF) {
-        // uint32_t mapped = rom_bank * 0x4000 + (addr - 0x4000);
-        // return this->romData[mapped];
     } else if (addr >= 0x8000 && addr <= 0x9FFF) {
-        return this->VRAM[addr - 0x8000];
+        return VRAM[addr - 0x8000];
     } else if (addr >= 0xA000 && addr <= 0xBFFF) {
         // this should also go to mbc
-        return this->EXTERNAL_RAM[addr - 0xA000];
+        return EXTERNAL_RAM[addr - 0xA000];
     } else if (addr >= 0xC000 && addr <= 0xDFFF) {
-        return this->WRAM[addr - 0xC000];
+        return WRAM[addr - 0xC000];
     } else if (addr >= 0xE000 && addr <= 0xFDFF) {
-        return this->WRAM[addr - 0xE000];
+        return WRAM[addr - 0x2000];
     } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
-        return this->OAM[addr - 0xFE00];
+        return OAM[addr - 0xFE00];
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
             return serial->read(addr);
@@ -78,9 +77,7 @@ uint8_t MMU::read8(uint16_t addr) {
         if (addr >= 0xFF04 && addr <= 0xFF07) {
             return timer->read(addr);
         } else if (addr == 0xFF44) {
-            static uint8_t fake_ly = 0;
-            fake_ly                = (fake_ly + 1) % 154;
-            return fake_ly;
+            return 0x90;
         } else {
             return IO_REGISTERS[addr - 0xFF00];
         }
@@ -94,18 +91,27 @@ uint8_t MMU::read8(uint16_t addr) {
 }
 
 void MMU::write8(uint16_t addr, uint8_t value) {
-    if (addr >= 0x0000 && addr <= 0x7FFF) {
+    if (addr < 0x8000) {
         return;
     } else if (addr >= 0x8000 && addr <= 0x9FFF) {
-        this->VRAM[addr - 0x8000] = value;
+        VRAM[addr - 0x8000] = value;
+        return;
     } else if (addr >= 0xA000 && addr <= 0xBFFF) {
-        this->EXTERNAL_RAM[addr - 0xA000] = value;
-    } else if (addr >= 0xC000 && addr <= 0xDFFF) {
-        this->WRAM[addr - 0xC000] = value;
+        EXTERNAL_RAM[addr - 0xA000] = value;
+        return;
+    }
+    if (addr >= 0xC000 && addr <= 0xDFFF) {
+        if (addr == 0xD800) {
+            printf("[WRITE D800] = %02X \n", value);
+        }
+        WRAM[addr - 0xC000] = value;
+        return;
     } else if (addr >= 0xE000 && addr <= 0xFDFF) {
-        this->WRAM[addr - 0xE000] = value;
+        WRAM[addr - 0x2000] = value;
+        return;
     } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
-        this->OAM[addr - 0xFE00] = value;
+        OAM[addr - 0xFE00] = value;
+        return;
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
             serial->write(addr, value);
@@ -118,10 +124,12 @@ void MMU::write8(uint16_t addr, uint8_t value) {
         } else if (addr == 0xFF44) {
             return;
         } else {
-            this->IO_REGISTERS[0xFF00 - value];
+            this->IO_REGISTERS[addr - 0xFF00];
+            return;
         }
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
         this->HRAM[addr - 0xFF80] = value;
+        return;
     } else if (addr == 0xFFFF) {
 
     } else {

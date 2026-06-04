@@ -95,7 +95,6 @@ void InstructionSet::ld_mem(uint8_t& reg, uint16_t addr) {
 
 void InstructionSet::jump(bool condition, int8_t offset) {
     // DONE:
-    cpu->PC += 2;
     if (condition) {
         cpu->PC += offset;
     }
@@ -116,23 +115,30 @@ void InstructionSet::ld(uint8_t& reg, uint8_t addr) {
 }
 
 void InstructionSet::execute(uint8_t opcode) {
+    // printf("A:%02X F:%02X B:%02X C:%02X D:%02X E:%02X H:%02X L:%02X "
+    //        "SP:%04X PC:%04X "
+    //        "PCMEM:%02X,%02X,%02X,%02X\n",
+    //        cpu->A, cpu->F, cpu->B, cpu->C, cpu->D, cpu->E, cpu->H, cpu->L, cpu->SP, cpu->PC,
+    //        mmu->read8(cpu->PC), mmu->read8(cpu->PC + 1), mmu->read8(cpu->PC + 2),
+    //        mmu->read8(cpu->PC + 3));
+    printf("PC:%04X HL:%04X ", cpu->PC, cpu->HL);
     switch (opcode) {
     case 0x00: {
         cpu->PC += 1;
-        // printf("NOP  -- %X --\n", cpu->PC);
+        printf("NOP  -- %X --\n", cpu->PC);
         break;
     }
     case 0x01: {
         uint8_t  l   = mmu->read8(cpu->PC + 1);
         uint8_t  h   = mmu->read8(cpu->PC + 2);
         uint16_t val = (h << 8) | l;
-        printf("LD (BC), A 0x02 -- %X --\n", val);
+        printf("LD (BC), A 0x01 -- %X --\n", val);
         cpu->BC = val;
         cpu->PC = cpu->PC + 3;
         break;
     }
     case 0x02: {
-        ld_mem(cpu->A, cpu->BC);
+        mmu->write8(cpu->BC, cpu->A);
         printf("LD (BC), A 0x02 -- %X --\n", cpu->BC);
         cpu->PC = cpu->PC + 1;
         break;
@@ -176,13 +182,18 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x08: {
-        uint8_t  l       = mmu->romData[cpu->PC + 1];
-        uint8_t  h       = mmu->romData[cpu->PC + 2];
-        uint16_t address = (h << 8) | l;
-        printf("LD (a16), SP -- %X --\n", address);
-        uint8_t value = cpu->SP & 0xFF;
-        mmu->write8(address, value);
-        cpu->PC = cpu->PC + 3;
+        uint8_t  l    = mmu->read8(cpu->PC + 1);
+        uint8_t  h    = mmu->read8(cpu->PC + 2);
+        uint16_t addr = (h << 8) | l;
+
+        printf("LD (a16), SP -- %04X --\n", addr);
+
+        uint16_t sp = cpu->SP;
+
+        mmu->write8(addr, sp & 0xFF);
+        mmu->write8(addr + 1, (sp >> 8) & 0xFF);
+
+        cpu->PC += 3;
         break;
     }
     case 0x09: {
@@ -281,10 +292,10 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x18: {
         int8_t offset;
-        offset = static_cast<int8_t>(mmu->romData[cpu->PC + 1]);
+        offset = (int8_t)mmu->read8(cpu->PC + 1);
+        cpu->PC += 2;
         cpu->PC += offset;
         printf("JR r8 -- %X --\n", offset);
-        cpu->PC += 2;
         break;
     }
     case 0x19: {
@@ -331,8 +342,11 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x20: {
         printf("JR NZ, s8\n");
-        int8_t v = (int8_t)(mmu->read8(cpu->PC + 1));
-        jump(!(cpu->F & FLAG_ZERO), v);
+        int8_t offset = (int8_t)(mmu->read8(cpu->PC + 1));
+        if (!(cpu->F & FLAG_ZERO))
+            cpu->PC += 2 + offset;
+        else
+            cpu->PC += 2;
         break;
     }
     case 0x21: {
@@ -347,7 +361,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x22: {
         printf("LD (HL+), A");
-        ld_mem(cpu->A, cpu->HL);
+        mmu->write8(cpu->HL, cpu->A);
         cpu->HL += 1;
         cpu->PC += 1;
         break;
@@ -403,21 +417,26 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x28: {
-
         printf("JR Z, r8 0x28");
-        int8_t offset = mmu->read8(cpu->PC + 1);
-        jump(cpu->F & FLAG_ZERO, offset);
-        // pc shouldn't not be updated here break;
+        int8_t offset = (int8_t)mmu->read8(cpu->PC + 1);
+
+        if (cpu->F & FLAG_ZERO)
+            cpu->PC += 2 + offset;
+        else
+            cpu->PC += 2;
+
+        break;
     }
     case 0x29: {
-        std::cout << "ADD HL, HL" << std::endl;
+        printf("ADD HL, HL\n");
         add16(cpu->HL, cpu->HL);
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x2A: {
         printf("LD A, (HL+)\n");
-        ld_mem(cpu->A, cpu->HL);
+        uint8_t n8 = mmu->read8(cpu->HL);
+        cpu->A     = n8;
         cpu->HL += 1;
         cpu->PC += 1;
         break;
@@ -458,16 +477,16 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x31: {
+        uint16_t l = mmu->read8(cpu->PC + 1);
+        uint16_t h = mmu->read8(cpu->PC + 2);
+        cpu->SP    = (h << 8) | l;
 
-        printf("LD SP, d16\n");
-        ldr(cpu->SP);
         cpu->PC = cpu->PC + 3;
         break;
     }
     case 0x32: {
-
         printf("LD (HL-), A\n");
-        ld_mem(cpu->A, cpu->HL);
+        mmu->write8(cpu->HL, cpu->A);
         cpu->HL -= 1;
         cpu->PC = cpu->PC + 1;
         break;
@@ -978,8 +997,9 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x86: {
         printf("ADD A, (HL)\n");
-        add8_mem(cpu->A, mmu->romData[cpu->HL]);
-        cpu->PC = cpu->PC + 1;
+        uint8_t value = mmu->read8(cpu->HL);
+        add8_mem(cpu->A, value);
+        cpu->PC += 1;
         break;
     }
     case 0x87: {
@@ -1335,9 +1355,13 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xC1: {
         printf("POP BC\n");
-        cpu->C = mmu->read8(cpu->SP);
-        cpu->B = mmu->read8(cpu->SP + 1);
+        uint8_t l = mmu->read8(cpu->SP);
         cpu->SP += 1;
+        uint8_t h = mmu->read8(cpu->SP);
+        cpu->SP += 1;
+
+        cpu->BC = (h << 8) | l;
+        cpu->PC += 1;
         break;
     }
     case 0xC2: {
@@ -3063,7 +3087,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xD3: {
         printf("-- NOT IMPLEMENTED --\n");
-        // cpu->PC = cpu->PC + 2;
+        //  cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xD4: {
@@ -3121,7 +3145,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xDB: {
         printf("-- NOT IMPLEMENTED --\n");
-        // cpu->PC = cpu->PC + 2;
+        //  cpu->PC = cpu->PC + 2;
         break;
     }
 
@@ -3141,7 +3165,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xDD: {
         printf("-- NOT IMPLEMENTED --\n");
-        // cpu->PC = cpu->PC + 2;
+        //  cpu->PC = cpu->PC + 2;
         break;
     }
     case 0xDE: {
@@ -3240,17 +3264,17 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xEB: {
         printf("-- NOT IMPLEMENTED --\n");
-        // cpu->PC = cpu->PC + 3;
+        //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xEC: {
         printf("-- NOT IMPLEMENTED --\n");
-        // cpu->PC = cpu->PC + 3;
+        //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xED: {
         printf("-- NOT IMPLEMENTED --\n");
-        // cpu->PC = cpu->PC + 3;
+        //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xEE: {
@@ -3268,9 +3292,11 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xF0: {
         printf("LD A, (a8)\n");
-        uint8_t a8 = mmu->read8(cpu->PC + 1);
-        cpu->A     = mmu->read8(0xFF00 + a8);
-        cpu->PC    = cpu->PC + 2;
+        uint8_t  a8   = mmu->read8(cpu->PC + 1);
+        uint16_t addr = 0xFF00 | a8;
+        cpu->A        = mmu->read8(addr);
+
+        cpu->PC += 2;
         break;
     }
     case 0xF1: {
@@ -3292,12 +3318,12 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xF4: {
         printf("-- NOT IMPLEMENTED --\n");
-        // cpu->PC = cpu->PC + 3;
+        //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xF5: {
         printf("push AF\n");
-        // cpu->PC = cpu->PC + 3;
+        //  cpu->PC = cpu->PC + 3;
         push_(cpu->AF);
         cpu->PC += 1;
         break;
@@ -3349,12 +3375,12 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xFC: {
         printf("-- NOT IMPLEMENTED --\n");
-        // cpu->PC = cpu->PC + 3;
+        //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xFD: {
         printf("-- NOT IMPLEMENTED --\n");
-        // cpu->PC = cpu->PC + 3;
+        //  cpu->PC = cpu->PC + 3;
         break;
     }
     case 0xFE: {
@@ -3403,10 +3429,9 @@ void InstructionSet::ret(bool condition) {
 
 void InstructionSet::or_(uint8_t& reg_1, uint8_t reg_2) {
     uint8_t tmp = reg_1 | reg_2;
+
+    cpu->F = 0;
     cpu->set_flag(FLAG_ZERO, (tmp == 0));
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
-    cpu->clear_flag(FLAG_CARRY);
     reg_1 = tmp;
 }
 

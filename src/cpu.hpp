@@ -28,6 +28,11 @@ enum Interrupt {
 
 using namespace std;
 class Cpu {
+  private:
+    uint32_t cycle;
+    uint32_t globalCycles;
+    // SystemBus& bus;
+
   public:
     // Cpu();
     ~Cpu() = default;
@@ -116,11 +121,6 @@ class Cpu {
     uint32_t cycle_count;
     bool     _ime        = false; // interrupt master enable
     bool     ime_pending = false; // delayed enable (after EI)
-
-  private:
-    uint32_t cycle;
-    uint32_t globalCycles;
-    // SystemBus& bus;
 };
 
 #endif // SRC_CPU_CPU_HPP_

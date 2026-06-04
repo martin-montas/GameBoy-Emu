@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 
-#define TRANSFER_STATUS        (1 << 7)
-#define CLOCK_STATUS           (1 << 1)
+#define TRANSFER_STATUS (1 << 7)
+#define CLOCK_STATUS    (1 << 1)
 
 #define check_flag(value, bit) ((value) & (bit))
 
@@ -18,29 +18,29 @@
  */
 class Serial {
 
-public:
-  Serial() : _sb(0x00), _sc(0x7E), _extern_clock_mode(0), _acc(0), _shift_reg(0), _bit_count(0) {}
+  private:
+    uint8_t _sb;
+    uint8_t _sc;
+    int     _acc;
+    bool    _extern_clock_mode;
+    bool    _transfer_active;
+    uint8_t _shift_reg;
+    uint8_t _bit_count;
 
-  /*
-   * @brief:  this function runs every instruction
-   * execution and keeps accumulating the t_cycles.
-   *
-   * @param[in]: t_cycle per instructions.
-   */
-  void    tick(int cycle);
-  void    write(uint16_t addr, uint8_t value);
-  uint8_t read(uint16_t addr);
+    void shift_one_bit();
 
-private:
-  uint8_t _sb;
-  uint8_t _sc;
-  int     _acc;
-  bool    _extern_clock_mode;
-  bool    _transfer_active;
-  uint8_t _shift_reg;
-  uint8_t _bit_count;
+  public:
+    Serial() : _sb(0x00), _sc(0x7E), _extern_clock_mode(0), _acc(0), _shift_reg(0), _bit_count(0) {}
 
-  void    shift_one_bit();
+    /*
+     * @brief:  this function runs every instruction
+     * execution and keeps accumulating the t_cycles.
+     *
+     * @param[in]: t_cycle per instructions.
+     */
+    void    tick(int cycle);
+    void    write(uint16_t addr, uint8_t value);
+    uint8_t read(uint16_t addr);
 };
 
 #endif // SRC_SERIAL_HPP_

@@ -26,41 +26,16 @@
 using namespace std;
 
 class MMU : public SystemBus {
-  public:
-    std::vector<uint8_t> romData;
-    bool                 ram_enabled = false;
-    /*
-     * @brief: Reads based the 16 bit memory value
-     * from ROM/RAM.
-     *
-     */
-    MMU(const std::string file);
-    uint8_t  read8(uint16_t addr) override;
-    uint16_t read16(uint16_t addr) override;
-    void     write8(uint16_t addr, uint8_t value) override;
-    void     write16(uint16_t addr, uint16_t value) override;
-
-    /*
-     * @brief: Loads the rom file into the
-     * romData vector.
-     */
-    void load_rom(const std::string& filename);
-
-    uint8_t getIE() override {
-        return 0;
-    }
-    uint8_t getIF() override {
-        return 0;
-    }
-
-    void setIF(uint8_t value) override {
-        return;
-    }
-
   private:
     std::unique_ptr<MBC> mbc;
-    Timer                timer;
-    Serial               serial;
+
+    /* @brief: These 2 objects are io registers that either synchronize
+     * the timing of each game or prints the  serial data.
+     */
+    Timer  timer;
+    Serial serial;
+
+    uint8_t rom_bank = 1;
 
     /*
      * @brief: Based on the 0x147 byte of the rom
@@ -68,7 +43,12 @@ class MMU : public SystemBus {
      * mode where diffent type of RAM memory gets
      * allocated and more.
      */
-    void    check_rom_type();
+    void check_rom_type();
+
+    /* @brief: memory arrays initialize with zeroes
+     * each of them hold the amount of memory specified
+     * in the official pandocs website.
+     */
     uint8_t HRAM[HRAM_SIZE]       = {};
     uint8_t IRAM[IRAM_SIZE]       = {};
     uint8_t VRAM[VRAM_SIZE]       = {};
@@ -77,9 +57,53 @@ class MMU : public SystemBus {
     uint8_t IO_REGISTERS[IO_SIZE] = {};
     uint8_t EXTERNAL_RAM[8192]    = {};
     uint8_t INTERRUPT[1]          = {};
-    uint8_t rom_bank              = 1;
 
     // auto InterruptEnabled;
+  public:
+    /* @brief: holds rom data. the ROM Can have extra memory
+     * given by its type which can be MBC0, MBC1 etc.
+     */
+    std::vector<uint8_t> romData;
+
+    bool ram_enabled = false;
+    /*
+     * @brief: Reads based the 16 bit memory value
+     * from ROM/RAM.
+     *
+     */
+    MMU(const std::string file);
+
+    /* @brief: methods made for memory operations:
+     * read8, write8, read16, and write16.
+     * @param[in]: address to be written/read/
+     * @param[in]: value value to be written at address
+     * specified.
+     */
+    uint8_t  read8(uint16_t addr) override;
+    uint16_t read16(uint16_t addr) override;
+    void     write8(uint16_t addr, uint8_t value) override;
+    void     write16(uint16_t addr, uint16_t value) override;
+
+    /*
+     * @brief: The follow methods are  setters and getters
+     * for the interrupt registers: currently not implemented.
+     */
+    uint8_t getIE() override {
+        return 0;
+    }
+    uint8_t getIF() override {
+        return 0;
+    }
+    void setIF(uint8_t value) override {
+        return;
+    }
+
+    /*
+     * @brief: Loads the rom file into the
+     * romData vector
+     * @param[in]: File name that will be used as rom.
+     */
+    void load_rom(const std::string& filename);
 };
 
 #endif // SRC_MMU_HPP_

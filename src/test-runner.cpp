@@ -3,7 +3,7 @@
 // Programmer: Martin Montas, martinmontas1@gmail.com
 #include <cstdint>
 #include <fstream>
-// #include <iostream>
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include "test-runner.hpp"
 #include "sst-bus.hpp"
@@ -17,11 +17,26 @@ void TestRunner::run_test(const std::string json_file) {
     mmu                     = new SST();
     instruction             = new InstructionSet(mmu, cpu);
 
-    j initial = jsonData["initial"].get<uint8_t>();
+    const auto& test    = jsonData[0];
+    const auto& initial = test["initial"];
+
     load_initial_state(initial);
-    instruction->step();
+    // const auto& init instruction->step();
     // verify_final_state(test["final"]);
 }
-void TestRunner::load_initial_state(j initial) {}
+void TestRunner::load_initial_state(j initial) {
+    cpu->PC = initial["pc"];
+    std::cout << cpu->PC << std ::endl;
+
+    cpu->SP = initial["sp"];
+    cpu->A  = initial["a"];
+    cpu->B  = initial["b"];
+    cpu->C  = initial["c"];
+    cpu->D  = initial["d"];
+    cpu->E  = initial["e"];
+    cpu->F  = initial["f"];
+    cpu->H  = initial["h"];
+    cpu->L  = initial["l"];
+}
 
 void TestRunner::verify_final_state(j final) {}

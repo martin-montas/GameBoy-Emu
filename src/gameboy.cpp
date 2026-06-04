@@ -22,7 +22,7 @@ GameBoy::GameBoy(const std::string file) {
 void GameBoy::run() {
     while (emulationRunning) {
         if (!cpu->halted) {
-            step();
+            instructions->step();
         } else {
             cpu->cycle_count += 4;
         }

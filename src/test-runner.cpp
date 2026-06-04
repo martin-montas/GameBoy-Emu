@@ -11,22 +11,27 @@
 #include "cpu.hpp"
 #include "instructions.hpp"
 
-void TestRunner::run_test(const std::string json_file) {
-    std::ifstream jsonFileStream(json_file);
+void TestRunner::run_test(const std::string file) {
+    std::ifstream jsonFileStream(file);
     j             jsonData = j::parse(jsonFileStream);
-    cpu                    = new Cpu();
-    mmu                    = new SST();
-    instruction            = new InstructionSet(mmu, cpu);
+    if (!jsonFileStream.is_open()) {
+        printf("Failed to open file: %s\n", file.c_str());
+        exit(1);
+    }
+    cpu         = new Cpu();
+    mmu         = new SST();
+    instruction = new InstructionSet(mmu, cpu);
     for (const auto& test : jsonData) {
         delete cpu;
         delete mmu;
         delete instruction;
 
-        cpu              = new Cpu();
-        mmu              = new SST();
-        instruction      = new InstructionSet(mmu, cpu);
-        const auto& name = test["name"];
-        printf("Running: %s\n", name.get<std::string>().c_str());
+        cpu         = new Cpu();
+        mmu         = new SST();
+        instruction = new InstructionSet(mmu, cpu);
+
+        std::string name = test["name"].get<std::string>();
+        printf("Running: %s\n", name.c_str());
         const auto& initial = test["initial"];
         load_initial_state(initial);
         instruction->step();
@@ -38,6 +43,7 @@ void TestRunner::run_test(const std::string json_file) {
     printf("------------------- passed! ---------------------\n");
     printf("=================================================\n");
 }
+
 void TestRunner::load_initial_state(j initial) {
     cpu->PC   = initial["pc"].get<uint16_t>();
     cpu->SP   = initial["sp"].get<uint16_t>();

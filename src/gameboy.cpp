@@ -11,11 +11,9 @@
 #include <cstdio>
 #include <stdint.h>
 
-GameBoy::GameBoy(std::string filename) {
-    serial           = new Serial();
+GameBoy::GameBoy(const std::string file) {
     cpu              = new Cpu();
-    timer            = new Timer();
-    mmu              = new MMU(filename, timer, serial);
+    mmu              = new MMU(file);
     instructions     = new InstructionSet(mmu, cpu);
     emulationRunning = true;
     instructions->post_boot_state();

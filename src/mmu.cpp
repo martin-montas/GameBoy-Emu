@@ -15,10 +15,8 @@
 #include <string>
 #include <vector>
 
-MMU::MMU(std::string filename, Timer* timer, Serial* serial) {
-    this->timer  = timer;
-    this->serial = serial;
-    load_rom(filename);
+MMU::MMU(const std::string file) {
+    load_rom(file);
     //  check_rom_type();
 }
 // void MMU::check_rom_type() {
@@ -72,10 +70,10 @@ uint8_t MMU::read8(uint16_t addr) {
         return OAM[addr - 0xFE00];
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
-            return serial->read(addr);
+            return serial.read(addr);
         }
         if (addr >= 0xFF04 && addr <= 0xFF07) {
-            return timer->read(addr);
+            return timer.read(addr);
         } else if (addr == 0xFF44) {
             return 0x90;
         } else {
@@ -114,10 +112,10 @@ void MMU::write8(uint16_t addr, uint8_t value) {
         return;
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
-            serial->write(addr, value);
+            serial.write(addr, value);
             return;
         } else if (addr >= 0xFF04 && addr <= 0xFF07) {
-            timer->write(addr, value);
+            timer.write(addr, value);
             return;
         } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
             return; // unused

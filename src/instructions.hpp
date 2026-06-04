@@ -13,14 +13,16 @@
 class MMU;
 class Cpu;
 class InstructionSet {
+
   private:
     Cpu*       cpu;
     SystemBus* mmu;
 
   public:
+    void step();
+
     void execute(uint8_t opcode);
     void post_boot_state();
-
     InstructionSet(SystemBus* mmu, Cpu* cpu) : mmu(mmu), cpu(cpu) {}
 
     void get_mbc_type();

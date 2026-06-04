@@ -28,14 +28,13 @@ using namespace std;
 class MMU : public SystemBus {
   public:
     std::vector<uint8_t> romData;
-    MMU(std::string filename, Timer* timer, Serial* serial);
-
-    bool ram_enabled = false;
+    bool                 ram_enabled = false;
     /*
      * @brief: Reads based the 16 bit memory value
      * from ROM/RAM.
      *
      */
+    MMU(const std::string file);
     uint8_t  read8(uint16_t addr) override;
     uint16_t read16(uint16_t addr) override;
     void     write8(uint16_t addr, uint8_t value) override;
@@ -60,8 +59,8 @@ class MMU : public SystemBus {
 
   private:
     std::unique_ptr<MBC> mbc;
-    Timer*               timer;
-    Serial*              serial;
+    Timer                timer;
+    Serial               serial;
 
     /*
      * @brief: Based on the 0x147 byte of the rom

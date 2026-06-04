@@ -6,7 +6,7 @@ LDFLAGS :=
 
 COMMON_OBJS := main.o gameboy.o cpu.o instructions.o \
                extended-instructions.o mmu.o MBC.o \
-               MBC0.o timer.o serial.o
+               MBC0.o timer.o serial.o test-runner.o
 
 gameboy: $(COMMON_OBJS)
 	$(CXX) $^ -o $@ $(LDFLAGS)
@@ -44,6 +44,8 @@ timer.o: src/timer.cpp src/timer.hpp
 serial.o: src/serial.cpp src/serial.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
+test-runner.o: src/test-runner.cpp src/test-runner.hpp
+	$(CXX) -c $< $(CXXFLAGS)
 
 # =====================================================
 # UTILITIES

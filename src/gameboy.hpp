@@ -19,13 +19,13 @@ class GameBoy {
     uint8_t _opcode;
     int     cycle_count = 0;
 
-    Serial*         serial;
-    Cpu*            cpu;
-    Timer*          timer;
-    MMU*            mmu;
-    InstructionSet* instructions;
+    Cpu*    cpu;
+    Serial* serial;
+    Timer*  timer;
+    MMU*    mmu;
 
   public:
+    InstructionSet* instructions;
     GameBoy(std::string filename);
     uint32_t calculateCyclesForFrame();
     void     run();

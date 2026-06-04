@@ -3679,3 +3679,12 @@ void InstructionSet::cpl(uint8_t& reg) {
     cpu->set_flag(FLAG_SUBTRACT, true);
     cpu->set_flag(FLAG_HALF_CARRY, true);
 }
+
+uint8_t _opcode;
+void    InstructionSet::step() {
+
+    _opcode = mmu->read8(cpu->PC);
+    execute(_opcode);
+    int current_cycle = cpu->opcode_cycles[_opcode];
+    cpu->cycle_count += current_cycle;
+}

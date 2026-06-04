@@ -157,17 +157,16 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x07: {
-        uint16_t result = cpu->A << 1;
-        bool     b      = (cpu->A << 8) & 1;
-        // printf("RLCA -- %d --\n", b);
-        if (b) {
-            cpu->A |= 1;
-            cpu->set_flag(FLAG_CARRY, 1);
-        } else {
-            cpu->A &= ~1;
-            cpu->set_flag(FLAG_CARRY, 0);
-        }
-        cpu->PC = cpu->PC + 1;
+        bool carry = (cpu->A & 0x80);
+
+        cpu->A = static_cast<uint8_t>((cpu->A << 1) | carry);
+
+        cpu->set_flag(FLAG_ZERO, false);
+        cpu->set_flag(FLAG_SUBTRACT, false);
+        cpu->set_flag(FLAG_HALF_CARRY, false);
+        cpu->set_flag(FLAG_CARRY, carry);
+
+        cpu->PC += 1;
         break;
     }
     case 0x08: {
@@ -186,12 +185,11 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x09: {
-        cpu->HL      = cpu->HL + cpu->BC;
-        uint32_t tmp = cpu->HL + cpu->BC;
         // printf("ADD HL, BC -- %X --\n", cpu->HL);
-        cpu->set_flag(FLAG_ZERO, 0);
-        cpu->set_flag(FLAG_CARRY, tmp > 0xFFFF);
-        cpu->set_flag(FLAG_SUBTRACT, ((cpu->HL & 0x0FFF) + (cpu->BC & 0x0FFF)) > 0x0FFF);
+        cpu->set_flag(FLAG_CARRY, (static_cast<uint32_t>(cpu->HL) + cpu->BC) > 0xFFFF);
+        cpu->set_flag(FLAG_SUBTRACT, false);
+        cpu->set_flag(FLAG_HALF_CARRY, ((cpu->HL & 0x0FFF) + (cpu->BC & 0x0FFF)) > 0x0FFF);
+        cpu->HL = cpu->HL + cpu->BC;
         cpu->PC = cpu->PC + 1;
         break;
     }

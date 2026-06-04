@@ -4,10 +4,11 @@
 //
 #include "gameboy.hpp"
 #include "serial.hpp"
+#include "cpu.hpp"
+#include "mmu.hpp"
 #include "timer.hpp"
 
 #include <cstdio>
-#include <iostream>
 #include <stdint.h>
 
 GameBoy::GameBoy(std::string filename) {

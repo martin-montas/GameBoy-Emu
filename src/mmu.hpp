@@ -7,6 +7,7 @@
 
 // #include "IO.hpp"
 #include "MBC.hpp"
+#include "system-bus.hpp"
 #include "serial.hpp"
 #include "timer.hpp"
 
@@ -24,7 +25,7 @@
 
 using namespace std;
 
-class MMU {
+class MMU : public SystemBus {
   public:
     std::vector<uint8_t> romData;
     MMU(std::string filename, Timer* timer, Serial* serial);
@@ -35,16 +36,27 @@ class MMU {
      * from ROM/RAM.
      *
      */
-    uint8_t  read8(uint16_t addr);
-    uint16_t read16(uint16_t addr);
-    void     write8(uint16_t addr, uint8_t value);
-    void     write16(uint16_t addr, uint16_t value);
+    uint8_t  read8(uint16_t addr) override;
+    uint16_t read16(uint16_t addr) override;
+    void     write8(uint16_t addr, uint8_t value) override;
+    void     write16(uint16_t addr, uint16_t value) override;
 
     /*
      * @brief: Loads the rom file into the
      * romData vector.
      */
     void load_rom(const std::string& filename);
+
+    uint8_t getIE() override {
+        return 0;
+    }
+    uint8_t getIF() override {
+        return 0;
+    }
+
+    void setIF(uint8_t value) override {
+        return;
+    }
 
   private:
     std::unique_ptr<MBC> mbc;

@@ -31,6 +31,9 @@ class Cpu {
   public:
     // Cpu();
     ~Cpu() = default;
+
+    // explicit Cpu(SystemBus& bus) : bus(bus) {}
+
     bool is_flag_set(uint8_t flag);
     void set_flag(uint8_t flags, bool state);
     void clear_flag(uint8_t flag);
@@ -117,6 +120,7 @@ class Cpu {
   private:
     uint32_t cycle;
     uint32_t globalCycles;
+    // SystemBus& bus;
 };
 
 #endif // SRC_CPU_CPU_HPP_

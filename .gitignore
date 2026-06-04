@@ -11,6 +11,6 @@ test/*
 test/a.out
 gameboy
 out.txt
-
+src/*.gch
 SameBoy
 gameboy-doctor/

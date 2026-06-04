@@ -44,6 +44,7 @@ timer.o: src/timer.cpp src/timer.hpp
 serial.o: src/serial.cpp src/serial.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
+
 # =====================================================
 # UTILITIES
 # =====================================================

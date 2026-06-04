@@ -15,15 +15,15 @@
 
 class GameBoy {
   private:
-    Cpu*    cpu;
-    MMU*    mmu;
-    Timer*  timer;
-    Serial* serial;
+    bool    emulationRunning;
+    uint8_t _opcode;
+    int     cycle_count = 0;
 
+    Serial*         serial;
+    Cpu*            cpu;
+    Timer*          timer;
+    MMU*            mmu;
     InstructionSet* instructions;
-    bool            emulationRunning;
-    uint8_t         _opcode;
-    int             cycle_count = 0;
 
   public:
     GameBoy(std::string filename);

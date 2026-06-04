@@ -5,6 +5,7 @@
 #define SRC_INSTRUCTIONS_HPP_
 
 #include "cpu.hpp"
+#include "system-bus.hpp"
 #include "mmu.hpp"
 #include <cstdint>
 #include <stdint.h>
@@ -13,14 +14,14 @@ class MMU;
 class Cpu;
 class InstructionSet {
   private:
-    Cpu* cpu;
-    MMU* mmu;
+    Cpu*       cpu;
+    SystemBus* mmu;
 
   public:
     void execute(uint8_t opcode);
     void post_boot_state();
 
-    InstructionSet(MMU* mmu, Cpu* cpu);
+    InstructionSet(SystemBus* mmu, Cpu* cpu) : mmu(mmu), cpu(cpu) {}
 
     void get_mbc_type();
     void rrca(uint8_t& reg);

@@ -70,21 +70,16 @@ void InstructionSet::post_boot_state() {
     mmu->write8(0xFFFF, 0x00); // IE (Disable all interrupts at boot)
 }
 
-InstructionSet::InstructionSet(MMU* mmu, Cpu* cpu) {
-    this->cpu = cpu;
-    this->mmu = mmu;
-}
-
 void InstructionSet::ldr(uint16_t& reg) {
     // DONE
-    uint8_t  tmp_1 = this->mmu->romData[cpu->PC + 1];
-    uint8_t  tmp_2 = this->mmu->romData[cpu->PC + 2];
+    uint8_t  tmp_1 = this->mmu->read8(cpu->PC + 1);
+    uint8_t  tmp_2 = this->mmu->read8(cpu->PC + 2);
     uint16_t tmp   = (tmp_2 << 8) | tmp_1;
     reg            = tmp;
 }
 
 void InstructionSet::ldr(uint8_t& reg) {
-    uint8_t tmp = this->mmu->romData[this->cpu->PC + 1];
+    uint8_t tmp = this->mmu->read8(this->cpu->PC + 1);
     reg         = tmp;
 }
 
@@ -163,7 +158,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x06: {
         // printf("LD B, d8 0x06 --- before %X --\n", cpu->B);
-        cpu->B  = mmu->romData[cpu->PC + 1];
+        cpu->B  = mmu->read8(cpu->PC + 1);
         cpu->PC = cpu->PC + 2;
         break;
     }
@@ -231,7 +226,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x0E: {
-        cpu->C = mmu->romData[cpu->PC + 1];
+        cpu->C = mmu->read8(cpu->PC + 1);
         // printf("LD C, d8 -- %X --\n", cpu->C);
         cpu->PC = cpu->PC + 2;
         break;
@@ -279,7 +274,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x16: {
-        cpu->D = mmu->romData[cpu->PC + 1];
+        cpu->D = mmu->read8(cpu->PC + 1);
         // printf("LD D, d8 -- %X --\n", cpu->D);
         cpu->PC = cpu->PC + 2;
         break;
@@ -330,7 +325,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x1E: {
         // printf("LD E, d8");
-        cpu->E  = mmu->romData[cpu->PC + 1];
+        cpu->E  = mmu->read8(cpu->PC + 1);
         cpu->PC = cpu->PC + 2;
         break;
     }
@@ -3102,7 +3097,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xD6: {
-        sub(cpu->A, mmu->romData[cpu->PC + 1]);
+        sub(cpu->A, mmu->read8(cpu->PC + 1));
         // printf("SUB d8. result of A -- %X -- 0xD6\n", cpu->A);
         cpu->PC = cpu->PC + 2;
         break;
@@ -3254,8 +3249,8 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xEA: {
-        uint8_t  l  = mmu->romData[cpu->PC + 1];
-        uint8_t  h  = mmu->romData[cpu->PC + 2];
+        uint8_t  l  = mmu->read8(cpu->PC + 1);
+        uint8_t  h  = mmu->read8(cpu->PC + 2);
         uint16_t nn = (h << 8) | l;
         // printf("LD(nn), A 0xEA nn: -- %X --\n", nn);
         mmu->write8(nn, cpu->A);

@@ -110,12 +110,6 @@ void InstructionSet::ld(uint8_t& reg, uint8_t addr) {
 }
 
 void InstructionSet::execute(uint8_t opcode) {
-    printf("A:%02X F:%02X B:%02X C:%02X D:%02X E:%02X H:%02X L:%02X "
-           "SP:%04X PC:%04X "
-           "PCMEM:%02X,%02X,%02X,%02X\n",
-           cpu->A, cpu->F, cpu->B, cpu->C, cpu->D, cpu->E, cpu->H, cpu->L, cpu->SP, cpu->PC,
-           mmu->read8(cpu->PC), mmu->read8(cpu->PC + 1), mmu->read8(cpu->PC + 2),
-           mmu->read8(cpu->PC + 3));
     // printf("PC:%04X HL:%04X ", cpu->PC, cpu->HL);
     switch (opcode) {
     case 0x00: {

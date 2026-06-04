@@ -9,6 +9,8 @@
 
 class SST : public SystemBus {
   public:
+    uint8_t _ie;
+
     uint8_t memory[65536]{};
 
     uint8_t read8(uint16_t addr) override {

@@ -119,7 +119,7 @@ class Cpu {
     // Program counter
     uint16_t PC;
     uint32_t cycle_count;
-    bool     _ime        = false; // interrupt master enable
+    uint8_t  _ime;                // interrupt master enable
     bool     ime_pending = false; // delayed enable (after EI)
 };
 

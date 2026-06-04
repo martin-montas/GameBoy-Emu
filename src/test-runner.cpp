@@ -17,98 +17,99 @@ void TestRunner::run_test(const std::string json_file) {
     cpu                    = new Cpu();
     mmu                    = new SST();
     instruction            = new InstructionSet(mmu, cpu);
+    for (const auto& test : jsonData) {
+        delete cpu;
+        delete mmu;
+        delete instruction;
 
-    const auto& test    = jsonData[0];
-    const auto& initial = test["initial"];
-    const auto& final   = test["final"];
+        cpu              = new Cpu();
+        mmu              = new SST();
+        instruction      = new InstructionSet(mmu, cpu);
+        const auto& name = test["name"];
+        printf("Running: %s\n", name.get<std::string>().c_str());
+        const auto& initial = test["initial"];
+        load_initial_state(initial);
+        instruction->step();
+        const auto& final = test["final"];
+        verify_final_state(final);
+    }
 
-    load_initial_state(initial);
-    instruction->step();
-    verify_final_state(final);
+    printf("=================================================\n");
+    printf("------------------- passed! ---------------------\n");
+    printf("=================================================\n");
 }
 void TestRunner::load_initial_state(j initial) {
-    cpu->PC   = initial["pc"];
-    cpu->SP   = initial["sp"];
-    cpu->A    = initial["a"];
-    cpu->B    = initial["b"];
-    cpu->C    = initial["c"];
-    cpu->D    = initial["d"];
-    cpu->E    = initial["e"];
-    cpu->F    = initial["f"];
-    cpu->H    = initial["h"];
-    cpu->L    = initial["l"];
-    cpu->_ime = initial["ime"];
+    cpu->PC   = initial["pc"].get<uint16_t>();
+    cpu->SP   = initial["sp"].get<uint16_t>();
+    cpu->A    = initial["a"].get<uint8_t>();
+    cpu->B    = initial["b"].get<uint8_t>();
+    cpu->C    = initial["c"].get<uint8_t>();
+    cpu->D    = initial["d"].get<uint8_t>();
+    cpu->E    = initial["e"].get<uint8_t>();
+    cpu->F    = initial["f"].get<uint8_t>();
+    cpu->H    = initial["h"].get<uint8_t>();
+    cpu->L    = initial["l"].get<uint8_t>();
+    cpu->_ime = initial["ime"].get<uint8_t>();
     // mmu->_ie  = initial["ie"];
 
     j ram = initial["ram"];
     for (auto r : ram) {
-        mmu->write8(r[0], r[1]);
+        mmu->write8(r[0].get<uint16_t>(), r[1].get<uint8_t>());
     }
 }
 void TestRunner::verify_final_state(j final) {
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->PC, final["pc"].get<uint16_t>());
     if (cpu->PC != final["pc"].get<uint16_t>()) {
 
         printf("PC mismatch: expected %04X got %04X\n", final["pc"].get<uint16_t>(), cpu->PC);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->SP, final["sp"].get<uint16_t>());
     if (cpu->SP != final["sp"].get<uint16_t>()) {
         printf("SP mismatch: expected %04X got %04X\n", final["sp"].get<uint16_t>(), cpu->SP);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->A, final["a"].get<uint8_t>());
     if (cpu->A != final["a"].get<uint8_t>()) {
         printf("A mismatch: expected %02X got %02X\n", final["a"].get<uint8_t>(), cpu->A);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->B, final["b"].get<uint8_t>());
     if (cpu->B != final["b"].get<uint8_t>()) {
         printf("B mismatch: expected %02X got %02X\n", final["b"].get<uint8_t>(), cpu->B);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->C, final["c"].get<uint8_t>());
     if (cpu->C != final["c"].get<uint8_t>()) {
         printf("C mismatch: expected %02X got %02X\n", final["c"].get<uint8_t>(), cpu->C);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->D, final["d"].get<uint8_t>());
     if (cpu->D != final["d"].get<uint8_t>()) {
         printf("D mismatch: expected %02X got %02X\n", final["d"].get<uint8_t>(), cpu->D);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->E, final["e"].get<uint8_t>());
     if (cpu->E != final["e"].get<uint8_t>()) {
         printf("E mismatch: expected %02X got %02X\n", final["e"].get<uint8_t>(), cpu->E);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->F, final["f"].get<uint8_t>());
     if (cpu->F != final["f"].get<uint8_t>()) {
         printf("F mismatch: expected %02X got %02X\n", final["f"].get<uint8_t>(), cpu->F);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->H, final["h"].get<uint8_t>());
     if (cpu->H != final["h"].get<uint8_t>()) {
         printf("H mismatch: expected %02X got %02X\n", final["h"].get<uint8_t>(), cpu->H);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->L, final["l"].get<uint8_t>());
     if (cpu->L != final["l"].get<uint8_t>()) {
         printf("L mismatch: expected %02X got %02X\n", final["l"].get<uint8_t>(), cpu->L);
         exit(1);
     }
 
-    printf("-- mine:%04X  => final:%04X  --\n", cpu->_ime, final["ime"].get<uint8_t>());
     if (cpu->_ime != final["ime"].get<uint8_t>()) {
         printf("IME mismatch: expected %d got %d\n", final["ime"].get<uint8_t>(), cpu->_ime);
         exit(1);
@@ -119,12 +120,10 @@ void TestRunner::verify_final_state(j final) {
         uint8_t  expected = r[1].get<uint8_t>();
         uint8_t  actual   = mmu->read8(addr);
 
-        printf("-- actual:%02X => expected:%02X --\n", actual, expected);
         if (actual != expected) {
-            printf("RAM mismatch at %04X: expected %02X got %02X\n", addr, expected, actual);
+            printf("RAM mismatch at %04X: expected %02X got %02X (PC=%04X)\n", addr, expected,
+                   actual, cpu->PC);
             exit(1);
         }
     }
-
-    printf("-- passed! --\n");
 }

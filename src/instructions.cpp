@@ -121,7 +121,7 @@ void InstructionSet::execute(uint8_t opcode) {
         uint8_t  l   = mmu->read8(cpu->PC + 1);
         uint8_t  h   = mmu->read8(cpu->PC + 2);
         uint16_t val = (h << 8) | l;
-        // printf("LD (BC), A 0x01 -- %X --\n", val);
+        // printf("LD BC, d16 0x01 -- %X --\n", val);
         cpu->BC = val;
         cpu->PC = cpu->PC + 3;
         break;

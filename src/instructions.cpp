@@ -2,9 +2,9 @@
 // All components of this software are licensed under the GNU License.
 // Programmer: Martin Montas, martinmontas1@gmail.com
 #include "instructions.hpp"
-#include "MBC.hpp"
-#include "MBC0.hpp"
-#include "cpu.hpp"
+// #include "MBC.hpp"
+// #include "MBC0.hpp"
+// #include "cpu.hpp"
 
 #include <bit>
 #include <cstdint>
@@ -100,6 +100,7 @@ void InstructionSet::inc(uint16_t& reg) {
     reg = old + 1;
 
     cpu->clear_flag(FLAG_SUBTRACT);
+    cpu->set_flag(FLAG_ZERO, reg == 0);
     cpu->set_flag(FLAG_HALF_CARRY, ((old & 0x0FFF) + 1) > 0x0FFF);
 }
 void InstructionSet::ld(uint16_t& reg, uint16_t addr) {
@@ -157,6 +158,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x07: {
+
         bool carry = (cpu->A & 0x80);
 
         cpu->A = static_cast<uint8_t>((cpu->A << 1) | carry);
@@ -232,7 +234,7 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0x10: {
         // this one should be checked out
         // printf("STOP 0x10 \n");
-        cpu->PC = cpu->PC + 2;
+        cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x11: {
@@ -273,8 +275,20 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x17: {
         // printf("RLA\n");
-        rla();
-        cpu->PC = cpu->PC + 1;
+        bool b7 = (cpu->A & 0x80);
+
+        bool c = cpu->F & FLAG_CARRY;
+
+        cpu->A = static_cast<uint8_t>((cpu->A << 1) | c);
+
+        cpu->set_flag(FLAG_ZERO, false);
+        cpu->set_flag(FLAG_SUBTRACT, false);
+        cpu->set_flag(FLAG_HALF_CARRY, false);
+        cpu->set_flag(FLAG_CARRY, b7);
+
+        cpu->PC += 1;
+        break;
+
         break;
     }
     case 0x18: {
@@ -361,7 +375,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x24: {
         // printf("INC H\n");
-        inc(cpu->HL);
+        inc(cpu->H);
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -401,6 +415,7 @@ void InstructionSet::execute(uint8_t opcode) {
             cpu->A += correction;
         cpu->set_flag(FLAG_ZERO, cpu->A == 0);
         cpu->clear_flag(FLAG_HALF_CARRY);
+        cpu->PC += 1;
         break;
     }
     case 0x28: {
@@ -448,19 +463,20 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x2E: {
         // printf("LD L, d8\n");
-        ld_mem(cpu->L, mmu->read8(cpu->PC + 1));
+        cpu->L  = mmu->read8(cpu->PC + 1);
         cpu->PC = cpu->PC + 2;
         break;
     }
     case 0x2F: {
         // printf("CPL\n");
         cpl(cpu->A);
-        cpu->PC = cpu->PC + 2;
+        cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x30: {
         // printf("JR NC,r8 -- --\n");
         jump(!(cpu->F & FLAG_CARRY), mmu->read8(cpu->PC + 1));
+        cpu->PC += 2;
         break;
     }
     case 0x31: {
@@ -516,10 +532,15 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x38: {
+        int8_t offset = static_cast<int8_t>(mmu->read8(cpu->PC + 1));
 
-        // printf("JR C, r8 0x38\n");
-        jump(cpu->F & FLAG_CARRY, mmu->read8(cpu->PC + 1));
-        // don't change pc on jumps break;
+        if (cpu->F & FLAG_CARRY) {
+            cpu->PC += 2 + offset;
+        } else {
+            cpu->PC += 2;
+        }
+
+        break;
     }
     case 0x39: {
         // printf("ADD HL, SP\n");
@@ -566,6 +587,8 @@ void InstructionSet::execute(uint8_t opcode) {
         cpu->set_flag(FLAG_CARRY, !carry);
         cpu->set_flag(FLAG_SUBTRACT, false);
         cpu->set_flag(FLAG_HALF_CARRY, false);
+        cpu->PC += 1;
+
         break;
     }
     case 0x40: {
@@ -595,7 +618,7 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0x44: {
         // printf("LD B, H\n");
         cpu->B  = cpu->H;
-        cpu->PC = cpu->PC + 2;
+        cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x45: {
@@ -629,7 +652,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x4A: {
         // printf("LD C, D\n");
-        cpu->C  = cpu->C;
+        cpu->C  = cpu->D;
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -664,14 +687,14 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x50: {
-        // printf("LD B, D\n");
-        cpu->B  = cpu->D;
+        // printf("LD D, B\n");
+        cpu->D  = cpu->B;
         cpu->PC = cpu->PC + 1;
         break;
     }
     case 0x51: {
         // printf("LD D, C\n");
-        cpu->B  = cpu->C;
+        cpu->D  = cpu->C;
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -713,7 +736,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x58: {
         // printf("LD D, B\n");
-        cpu->D  = cpu->B;
+        cpu->E  = cpu->B;
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -3548,8 +3571,11 @@ void InstructionSet::dec_mem(uint16_t& reg) {
     // To be DONE
     uint8_t tmp          = mmu->read8(reg);
     uint8_t nibble_carry = tmp & 0x0F;
-    tmp                  = tmp - 1;
+    cpu->set_flag(FLAG_HALF_CARRY, (tmp & 0x0F) == 0);
+    tmp = tmp - 1;
     mmu->write8(reg, tmp);
+    cpu->set_flag(FLAG_ZERO, tmp == 0);
+    cpu->set_flag(FLAG_SUBTRACT, 1);
 }
 
 void InstructionSet::adc(uint8_t& reg_1, uint8_t reg_2) {

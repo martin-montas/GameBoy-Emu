@@ -35,11 +35,11 @@ class Timer {
      */
     void tick(int cycles);
 
-    // /*
-    //  * @brief: the tag flag should be set if value paramenter has the
-    //  * bit 0 flipped
-    //  */
-    // uin8_t get_tac_flag();
+    /*
+     * @brief: the tag flag should be set if value paramenter has the
+     * bit 0 flipped
+     */
+    // uint8_t get_tac_flag();
 
     void set_tac_flag(TAC_TIMER_CONTROL tac_timer);
 

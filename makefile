@@ -64,4 +64,7 @@ lint:
 count:
 	find . \( -name "*.cpp" -o -name "*.hpp"  \) | xargs wc -l
 
+t:
+	./sm83.sh
+
 .PHONY: clean format lint

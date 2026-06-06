@@ -1014,6 +1014,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x87: {
         // printf("ADD A, A\n");
+        add8(cpu->A, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -1055,7 +1056,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x8E: {
         // printf("ADC A, (HL)\n");
-        adc(cpu->A, mmu->read8(cpu->L));
+        adc(cpu->A, mmu->read8(cpu->HL));
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -1206,7 +1207,7 @@ void InstructionSet::execute(uint8_t opcode) {
 
     case 0xA7: {
         // printf("AND A, (HL)\n");
-        and_(cpu->A, mmu->read8(cpu->L));
+        and_(cpu->A, mmu->read8(cpu->HL));
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -1377,7 +1378,9 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xC2: {
         // printf("JP NZ, nn\n");
         if (!(cpu->F & FLAG_ZERO)) {
-            cpu->PC = mmu->read8(cpu->PC) | mmu->read8(cpu->PC + 1) << 8;
+            uint8_t l = mmu->read8(cpu->PC + 1);
+            uint8_t h = mmu->read8(cpu->PC + 2);
+            cpu->PC   = (h << 8) | l;
         } else {
             cpu->PC += 3;
         }
@@ -3582,11 +3585,11 @@ void InstructionSet::adc(uint8_t& reg_1, uint8_t reg_2) {
     bool old_c = cpu->F & FLAG_CARRY;
 
     uint16_t c = reg_1 + reg_2 + old_c;
-    reg_1      = c;
-    cpu->set_flag(FLAG_ZERO, reg_1 == 0);
+    cpu->set_flag(FLAG_ZERO, (c & 0xFF) == 0);
     cpu->clear_flag(FLAG_SUBTRACT);
     cpu->set_flag(FLAG_HALF_CARRY, ((reg_1 & 0x0F) + (reg_2 & 0x0F) + old_c) > 0x0F);
     cpu->set_flag(FLAG_CARRY, c > 0xFF);
+    reg_1 = c;
 }
 
 void InstructionSet::rra() {
@@ -3618,14 +3621,16 @@ void InstructionSet::rla() {
     cpu->clear_flag(FLAG_SUBTRACT);
     cpu->clear_flag(FLAG_HALF_CARRY);
 }
-void InstructionSet::add8_mem(uint8_t destination, uint8_t value) {
-    mmu->write8(destination, destination + value);
-    cpu->set_flag(FLAG_ZERO, (destination + value) == 0);
-    cpu->clear_flag(FLAG_SUBTRACT);
+void InstructionSet::add8_mem(uint8_t& destination, uint8_t value) {
+    // mmu->write8(destination, destination + value);
+    uint16_t v = destination + value;
+    cpu->set_flag(FLAG_ZERO, (v & 0xFF) == 0);
+    cpu->set_flag(FLAG_SUBTRACT, false);
     cpu->set_flag(FLAG_HALF_CARRY, ((destination & 0x0F) + (value & 0x0F)) > 0x0F);
-    cpu->set_flag(FLAG_CARRY, (destination + value) > 0xFF);
+    cpu->set_flag(FLAG_CARRY, v > 0xFF);
+    destination = v;
 }
-uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
+void InstructionSet::add8(uint8_t& reg_1, uint8_t reg_2) {
     // DONE:
     uint8_t  result = reg_1 + reg_2;
     uint16_t _carry = reg_1 + reg_2;
@@ -3633,7 +3638,7 @@ uint8_t InstructionSet::add8(uint8_t reg_1, uint8_t reg_2) {
     cpu->set_flag(FLAG_SUBTRACT, false);
     cpu->set_flag(FLAG_HALF_CARRY, (reg_1 & 0x0F) + (reg_2 & 0x0F) >= 0x10);
     cpu->set_flag(FLAG_CARRY, _carry >= 0x0100);
-    return result;
+    reg_1 = result;
 }
 void InstructionSet::sub(uint8_t& reg_1, uint8_t reg_2) {
     uint8_t a = reg_1;
@@ -3641,13 +3646,13 @@ void InstructionSet::sub(uint8_t& reg_1, uint8_t reg_2) {
 
     uint16_t result = a - b;
 
-    reg_1 = result & 0xFF;
-
-    cpu->set_flag(FLAG_ZERO, (reg_1 == 0));
+    cpu->set_flag(FLAG_ZERO, ((result & 0xFF) == 0));
     cpu->set_flag(FLAG_SUBTRACT, true);
 
     cpu->set_flag(FLAG_HALF_CARRY, (a & 0x0F) < (b & 0x0F));
     cpu->set_flag(FLAG_CARRY, a < b);
+
+    reg_1 = result & 0xFF;
 }
 void InstructionSet::add16(uint16_t& destination, uint16_t& value) {
     // DONE

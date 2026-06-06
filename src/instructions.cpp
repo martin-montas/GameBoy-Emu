@@ -1104,7 +1104,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x96: {
         // printf("SUB (HL)\n");
-        sub(cpu->A, cpu->HL);
+        sub(cpu->A, mmu->read8(cpu->HL));
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -1200,14 +1200,14 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xA6: {
         // printf("AND A, (HL)\n");
-        and_(cpu->A, mmu->read8(cpu->L));
+        and_(cpu->A, mmu->read8(cpu->HL));
         cpu->PC = cpu->PC + 1;
         break;
     }
 
     case 0xA7: {
         // printf("AND A, (HL)\n");
-        and_(cpu->A, mmu->read8(cpu->HL));
+        and_(cpu->A, cpu->A);
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -3438,9 +3438,9 @@ void InstructionSet::pop_(bool condition, uint16_t& reg) {
 void InstructionSet::ret(bool condition) {
     if (condition) {
         uint8_t l = mmu->read8(cpu->SP);
-        l += 1;
+        cpu->SP += 1;
         uint8_t h = mmu->read8(cpu->SP);
-        h += 1;
+        cpu->SP += 1;
         cpu->PC = (h << 8) | l;
     }
 }
@@ -3651,8 +3651,7 @@ void InstructionSet::sub(uint8_t& reg_1, uint8_t reg_2) {
 
     cpu->set_flag(FLAG_HALF_CARRY, (a & 0x0F) < (b & 0x0F));
     cpu->set_flag(FLAG_CARRY, a < b);
-
-    reg_1 = result & 0xFF;
+    reg_1 = a - b;
 }
 void InstructionSet::add16(uint16_t& destination, uint16_t& value) {
     // DONE

@@ -3170,16 +3170,11 @@ void InstructionSet::execute(uint8_t opcode) {
     }
 
     case 0xDC: {
-        // printf("CALL C, a16\n");
+        // printf("CALL Z, a16\n");
         if (cpu->F & FLAG_CARRY) {
-            uint16_t return_addr = cpu->PC + 3;
-            cpu->SP -= 1;
-            mmu->write8(cpu->SP, (return_addr >> 8));
-            cpu->SP -= 1;
-            mmu->write8(cpu->SP, return_addr & 0xFF);
-            cpu->PC = return_addr;
+            execute_call();
         } else {
-            cpu->PC = cpu->PC + 3;
+            cpu->PC += 3;
         }
         break;
     }

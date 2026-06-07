@@ -1551,7 +1551,6 @@ void InstructionSet::execute(uint8_t opcode) {
         case 0x10: {
             // printf("RL B \n");
             rl_extended(cpu->B);
-
             break;
         }
         case 0x11: {
@@ -2061,8 +2060,7 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x62: {
             // printf("BIT4 D\n");
-            bit4_extended(cpu->C);
-
+            bit4_extended(cpu->D);
             break;
         }
         case 0x63: {
@@ -2099,31 +2097,30 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x68: {
             // printf("BIT4 A\n");
-            bit4_extended(cpu->A);
-
+            bit5_extended(cpu->B);
             break;
         }
         case 0x69: {
             // printf("BIT5 B\n");
-            bit4_extended(cpu->B);
+            bit5_extended(cpu->C);
 
             break;
         }
         case 0x6A: {
             // printf("BIT5 C\n");
-            bit4_extended(cpu->C);
+            bit5_extended(cpu->D);
 
             break;
         }
         case 0x6B: {
             // printf("BIT5 D\n");
-            bit5_extended(cpu->D);
+            bit5_extended(cpu->E);
 
             break;
         }
         case 0x6C: {
             // printf("BIT5 E\n");
-            bit5_extended(cpu->E);
+            bit5_extended(cpu->H);
 
             break;
         }
@@ -2134,23 +2131,18 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x6E: {
-            // printf("BIT5 L\n");
             uint8_t v = mmu->read8(cpu->HL);
             bit5_extended(v);
             mmu->write8(cpu->HL, v);
-
             break;
         }
         case 0x6F: {
-            // printf("BIT5 A\n");
             bit5_extended(cpu->A);
-
             break;
         }
         case 0x70: {
             // printf("BIT6 A\n");
             bit6_extended(cpu->B);
-
             break;
         }
         case 0x71: {
@@ -2238,6 +2230,7 @@ void InstructionSet::execute(uint8_t opcode) {
             uint8_t v = mmu->read8(cpu->HL);
             bit7_extended(v);
             mmu->write8(cpu->HL, v);
+            break;
         }
         case 0x7F: {
             // printf("BIT7 A\n");
@@ -2449,7 +2442,6 @@ void InstructionSet::execute(uint8_t opcode) {
         case 0xA0: {
             // printf("RES4 A\n");
             res4_extended(cpu->B);
-
             break;
         }
         case 0xA1: {
@@ -2772,8 +2764,7 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xD4: {
             // printf("SET2 D\n");
-            set2_extended(cpu->D);
-
+            set2_extended(cpu->H);
             break;
         }
         case 0xD5: {
@@ -3500,11 +3491,18 @@ void InstructionSet::sbc(uint8_t& reg_1, uint8_t reg_2) {
     cpu->set_flag(FLAG_CARRY, old < (reg_2 + c));
 }
 void InstructionSet::execute_call() {
-    uint16_t address = mmu->read16(cpu->PC + 1);
-    cpu->PC += 2;
-    cpu->SP -= 2;
-    mmu->write16(cpu->SP, cpu->PC);
-    cpu->PC = address;
+    // address being called
+    uint8_t l = mmu->read8(cpu->PC + 1);
+    uint8_t h = called->read8(cpu->PC + 2);
+
+    // next instruction after call
+    uint16_t ret_addr = cpu->PC + 3;
+
+    cpu->SP -= 1;
+    mmu->write8(cpu->SP, (ret_addr >> 8) & 0xFF);
+    cpu->SP -= 1;
+    mmu->write8(cpu->SP, ret_addr & 0xFF);
+    cpu->PC = (h << 8) | l;
 }
 
 void InstructionSet::xor_(uint8_t& reg_1, uint8_t reg_2) {
@@ -3691,7 +3689,6 @@ void InstructionSet::inc_mem(uint16_t& reg) {
     uint8_t tmp          = mmu->read8(reg);
     uint8_t nibble_carry = tmp & 0x0F;
     tmp                  = tmp + 1;
-    printf("-- Debug: 0x%X to 0x%X --\n", tmp, reg);
     mmu->write8(reg, tmp);
 
     cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));

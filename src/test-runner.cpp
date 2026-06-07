@@ -11,7 +11,7 @@
 #include "cpu.hpp"
 #include "instructions.hpp"
 
-void TestRunner::run_test(const std::string file) {
+void TestRunner::run_cpu_test(const std::string file) {
     std::ifstream jsonFileStream(file);
     j             jsonData = j::parse(jsonFileStream);
     if (!jsonFileStream.is_open()) {
@@ -43,6 +43,8 @@ void TestRunner::run_test(const std::string file) {
     printf("------------------- passed! ---------------------\n");
     printf("=================================================\n");
 }
+
+void TestRunner::run_ppu_test(const std::string file) {}
 
 void TestRunner::load_initial_state(j initial) {
     cpu->PC   = initial["pc"].get<uint16_t>();

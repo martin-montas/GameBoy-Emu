@@ -18,7 +18,8 @@ class TestRunner {
 
   public:
     bool runFile();
-    void run_test(const std::string file);
+    void run_cpu_test(const std::string file);
+    void run_ppu_test(const std::string file);
 
     void verify_final_state(j final);
     void load_initial_state(j initial);

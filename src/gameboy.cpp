@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 GameBoy::GameBoy(const std::string file) {
+
     cpu              = new Cpu();
     mmu              = new MMU(file);
     instructions     = new InstructionSet(mmu, cpu);

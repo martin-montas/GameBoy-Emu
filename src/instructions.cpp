@@ -3095,8 +3095,13 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xD2: {
-        // printf("JP NC, a16\n");
-        pop_(!(cpu->F & FLAG_CARRY), cpu->PC);
+        if (!(cpu->F & FLAG_CARRY)) {
+            uint8_t l = mmu->read8(cpu->PC + 1);
+            uint8_t h = mmu->read8(cpu->PC + 2);
+            cpu->PC   = (h << 8) | l;
+        } else {
+            cpu->PC += 3;
+        }
         break;
     }
     case 0xD3: {
@@ -3106,7 +3111,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xD4: {
         // printf("  CALL NC, a16\n");
-        call((cpu->F & FLAG_CARRY));
+        call(!(cpu->F & FLAG_CARRY));
         break;
     }
     case 0xD5: {
@@ -3142,9 +3147,10 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xD9: {
         // TODO
         // printf("-- 0xD9 -- RETI NOT DONE \n");
-        // pop_();
-        // cpu->PC = cpu->PC + 2;
-        // break;
+        pop_(true, cpu->PC);
+        cpu->_ime = true;
+        // cpu->PC += 1;
+        break;
     }
     case 0xDA: {
         // printf("JP C, nn\n");
@@ -3216,8 +3222,8 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xE2: {
-        uint8_t a8 = mmu->read8(cpu->PC + 1);
-        mmu->write8(0xFF00 + a8, cpu->C);
+        // uint8_t a8 = mmu->read8(cpu->PC + 1);
+        mmu->write8(0xff00 + cpu->C, cpu->A);
         cpu->PC += 1;
         break;
     }
@@ -3316,6 +3322,7 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xF1: {
         // printf("POP AF\n");
         pop_(true, cpu->AF);
+        cpu->AF &= 0xFFF0;
         cpu->PC = cpu->PC + 1;
         break;
     }
@@ -3364,12 +3371,13 @@ void InstructionSet::execute(uint8_t opcode) {
         cpu->clear_flag(FLAG_ZERO);
         cpu->clear_flag(FLAG_SUBTRACT);
         cpu->set_flag(FLAG_HALF_CARRY, (cpu->SP & 0x0F) + (s8 & 0x0F) > 0x0F);
-        cpu->set_flag(FLAG_CARRY, r > 0xFF);
+        cpu->set_flag(FLAG_CARRY, ((cpu->SP & 0xFF) + (s8 & 0xFF)) > 0xFF);
         break;
     }
     case 0xF9: {
         // printf("  LDSP, HL\n");
         cpu->SP = cpu->HL;
+        cpu->PC += 1;
         break;
     }
     case 0xFA: {
@@ -3383,7 +3391,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xFB: {
         // printf("EI\n");
-        cpu->_ime = 1;
+        cpu->ime_pending = true;
         cpu->PC += 1;
         break;
     }
@@ -3712,6 +3720,10 @@ void InstructionSet::cpl(uint8_t& reg) {
 uint8_t _opcode;
 void    InstructionSet::step() {
 
+    if (cpu->ime_pending) {
+        cpu->ime_pending = false;
+        cpu->_ime        = 1;
+    }
     _opcode = mmu->read8(cpu->PC);
     execute(_opcode);
     int current_cycle = cpu->opcode_cycles[_opcode];

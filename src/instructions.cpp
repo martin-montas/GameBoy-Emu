@@ -3074,19 +3074,24 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xCF: {
         // printf("RST 1\n");
         uint16_t return_addr = cpu->PC + 1;
-        cpu->SP -= 1;
+        cpu->SP -= 2;
         mmu->write16(cpu->SP, return_addr);
-        cpu->PC = cpu->PC + 2;
+        cpu->PC = 0x0008;
         break;
     }
     case 0xD0: {
         // printf("RET NC\n");
-        pop_(!(cpu->F & FLAG_CARRY), cpu->PC);
+        if (!(cpu->F & FLAG_CARRY)) {
+            pop_(true, cpu->PC);
+        } else {
+            cpu->PC += 1;
+        }
         break;
     }
     case 0xD1: {
         // printf("POP DE\n");
         pop_(true, cpu->DE);
+        cpu->PC += 1;
         break;
     }
     case 0xD2: {
@@ -3493,7 +3498,7 @@ void InstructionSet::sbc(uint8_t& reg_1, uint8_t reg_2) {
 void InstructionSet::execute_call() {
     // address being called
     uint8_t l = mmu->read8(cpu->PC + 1);
-    uint8_t h = called->read8(cpu->PC + 2);
+    uint8_t h = mmu->read8(cpu->PC + 2);
 
     // next instruction after call
     uint16_t ret_addr = cpu->PC + 3;

@@ -1,7 +1,7 @@
 SRC_DIR := ./src
 
 CXX := g++
-CXXFLAGS := -I./src -std=c++20 
+CXXFLAGS := -std=c++20 
 LDFLAGS := -lSDL2
 
 COMMON_OBJS := main.o gameboy.o cpu.o instructions.o \

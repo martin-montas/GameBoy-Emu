@@ -1,6 +1,6 @@
 // Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
 // All components of this software are licensed under the GNU License.
-// Programmer: Martin Montas, martinmontas1@gmail.com
+// Author: Martin Montas, martinmontas1@gmail.com
 #include "instructions.hpp"
 // #include "MBC.hpp"
 // #include "MBC0.hpp"

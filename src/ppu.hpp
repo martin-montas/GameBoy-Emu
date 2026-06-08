@@ -4,10 +4,6 @@
 #ifndef SRC_PPU_HPP_
 #define SRC_PPU_HPP_
 
-#include <SDL2/SDL.h>
-#include <cstdio>
-#include "mmu.hpp"
-
 /*  Mode  Name What happens
  *
  *     Mode 2: OAM, Scan Search OAM for up to 10 sprites that will appear on the current
@@ -27,6 +23,8 @@
  *     Mixes sprite pixels with background pixels according to priority rules.
  *     Outputs one pixel at a time to the LCD.
  *
+ *
+ *  1. Tile Data
  *
  *     Tile data lives in memory starting from $8000 to $97FF.
  *     each of them is its 16 bytes. Each char/pixel of the tile
@@ -55,7 +53,17 @@
  *      [10] equals light gray. remember that the bytes are swapped since the most
  *      significat bits is the first byte of each row.
  *
+ *  2. Tile Maps
+ *
+ *   A tile map are 32x32 of values ranging from 0 to 255. each of these
+ *   values correspond to the indices of the of the titles to be displayed.
+ *
+ *
  */
+
+#include <SDL2/SDL.h>
+#include <cstdio>
+#include "mmu.hpp"
 
 #define WIDTH  160
 #define HEIGHT 144

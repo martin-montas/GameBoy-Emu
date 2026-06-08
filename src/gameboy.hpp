@@ -12,6 +12,7 @@
 #include "mmu.hpp"
 #include "serial.hpp"
 #include "timer.hpp"
+#include "ppu.hpp"
 
 class GameBoy {
   private:
@@ -23,6 +24,7 @@ class GameBoy {
     Serial* serial;
     Timer*  timer;
     MMU*    mmu;
+    PPU*    ppu;
 
   public:
     InstructionSet* instructions;

@@ -1,12 +1,12 @@
 SRC_DIR := ./src
 
 CXX := g++
-CXXFLAGS := -I./src -std=c++20
-LDFLAGS :=
+CXXFLAGS := -I./src -std=c++20 
+LDFLAGS := -lSDL2
 
 COMMON_OBJS := main.o gameboy.o cpu.o instructions.o \
                extended-instructions.o mmu.o MBC.o \
-               MBC0.o timer.o serial.o test-runner.o
+               MBC0.o timer.o serial.o ppu.o test-runner.o
 
 gameboy: $(COMMON_OBJS)
 	$(CXX) $^ -o $@ $(LDFLAGS)
@@ -42,6 +42,9 @@ timer.o: src/timer.cpp src/timer.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
 serial.o: src/serial.cpp src/serial.hpp
+	$(CXX) -c $< $(CXXFLAGS)
+
+ppu.o: src/ppu.cpp src/ppu.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
 test-runner.o: src/test-runner.cpp src/test-runner.hpp

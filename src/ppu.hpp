@@ -5,55 +5,95 @@
 #define SRC_PPU_HPP_
 
 #include <SDL2/SDL.h>
-#include "mmu.hpp"
 #include <cstdio>
+#include "mmu.hpp"
+
+/*  Mode  Name What happens
+ *
+ *     Mode 2: OAM, Scan Search OAM for up to 10 sprites that will appear on the current
+ *     line. Mode 3: Drawing, Fetch tile/sprite data and generate pixels. Mode 0: HBlank,
+ *     Finished drawing the line, waiting for next line Mode 1: VBlank, Finished all visible
+ *     lines, screen can be updated
+ *
+ *  During Mode 3 the PPU:
+ *
+ *     Reads the scroll registers (SCX, SCY).
+ *     Determines which background/window tiles are visible.
+ *     Fetches tile numbers from the tile map.
+ *     Fetches tile graphics from tile data in VRAM.
+ *     Pushes pixel data into a pixel FIFO.
+ *     Checks sprites that overlap the current X position.
+ *     Fetches sprite tile data when needed.
+ *     Mixes sprite pixels with background pixels according to priority rules.
+ *     Outputs one pixel at a time to the LCD.
+ *
+ *
+ *     Tile data lives in memory starting from $8000 to $97FF.
+ *     each of them is its 16 bytes each char/pixel of the tile
+ *     its 8x8 pixels and each row its 2 bytes per row.
+ *
+ *     Each color its represented by 2 bits. pixel 0 and others
+ *     pixel colors are represented by the bit 0 of 1 byte and
+ *     bit 0 of second byte in the current row.
+ *
+ *     examaple:
+ *
+ *      [ MSB ]    [ LSB ]
+ *      -------------------
+ *      00110010 | 11011010 -> row
+ *      00110010 | 01011010
+ *      00110010 | 01011010
+ *      00110010 | 01011010
+ *      00110010 | 01011010
+ *      00110010 | 01011010
+ *      00110010 | 01011010
+ *      00110010 | 01011010
+ *
+ *     given first row:
+ *
+ *      bit 0 of first byte its 0 and bit 0 of second byte its 1. therefore the value
+ *      [10] equals light gray. remember that the bytes are swapped since the most
+ *      significat bits is the first byte of each row.
+ *
+ *
+ *
+ */
+
+#define WIDTH  160
+#define HEIGHT 144
 
 enum PpuMode { MODE_HBLANK = 0, MODE_VBLANK = 1, MODE_OAM_SCAN = 2, MODE_DRAWING = 3 };
 
-#define WHITE      #FFFFFF
-#define light_gray #AAAAAA
-#define dark_gray  #555555
-#define black      #000000
+#define WHITE      0xFFFFFFFF
+#define LIGHT_GRAY 0xFFAAAAAA
+#define DARK_GRAY  0xFF555555
+#define BLACK      0xFF000000
+#define SCALE      4
 
-struct Tile {
-    uint8_t pixels[8][8];
-
-}
+typedef struct {
+    SDL_Rect pixel[8 * 8];
+} Tile;
 
 class PPU {
 
-    /*      Mode  Name What happens
-     *
-     *     Mode 2: OAM, Scan Search OAM for up to 10 sprites that will appear on the current
-     *     line. Mode 3: Drawing, Fetch tile/sprite data and generate pixels. Mode 0: HBlank,
-     *     Finished drawing the line, waiting for next line Mode 1: VBlank, Finished all visible
-     *     lines, screen can be updated
-     *
-     *  During Mode 3 the PPU:
-     *
-     *     Reads the scroll registers (SCX, SCY).
-     *     Determines which background/window tiles are visible.
-     *     Fetches tile numbers from the tile map.
-     *     Fetches tile graphics from tile data in VRAM.
-     *     Pushes pixel data into a pixel FIFO.
-     *     Checks sprites that overlap the current X position.
-     *     Fetches sprite tile data when needed.
-     *     Mixes sprite pixels with background pixels according to priority rules.
-     *     Outputs one pixel at a time to the LCD.
-     */
-
   private:
-    Tile    frambuffer[160][144];
-    MMU*    mmu;
-    int     _cycle;
-    PpuMode _mode;
+    uint32_t      buff[WIDTH * HEIGHT];
+    MMU*          mmu;
+    int           _cycles;
+    PpuMode       _mode;
+    uint16_t      _ldc;
+    SDL_Renderer* renderer;
+    SDL_Surface*  screen;
+    SDL_Texture*  texture;
+    SDL_Window*   window;
+    bool          ppu_running;
+    void          draw();
+    void          oam_scan();
+    void          h_blank();
+    void          v_blank();
 
   public:
-    PPU(MMU mmu) : mmu(mmu), _cycle(0), _mode(MODE_OAM_SCAN);
-    void draw();
-    void oam_scan();
-    void h_blank();
-    void v_blank();
+    PPU(MMU* mmu);
     void step(int t_cycle);
     void sdl_init();
 };

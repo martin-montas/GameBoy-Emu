@@ -7,15 +7,18 @@
 #include "cpu.hpp"
 #include "mmu.hpp"
 #include "timer.hpp"
+#include "ppu.hpp"
 
 #include <cstdio>
 #include <stdint.h>
 
 GameBoy::GameBoy(const std::string file) {
 
-    cpu              = new Cpu();
-    mmu              = new MMU(file);
-    instructions     = new InstructionSet(mmu, cpu);
+    cpu          = new Cpu();
+    mmu          = new MMU(file);
+    instructions = new InstructionSet(mmu, cpu);
+    ppu          = new PPU(mmu);
+
     emulationRunning = true;
     instructions->post_boot_state();
 }
@@ -23,7 +26,7 @@ GameBoy::GameBoy(const std::string file) {
 void GameBoy::run() {
     while (emulationRunning) {
         if (!cpu->halted) {
-            instructions->step();
+            step();
         } else {
             cpu->cycle_count += 4;
         }
@@ -39,4 +42,5 @@ void GameBoy::step() {
     instructions->execute(_opcode);
     int current_cycle = cpu->opcode_cycles[_opcode];
     cpu->cycle_count += current_cycle;
+    ppu->step(current_cycle);
 }

@@ -29,7 +29,7 @@
  *
  *
  *     Tile data lives in memory starting from $8000 to $97FF.
- *     each of them is its 16 bytes each char/pixel of the tile
+ *     each of them is its 16 bytes. Each char/pixel of the tile
  *     its 8x8 pixels and each row its 2 bytes per row.
  *
  *     Each color its represented by 2 bits. pixel 0 and others
@@ -54,8 +54,6 @@
  *      bit 0 of first byte its 0 and bit 0 of second byte its 1. therefore the value
  *      [10] equals light gray. remember that the bytes are swapped since the most
  *      significat bits is the first byte of each row.
- *
- *
  *
  */
 

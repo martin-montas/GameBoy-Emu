@@ -70,6 +70,17 @@
 
 enum PpuMode { MODE_HBLANK = 0, MODE_VBLANK = 1, MODE_OAM_SCAN = 2, MODE_DRAWING = 3 };
 
+enum LCDFlag {
+    FLAG_ENABLE     = (1 << 7),
+    FLAG_WIN_AREA   = (1 << 6),
+    FLAG_WIN_ENBLE  = (1 << 5),
+    FLAG_BG_AREA    = (1 << 4),
+    flag_bg_MAP     = (1 << 3),
+    FLAG_OBJ_SIZE   = (1 << 2),
+    FLAG_OBJ_ENABLE = (1 << 1),
+    FLAG_BG_ENABLE  = (1,
+};
+
 #define WHITE      0xFFFFFFFF
 #define LIGHT_GRAY 0xFFAAAAAA
 #define DARK_GRAY  0xFF555555
@@ -87,7 +98,8 @@ class PPU {
     MMU*          mmu;
     int           _cycles;
     PpuMode       _mode;
-    uint16_t      _ldc;
+    uint8_t       _ldc;
+    uint8_t       _ly;
     SDL_Renderer* renderer;
     SDL_Surface*  screen;
     SDL_Texture*  texture;
@@ -97,6 +109,9 @@ class PPU {
     void          oam_scan();
     void          h_blank();
     void          v_blank();
+    void          scanline_timing_handler();
+
+    ~PPU();
 
   public:
     PPU(MMU* mmu);

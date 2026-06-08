@@ -7,9 +7,8 @@
 #include "mmu.hpp"
 
 PPU::PPU(MMU* mmu) {
-    mmu    = mmu;
-    _cycle = 0;
-    _mode  = MODE_OAM_SCAN;
+    mmu     = mmu;
+    _cycles = 0;
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf("SDL Error: %s\n", SDL_GetError());
         exit(1);
@@ -47,21 +46,63 @@ void PPU::draw() {
     buff[8 * WIDTH + 8] = 0xFFFFFFFF;
 }
 
+void PPU::scanline_timing_handler() {
+    if (_mode == MODE_VBLANK) {
+        _ly = mmu->read8(0XFF44);
+        _ly += 1;
+        mmu->write8(0xFF44, _ly);
+    }
+}
+
 void PPU::step(int t_cycle) {
     _ldc = mmu->read8(0XFF40);
+
     _cycles += t_cycle;
 
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT)
-            ppu_running = false;
+    if (_cycles == 455) {
+        _ly = mmu->read8(0XFF44);
+        _ly += 1;
+        mmu->write8(0xFF44, _ly);
+        _cycles = 0;
+        // _mode   = mode
     }
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(renderer);
-    SDL_UpdateTexture(texture, nullptr, buff, WIDTH * sizeof(uint32_t));
+    // scanline_timing_handler();
 
-    SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-    SDL_RenderPresent(renderer);
-    SDL_Delay(32);
+    // if (_cycles < 79) {
+    //     // mode 2: oam scan
+    //     _mode = MODE_OAM_SCAN
+
+    // } else if (_cycles >= 80 && _cycles <= 251) {
+    //     if (_cycles >= 144 && _cycles <= 153) {
+    //         // switch mode 1:  vblank
+    //         _mode = MODE_VBLANK
+
+    //     } else {
+    //         // switch mode 3: drawing
+    //         _mode = MODE_DRAWING
+    //     }
+    // } else if (_cycles >= 252 && _cycles <= 455) {
+    //     // switch mode 0: hblank
+    //     _ly = mmu->read8(0XFF44);
+    //     _ly += 1;
+    //     mmu->write8(0xFF44, _ly);
+    //     _mode = MODE_DRAWING;
+    // } else {
+    //     _cycles = 0;
+    // }
+
+    // SDL_Event event;
+    // while (SDL_PollEvent(&event)) {
+    //     if (event.type == SDL_QUIT)
+    //         ppu_running = false;
+    // }
+
+    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    // SDL_RenderClear(renderer);
+    // SDL_UpdateTexture(texture, nullptr, buff, WIDTH * sizeof(uint32_t));
+
+    // SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+    // SDL_RenderPresent(renderer);
+    // SDL_Delay(32);
 }

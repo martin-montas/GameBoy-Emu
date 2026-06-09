@@ -51,6 +51,10 @@
 #include "mmu.hpp"
 #include "sdl-utils.hpp"
 
+#define LY_ADDR   0xFF44
+#define BGP_ADDR  0xFF47 // BGP palette (0xFF47)
+#define LCDC_ADDR 0xFF40
+
 enum LCDFlag {
     FLAG_LCD_ENABLE = (1 << 7),
     FLAG_WIN_AREA   = (1 << 6),
@@ -81,8 +85,9 @@ class Ppu {
 
     void enter_mode_3();
     void enter_mode_2();
-    void enter_mode_0();
+    void hblank_handler();
     void enter_mode_1();
+    void update_framebuff(uint16_t addr);
 
     // do something like this
     // uint8_t read_reg(uint8_t& data, uint16_t addr);

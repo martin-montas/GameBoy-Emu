@@ -15,15 +15,15 @@ class Cpu;
 class InstructionSet {
 
   private:
-    Cpu*       cpu;
-    SystemBus* mmu;
+    Cpu*       _cpu;
+    SystemBus* _mmu;
 
   public:
     void step();
 
     void execute(uint8_t opcode);
     void post_boot_state();
-    InstructionSet(SystemBus* mmu, Cpu* cpu) : mmu(mmu), cpu(cpu) {}
+    InstructionSet(SystemBus* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {}
 
     void get_mbc_type();
     void rrca(uint8_t& reg);

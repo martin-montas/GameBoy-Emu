@@ -1,7 +1,7 @@
 #ifndef SRC_SYSTEM_BUS_HPP_
 #define SRC_SYSTEM_BUS_HPP_
 
-#include <cstdint>
+#include <stdint.h>
 
 class SystemBus {
 

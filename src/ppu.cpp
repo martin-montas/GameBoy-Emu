@@ -1,102 +1,100 @@
 // Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
 // All components of this software are licensed under the GNU License.
 // Author: Martin Montas, martinmontas1@gmail.com
-#include <cstdio>
+#include <stdio.h>
 
 #include "ppu.hpp"
 #include "mmu.hpp"
 
 PPU::PPU(MMU* mmu) {
-    mmu     = mmu;
-    _cycles = 0;
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("SDL Error: %s\n", SDL_GetError());
-        exit(1);
-    }
-    printf("Video driver: %s\n", SDL_GetCurrentVideoDriver());
-    window = SDL_CreateWindow("SDL TEST", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH * 2,
-                              HEIGHT * 2, SDL_WINDOW_SHOWN);
-    if (!window) {
-        printf("Window Error: %s\n", SDL_GetError());
-        exit(1);
-    }
-    renderer             = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-                                             SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
-    if (!renderer) {
-        printf("Renderer Error: %s\n", SDL_GetError());
-        exit(1);
-    }
-    bool running = true;
+    mmu               = mmu;
+    _mode             = MODE_OAM_SCAN;
+    _scanline_counter = 0;
 }
 
 void PPU::sdl_init() {
     return;
 }
 
-PPU::~PPU() {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyTexture(texture);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-}
-
 void PPU::draw() {
-    // buff[y * WIDTH + x]
-    buff[8 * WIDTH + 8] = 0xFFFFFFFF;
+    // buff[8 * WIDTH + 8] = 0xFFFFFFFF;
+}
+void PPU::mode_handler(int t_cycle) {
+    _ly = mmu->read8(0xFF44);
+    _dot_counter += t_cycle;
+
+    // If LY >= 144
+    //     Mode 1 (VBlank)
+    // Else
+    //     Use dot counter:
+    //         Beginning of line -> Mode 2
+    //         Middle of line    -> Mode 3
+    //         End of line       -> Mode 0
+
+    if (_ly >= 144)
+        _mode = MODE_1;
+    else {
+        if (_dot_counter <= 79) {
+            _mode = MODE_2;
+        } else if (_dot_counter >= 80 && _dot_counter <= 251)
+            _mode = MODE_3;
+        else {
+            _mode = MODE_0;
+        }
+    }
 }
 
-void PPU::scanline_timing_handler() {
-    if (_mode == MODE_VBLANK) {
-        _ly = mmu->read8(0XFF44);
-        _ly += 1;
-        mmu->write8(0xFF44, _ly);
-    }
+void PPU::_handler() {
+    // oams its located at 0xFE00 - 0xFE9F
 }
 
 void PPU::step(int t_cycle) {
-    _ldc = mmu->read8(0XFF40);
+    // Mode 2
+    //     Scan OAM for visible sprites
+    //
+    // Mode 3
+    //     Read tile map
+    //     Read tile number
+    //     Check LCDC bit 4
+    //     Calculate tile data address
+    //     Fetch tile graphics
+    //     Generate pixels
+    //
+    // Mode 0
+    //     HBlank
+    //
+    // Mode 1
+    //     VBlank
+    //
+    _ldc = mmu->read8(0xFF40);
+    _ly  = mmu->read8(0xFF44);
 
-    _cycles += t_cycle;
+    // handles _ly:
+    mode_handler(t_cycle);
 
-    if (_cycles == 455) {
-        _ly = mmu->read8(0XFF44);
-        _ly += 1;
-        mmu->write8(0xFF44, _ly);
-        _cycles = 0;
-        // _mode   = mode
+    switch (_mode) {
+    case MODE_2: {
+        oam_event_handler();
+        break;
     }
-
-    // scanline_timing_handler();
-
-    // if (_cycles < 79) {
-    //     // mode 2: oam scan
-    //     _mode = MODE_OAM_SCAN
-
-    // } else if (_cycles >= 80 && _cycles <= 251) {
-    //     if (_cycles >= 144 && _cycles <= 153) {
-    //         // switch mode 1:  vblank
-    //         _mode = MODE_VBLANK
-
-    //     } else {
-    //         // switch mode 3: drawing
-    //         _mode = MODE_DRAWING
-    //     }
-    // } else if (_cycles >= 252 && _cycles <= 455) {
-    //     // switch mode 0: hblank
-    //     _ly = mmu->read8(0XFF44);
-    //     _ly += 1;
-    //     mmu->write8(0xFF44, _ly);
-    //     _mode = MODE_DRAWING;
-    // } else {
-    //     _cycles = 0;
-    // }
-
+    case MODE_3: {
+        draw();
+        break;
+    }
+    case MODE_1: {
+        _dot_counter = 0;
+        vblank_event_handler();
+        break;
+    }
+    case MODE_0: {
+        hblank_event_handler();
+        break;
+    }
+    }
     // SDL_Event event;
     // while (SDL_PollEvent(&event)) {
     //     if (event.type == SDL_QUIT)
     //         ppu_running = false;
-    // }
 
     // SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     // SDL_RenderClear(renderer);

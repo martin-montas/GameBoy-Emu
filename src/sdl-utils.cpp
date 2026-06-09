@@ -2,10 +2,10 @@
 // All components of this software are licensed under the GNU License.
 // Author: Martin Montas, martinmontas1@gmail.com
 
-#include "dslutils.hpp"
+#include "sdl-utils.hpp"
 #include <SDL2/SDL.h>
 
-void SDL::std_init() {
+void SDL::sdl_init() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf("SDL Error: %s\n", SDL_GetError());
         exit(1);
@@ -34,4 +34,6 @@ SDL::~SDL() {
     SDL_Quit();
 }
 
-SDL::create_rect(size_t) {}
+void SDL::create_rect(size_t) {
+    return;
+}

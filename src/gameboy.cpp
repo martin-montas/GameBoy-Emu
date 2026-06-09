@@ -12,23 +12,12 @@
 #include <cstdio>
 #include <stdint.h>
 
-GameBoy::GameBoy(const std::string file) {
-
-    cpu          = new Cpu();
-    mmu          = new MMU(file);
-    instructions = new InstructionSet(mmu, cpu);
-    ppu          = new PPU(mmu);
-
-    emulationRunning = true;
-    instructions->post_boot_state();
-}
-
 void GameBoy::run() {
     while (emulationRunning) {
-        if (!cpu->halted) {
+        if (!_cpu->halted) {
             step();
         } else {
-            cpu->cycle_count += 4;
+            _cpu->cycle_count += 4;
         }
     }
 }
@@ -38,9 +27,9 @@ uint32_t GameBoy::calculateCyclesForFrame() {
 }
 
 void GameBoy::step() {
-    _opcode = mmu->read8(cpu->PC);
-    instructions->execute(_opcode);
-    int current_cycle = cpu->opcode_cycles[_opcode];
-    cpu->cycle_count += current_cycle;
-    ppu->step(current_cycle);
+    _opcode = _mmu->read8(_cpu->PC);
+    _instructions->execute(_opcode);
+    int current_cycle = _cpu->opcode_cycles[_opcode];
+    _cpu->cycle_count += current_cycle;
+    _ppu->dot_cycle(current_cycle);
 }

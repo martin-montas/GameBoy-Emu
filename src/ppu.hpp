@@ -62,37 +62,37 @@ enum LCDFlag {
     FLAG_BG_ENABLE  = 1
 };
 
-class PPU {
+class Ppu {
   private:
     uint32_t frame_buff[HEIGHT * WIDTH];
-    MMU*     mmu;
+    MMU*     _mmu;
     SDL*     sdl;
 
-    size_t  _dot_counter;
+    size_t  _dot_clock;
     size_t  _mode;
-    uint8_t _ldc;
-    uint8_t _ly;
+    uint8_t LCDC;
+    uint8_t LY;
     uint8_t _scanline_counter;
     /*
      * @brief: this happens on mode 3 of the ppu.
      * where the value at 0xFF40 is read and
-     *
      */
-    void pixel_renderer();
     void mode_handler(int t_cycle);
 
-    void oam_event_handler();
-    void hblank_event_handler();
-    void vblank_event_handler();
-    // do something like this
-    // void Ppu::read_reg(uint8_t &data, uint16_t addr) const {
-    //
+    void enter_mode_3();
+    void enter_mode_2();
+    void enter_mode_0();
+    void enter_mode_1();
 
-    ~PPU();
+    // do something like this
+    // uint8_t read_reg(uint8_t& data, uint16_t addr);
+
+    ~Ppu();
 
   public:
-    PPU(MMU* mmu);
-    void step(int t_cycle);
+    Ppu(MMU* mmu) : _mmu(mmu), _mode(2), _scanline_counter(0) {}
+
+    void dot_cycle(int t_cycle);
     void sdl_init();
 };
 #endif // SRC_PPU_HPP_

@@ -15,7 +15,7 @@
 
 void InstructionSet::post_boot_state() {
     // 1. CPU Registers
-    cpu->PC = 0x0100;
+    cpu->PC = 0x0000;
     cpu->SP = 0xFFFE;
     cpu->AF = 0x01B0;
     cpu->BC = 0x0013;
@@ -64,7 +64,7 @@ void InstructionSet::post_boot_state() {
     mmu->write8(0xFF4B, 0x00); // WX (Window X)
 
     // 5. Unmap Boot ROM
-    mmu->write8(0xFF50, 0x01); // Unmaps Boot ROM, enabling Cartridge mapping
+    // mmu->write8(0xFF50, 0x01); // Unmaps Boot ROM, enabling Cartridge mapping
 
     // 6. Interrupt Enable
     mmu->write8(0xFFFF, 0x00); // IE (Disable all interrupts at boot)

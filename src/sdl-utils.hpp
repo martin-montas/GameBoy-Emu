@@ -27,6 +27,7 @@ class SDL {
 
   public:
     void sdl_init();
+    void create_rect(size_t);
     ~SDL();
 };
 

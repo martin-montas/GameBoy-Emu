@@ -20,15 +20,24 @@ class GameBoy {
     uint8_t _opcode;
     int     cycle_count = 0;
 
-    Cpu*    cpu;
-    Serial* serial;
-    Timer*  timer;
-    MMU*    mmu;
-    PPU*    ppu;
+    Cpu*            _cpu;
+    Serial*         _serial;
+    Timer*          _timer;
+    MMU*            _mmu;
+    Ppu*            _ppu;
+    InstructionSet* _instructions;
 
   public:
-    InstructionSet* instructions;
-    GameBoy(std::string filename);
+    GameBoy(const std::string file) {
+        _cpu          = new Cpu();
+        _mmu          = new MMU(file);
+        _instructions = new InstructionSet(_mmu, _cpu);
+        _ppu          = new Ppu(_mmu);
+
+        emulationRunning = true;
+        _instructions->post_boot_state();
+    }
+
     uint32_t calculateCyclesForFrame();
     void     run();
     void     step();

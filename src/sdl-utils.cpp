@@ -5,7 +5,7 @@
 #include "dslutils.hpp"
 #include <SDL2/SDL.h>
 
-void GAME_SDL::std_init() {
+void SDL::std_init() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf("SDL Error: %s\n", SDL_GetError());
         exit(1);
@@ -27,11 +27,11 @@ void GAME_SDL::std_init() {
     bool running = true;
 }
 
-GAME_SDL::~SDL() {
+SDL::~SDL() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyTexture(texture);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
-GAME_SDL::create_rect(size_t) {}
+SDL::create_rect(size_t) {}

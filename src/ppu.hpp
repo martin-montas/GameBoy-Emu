@@ -8,7 +8,7 @@
  *                           1. Tile Data
  *
  *     Tile data lives in memory starting from $8000 to $97FF.
- *     each of them is its 16 bytes. Each char/pixel of the tile
+ *     Each of them is its 16 bytes. Each char/pixel of the tile
  *     its 8x8 pixels and each row its 2 bytes per row.
  *     Each color its represented by 2 bits. pixel 0 and others
  *     pixel colors are represented by the bit 0 of 1 byte and
@@ -49,45 +49,44 @@
 
 #include <stdio.h>
 #include "mmu.hpp"
-
-enum PpuMode { MODE_0 = 0, MODE_1 = 1, MODE_2 = 2, MODE_3 = 3 };
+#include "sdl-utils.hpp"
 
 enum LCDFlag {
-    FLAG_ENABLE     = (1 << 7),
+    FLAG_LCD_ENABLE = (1 << 7),
     FLAG_WIN_AREA   = (1 << 6),
     FLAG_WIN_ENBLE  = (1 << 5),
     FLAG_BG_AREA    = (1 << 4),
-    flag_bg_MAP     = (1 << 3),
+    FLAG_BG_MAP     = (1 << 3),
     FLAG_OBJ_SIZE   = (1 << 2),
     FLAG_OBJ_ENABLE = (1 << 1),
     FLAG_BG_ENABLE  = 1
 };
 
-typedef struct {
-    SDL_Rect pixel[8 * 8];
-} Tile;
-
 class PPU {
-
   private:
-    uint32_t buff[WIDTH * HEIGHT];
+    uint32_t frame_buff[HEIGHT * WIDTH];
     MMU*     mmu;
-    size_t   _dot_counter;
-    PpuMode  _mode;
-    uint8_t  _ldc;
-    uint8_t  _ly;
-    uint8_t  _scanline_counter;
+    SDL*     sdl;
+
+    size_t  _dot_counter;
+    size_t  _mode;
+    uint8_t _ldc;
+    uint8_t _ly;
+    uint8_t _scanline_counter;
     /*
      * @brief: this happens on mode 3 of the ppu.
      * where the value at 0xFF40 is read and
      *
      */
-    void draw();
+    void pixel_renderer();
     void mode_handler(int t_cycle);
 
     void oam_event_handler();
     void hblank_event_handler();
     void vblank_event_handler();
+    // do something like this
+    // void Ppu::read_reg(uint8_t &data, uint16_t addr) const {
+    //
 
     ~PPU();
 

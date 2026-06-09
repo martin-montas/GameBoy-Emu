@@ -17,7 +17,7 @@
 #define BLACK      0xFF000000
 #define SCALE      4
 
-class GAME_SDL {
+class SDL {
   private:
     SDL_Renderer*         renderer;
     SDL_Surface*          screen;

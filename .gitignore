@@ -13,3 +13,4 @@ out.txt
 src/*.gch
 SameBoy
 gameboy-doctor/
+dmg_boot.bin

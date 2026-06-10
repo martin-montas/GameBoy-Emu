@@ -37,7 +37,7 @@ class MMU : public SystemBus {
      */
     Timer  timer;
     Serial serial;
-    Ppu*   _ppu;
+    Ppu*   _ppu = nullptr;
 
     uint8_t rom_bank = 1;
 
@@ -77,7 +77,11 @@ class MMU : public SystemBus {
      */
     MMU(const std::string file) {
         load_rom(file);
-        //  check_rom_type();
+        // check_rom_type();
+    }
+
+    void attach(Ppu* ppu) {
+        _ppu = ppu;
     }
 
     /* @brief: methods made for memory operations:

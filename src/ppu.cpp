@@ -14,10 +14,7 @@ void Ppu::hblank_handler() {
     /* checks if scan line has ended */
     if (_dot_clock == 456) {
         _dot_clock = 0;
-        LY         = _mmu->read8(0xFF44);
         LY += 1;
-        _mmu->write8(0xFF44, LY);
-
         /* enters vblank */
         if (LY == 144) {
             enter_mode_1();
@@ -86,38 +83,14 @@ void Ppu::enter_mode_3() {
     }
 }
 
-void Ppu::enter_mode_1() {
-    // TODO
-    if (_dot_clock >= 456) {
-        _dot_clock = 0;
-    }
-}
+/*
+ * @brief:
+ *
+ */
+void Ppu::enter_mode_1() {}
 
 void Ppu::render_frame() {
     _sdl.frame_step();
-}
-
-/*
- * @brief Changes modes based on _dot_clock variable
- * @param[in] current cpu T cycle
- */
-void Ppu::mode_handler(int t_cycle) {
-    _dot_clock += t_cycle;
-
-    uint8_t _lcd = _mmu->read8(0xFF40);
-    if (_lcd & FLAG_LCD_ENABLE) {
-        if (LY >= 144) {
-            _mode = 1;
-        } else {
-            if (_dot_clock < 80) {
-                _mode = 2;
-            } else if (_dot_clock < 252) {
-                _mode = 3;
-            } else {
-                _mode = 0;
-            }
-        }
-    }
 }
 
 void Ppu::enter_mode_2() {
@@ -126,6 +99,8 @@ void Ppu::enter_mode_2() {
      */
     return;
 }
+
+void Ppu::enter_mode_0() {}
 
 void Ppu::write_reg(uint8_t& data, uint16_t addr) {
     switch (addr & 0xF) {
@@ -140,31 +115,73 @@ uint8_t Ppu::read_ly() {
     return LY;
 }
 
-void Ppu::dot_cycle(int t_cycle) {
+void Ppu::switch_mode(int mode) {
+    if (mode == 0)
+        hblank_handler();
+    else if (mode == 1)
+        enter_mode_1();
+    else if (mode == 2)
+        enter_mode_2();
+    else if (mode == 3)
+        enter_mode_3();
+}
 
+void Ppu::dot_cycle(int t_cycle) {
+    // dot:       0                         79 80                         251 252 455
+    //            |--------------------------|-------------------------------|-------------------------------|
+    // mode:             Mode 2                       Mode 3                         Mode 0
+    //                OAM search                pixel transfer                    HBlank
     /* returns of LCDC flag is set to 0 */
+    LCDC = _mmu->read8(0xFF40);
     if ((LCDC & FLAG_LCD_ENABLE) == 0) {
+        LY         = 0;
+        _mode      = 0;
+        _dot_clock = 0;
         return;
     }
-    mode_handler(t_cycle);
-
+    _dot_clock += t_cycle;
     switch (_mode) {
-    case 0: /* hblank */
-        hblank_handler();
-        break;
 
+    case 0: /* HBlank */
+        if (_dot_clock >= 204) {
+            _dot_clock -= 204;
+            LY += 1;
+            if (LY == 144) {
+                _mode      = 1; // VBlank
+                can_render = true;
+                switch_mode(1);
+                render_frame();
+            } else {
+                _mode = 2; // next scanline
+                switch_mode(2);
+            }
+        }
+        break;
     case 1: /* vblank */
-        /* render frame here */
         /* TODO */
-        enter_mode_1();
+        if (_dot_clock >= 456) {
+            _dot_clock -= 456;
+            LY += 1;
+            if (LY == 154) {
+                _mode = 2;
+                LY    = 0;
+                switch_mode(2);
+            }
+        }
         break;
-
-    case 2: /* OAM Scan */
-        enter_mode_2();
+    case 2: /* oam scan */
+        if (_dot_clock >= 80) {
+            _dot_clock -= 80;
+            _mode = 3;
+            switch_mode(3);
+        }
         break;
-
-    case 3: /* Display */
-        enter_mode_3();
+    case 3: /* render */
+        if (_dot_clock >= 172) {
+            _dot_clock -= 172;
+            _mode = 0;
+            switch_mode(0);
+        }
         break;
     }
 }

@@ -4,49 +4,6 @@
 #ifndef SRC_PPU_HPP_
 #define SRC_PPU_HPP_
 
-/*
- *                           1. Tile Data
- *
- *     Tile data lives in memory starting from $8000 to $97FF.
- *     Each of them is its 16 bytes. Each char/pixel of the tile
- *     its 8x8 pixels and each row its 2 bytes per row.
- *     Each color its represented by 2 bits. pixel 0 and others
- *     pixel colors are represented by the bit 0 of 1 byte and
- *     bit 0 of second byte in the current row.
- *
- *     examaple:
- *
- *      [ MSB ]    [ LSB ]
- *      -------------------
- *      00110010 | 11011010 -> row
- *      ...
- *      ...
- *
- *     given first row: bit 0 of first byte its 0 and bit 0 of second byte its 1.
- *     therefore the value [10] equals light gray. remember that the bytes are
- *     swapped since the most significat bits is the first byte of each row.
- *
- *                            2. Tile Maps
- *
- *   A tile map are 32x32 of values ranging from 0 to 255. each of these
- *   values correspond to the indices of the of the titles to be displayed.
- *
- *                      3. Background Rendering
- *
- *   There are 2 tile maps and the ppu needs to know which of them should be used.
- *   The value to do this its done through bit 3 of LCDC register. When this bit
- *   is 0 you use the tile map that starts at 0x9800 else if 1 use you the one
- *   that starts at 0x9C00.
- *
- *   To render the tiles on the background, you will to find the row and the col
- *   correspoding to the ly register found at 0xFF44. lets say that for example
- *   ly equals 25 then to find the row that that should be drawn, you will use this
- *   formula: tile_row = 25 / 8 = 3. Now, lets say you want to find the col, lets say
- *   col 37, you will use the same tile_col: 37 / 8 = 4, so in the row 3, col 4 of the
- *   given tile map on vram. since tile maps has 32 entries this formula holds true.
- *   tile_map_index = tile_row * 32 + tile_col.
- */
-
 #include <stdio.h>
 #include "mmu.hpp"
 #include "sdl-utils.hpp"
@@ -77,14 +34,14 @@ class Ppu {
   private:
     uint32_t frame_buff[HEIGHT * WIDTH];
 
-    MMU* _mmu;
-
+    MMU*    _mmu = nullptr;
     SDL     _sdl;
     size_t  _dot_clock;
     size_t  _mode;
     uint8_t LCDC;
     uint8_t LY;
     uint8_t _scanline_counter;
+    bool    can_render;
 
     /*
      * @brief: this happens on mode 3 of the ppu.
@@ -101,13 +58,18 @@ class Ppu {
     // do something like this
     // uint8_t read_reg(uint8_t& data, uint16_t addr);
     void write_reg(uint8_t& data, uint16_t addr);
+    void switch_mode(int mode);
     void render_frame();
+    void enter_mode_0();
 
   public:
-    Ppu(MMU* mmu) : _mmu(mmu), _mode(2), _scanline_counter(0), LY(0) {
+    Ppu() : can_render(false), _mode(2), _scanline_counter(0), LY(0) {
         _sdl.init();
     }
     ~Ppu();
+    void attach(MMU* mmu) {
+        _mmu = mmu;
+    }
 
     void    dot_cycle(int t_cycle);
     void    sdl_init();

@@ -29,13 +29,15 @@ class GameBoy {
 
   public:
     GameBoy(const std::string file) {
-        _cpu          = new Cpu();
-        _mmu          = new MMU(file);
-        _ppu          = new Ppu(_mmu);
+        _cpu = new Cpu();
+        _mmu = new MMU(file);
+        _ppu = new Ppu();
+        _mmu->attach(_ppu);
+        _ppu->attach(_mmu);
         _instructions = new InstructionSet(_mmu, _cpu);
 
         emulationRunning = true;
-        _instructions->post_boot_state();
+        // _instructions->post_boot_state();
     }
 
     uint32_t calculateCyclesForFrame();

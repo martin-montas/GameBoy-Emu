@@ -47,10 +47,13 @@ void SDL::frame_step() {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT)
+        if (event.type == SDL_QUIT) {
             sdl_running = false;
+        }
+        if (event.key.keysym.sym == SDLK_ESCAPE) {
+            sdl_running = false;
+        }
     }
-
     SDL_UpdateTexture(texture, nullptr, frame_buff, WIDTH * sizeof(uint32_t));
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);

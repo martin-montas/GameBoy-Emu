@@ -20,10 +20,13 @@ class InstructionSet {
 
   public:
     void step();
-
     void execute(uint8_t opcode);
+    void pre_boot_state();
     void post_boot_state();
-    InstructionSet(SystemBus* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {}
+    InstructionSet(SystemBus* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
+        /* initializes regs to 0 */
+        pre_boot_state();
+    }
 
     void get_mbc_type();
     void rrca(uint8_t& reg);

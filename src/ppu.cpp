@@ -70,7 +70,7 @@ void Ppu::update_framebuff(uint16_t addr) {
             color_val = BLACK;
         }
 
-        frame_buff[LY * WIDTH + x] = color_val;
+        _sdl.frame_buff[LY * WIDTH + x] = color_val;
     }
 }
 
@@ -92,6 +92,11 @@ void Ppu::enter_mode_1() {
         _dot_clock = 0;
     }
 }
+
+void Ppu::render_frame() {
+    _sdl.render_frame();
+}
+
 /*
  * @brief Changes modes based on _dot_clock variable
  * @param[in] current cpu T cycle
@@ -133,6 +138,7 @@ void Ppu::write_reg(uint8_t& data, uint16_t addr) {
 uint8_t Ppu::read_ly() {
     return LY;
 }
+
 void Ppu::dot_cycle(int t_cycle) {
 
     /* returns of LCDC flag is set to 0 */
@@ -147,6 +153,7 @@ void Ppu::dot_cycle(int t_cycle) {
         break;
 
     case 1: /* vblank */
+        /* render frame here */
         enter_mode_1();
         break;
 

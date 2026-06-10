@@ -73,7 +73,7 @@ class Ppu {
 
     MMU* _mmu;
 
-    SDL*    _sdl;
+    SDL     _sdl;
     size_t  _dot_clock;
     size_t  _mode;
     uint8_t LCDC;
@@ -95,6 +95,7 @@ class Ppu {
     // do something like this
     // uint8_t read_reg(uint8_t& data, uint16_t addr);
     void write_reg(uint8_t& data, uint16_t addr);
+    void render_frame();
 
   public:
     Ppu(MMU* mmu) : _mmu(mmu), _mode(2), _scanline_counter(0), LY(0) {}

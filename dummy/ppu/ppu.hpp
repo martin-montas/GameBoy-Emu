@@ -96,7 +96,7 @@ class PPU {
     void          h_blank();
     void          v_blank();
     bool          running;
-    void          step(int t_cycle);
+    void          step();
     void          sdl_init();
 
   public:

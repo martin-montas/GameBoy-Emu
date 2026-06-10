@@ -8,58 +8,74 @@
 PPU::PPU() {
     _cycles = 0;
     _mode   = MODE_OAM_SCAN;
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf("SDL Error: %s\n", SDL_GetError());
         exit(1);
     }
-    printf("Video driver: %s\n", SDL_GetCurrentVideoDriver());
+
     window = SDL_CreateWindow("SDL TEST", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH * 2,
                               HEIGHT * 2, SDL_WINDOW_SHOWN);
+
     if (!window) {
         printf("Window Error: %s\n", SDL_GetError());
         exit(1);
     }
-    renderer             = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-                                             SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
     if (!renderer) {
         printf("Renderer Error: %s\n", SDL_GetError());
         exit(1);
     }
+
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+                                WIDTH, HEIGHT);
+
+    // clear framebuffer
+    for (int i = 0; i < WIDTH * HEIGHT; i++) {
+        buff[i] = 0xFF000000; // black
+    }
+
     running = true;
+}
+void PPU::draw() {
+
+    int x = 8;
+    int y = 8;
+
+    buff[y * WIDTH + x] = 0xFFFFFFFF;
 }
 
 void PPU::sdl_init() {
     return;
 }
 
-void PPU::draw() {
-    // buff[y * WIDTH + x]
-    buff[8 * WIDTH + 8] = 0xFFFFFFFF;
-}
+void PPU::step() {
 
-void PPU::step(int t_cycle) {
     SDL_Event event;
-    _cycles += t_cycle;
+
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT)
             running = false;
     }
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(renderer);
+    draw();
+
     SDL_UpdateTexture(texture, nullptr, buff, WIDTH * sizeof(uint32_t));
 
+    SDL_RenderClear(renderer);
+
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+
     SDL_RenderPresent(renderer);
-    SDL_Delay(32);
 }
 
 int  cycles[] = {1, 3, 3, 4, 1, 1, 2, 2};
 void PPU::run() {
     size_t indx = 0;
     while (running) {
-        step(cycles[indx]);
+        step();
     }
 
     SDL_DestroyRenderer(renderer);

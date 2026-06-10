@@ -54,6 +54,12 @@
 #define BGP_ADDR  0xFF47 // BGP palette (0xFF47)
 #define LCDC_ADDR 0xFF40
 
+#define WHITE      0xFFFFFFFF
+#define LIGHT_GRAY 0xFFAAAAAA
+#define DARK_GRAY  0xFF555555
+#define BLACK      0xFF000000
+#define SCALE      4
+
 enum LCDFlag {
     FLAG_LCD_ENABLE = (1 << 7),
     FLAG_WIN_MAP    = (1 << 6),
@@ -98,7 +104,9 @@ class Ppu {
     void render_frame();
 
   public:
-    Ppu(MMU* mmu) : _mmu(mmu), _mode(2), _scanline_counter(0), LY(0) {}
+    Ppu(MMU* mmu) : _mmu(mmu), _mode(2), _scanline_counter(0), LY(0) {
+        _sdl.init();
+    }
     ~Ppu();
 
     void    dot_cycle(int t_cycle);

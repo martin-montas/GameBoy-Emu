@@ -94,7 +94,7 @@ void Ppu::enter_mode_1() {
 }
 
 void Ppu::render_frame() {
-    _sdl.render_frame();
+    _sdl.frame_step();
 }
 
 /*
@@ -121,8 +121,9 @@ void Ppu::mode_handler(int t_cycle) {
 }
 
 void Ppu::enter_mode_2() {
-    //  Beginning of line -> Mode 2
-    // oams its located at 0xFE00 - 0xFE9F
+    /* Beginning of line -> Mode 2
+     * oams its located at 0xFE00 - 0xFE9F
+     */
     return;
 }
 
@@ -154,6 +155,7 @@ void Ppu::dot_cycle(int t_cycle) {
 
     case 1: /* vblank */
         /* render frame here */
+        /* TODO */
         enter_mode_1();
         break;
 

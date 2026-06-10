@@ -6,7 +6,6 @@
 #define SRC_SDL_UTILS_HPP_
 
 #include <SDL2/SDL.h>
-#include <vector>
 
 #define WIDTH  160
 #define HEIGHT 144
@@ -19,15 +18,17 @@
 
 class SDL {
   private:
-    SDL_Renderer*         renderer;
-    SDL_Surface*          screen;
-    SDL_Texture*          texture;
-    SDL_Window*           window;
-    std::vector<SDL_Rect> pixel;
+    SDL_Renderer* renderer;
+    SDL_Surface*  screen;
+    SDL_Texture*  texture;
+    SDL_Window*   window;
+    bool          sdl_running;
 
   public:
-    void sdl_init();
-    void create_rect(size_t);
+    void     init();
+    uint32_t frame_buff[WIDTH * HEIGHT];
+    void     update_frame_buff(size_t y_pos, size_t x_pos, uint32_t hex);
+    void     frame_step();
     ~SDL();
 };
 

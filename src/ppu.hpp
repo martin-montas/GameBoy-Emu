@@ -51,13 +51,12 @@
 #include "mmu.hpp"
 #include "sdl-utils.hpp"
 
-#define LY_ADDR   0xFF44
 #define BGP_ADDR  0xFF47 // BGP palette (0xFF47)
 #define LCDC_ADDR 0xFF40
 
 enum LCDFlag {
     FLAG_LCD_ENABLE = (1 << 7),
-    FLAG_WIN_AREA   = (1 << 6),
+    FLAG_WIN_MAP    = (1 << 6),
     FLAG_WIN_ENBLE  = (1 << 5),
     FLAG_BG_AREA    = (1 << 4),
     FLAG_BG_MAP     = (1 << 3),
@@ -66,17 +65,21 @@ enum LCDFlag {
     FLAG_BG_ENABLE  = 1
 };
 
+class MMU;
+
 class Ppu {
   private:
     uint32_t frame_buff[HEIGHT * WIDTH];
-    MMU*     _mmu;
-    SDL*     sdl;
 
+    MMU* _mmu;
+
+    SDL*    _sdl;
     size_t  _dot_clock;
     size_t  _mode;
     uint8_t LCDC;
     uint8_t LY;
     uint8_t _scanline_counter;
+
     /*
      * @brief: this happens on mode 3 of the ppu.
      * where the value at 0xFF40 is read and
@@ -91,13 +94,14 @@ class Ppu {
 
     // do something like this
     // uint8_t read_reg(uint8_t& data, uint16_t addr);
-
-    ~Ppu();
+    void write_reg(uint8_t& data, uint16_t addr);
 
   public:
-    Ppu(MMU* mmu) : _mmu(mmu), _mode(2), _scanline_counter(0) {}
+    Ppu(MMU* mmu) : _mmu(mmu), _mode(2), _scanline_counter(0), LY(0) {}
+    ~Ppu();
 
-    void dot_cycle(int t_cycle);
-    void sdl_init();
+    void    dot_cycle(int t_cycle);
+    void    sdl_init();
+    uint8_t read_ly();
 };
 #endif // SRC_PPU_HPP_

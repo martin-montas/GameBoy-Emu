@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "ppu.hpp"
-#include "mmu.hpp"
 
 /*
  * @brief Handles hblank-related things like
@@ -34,7 +33,7 @@ void Ppu::hblank_handler() {
  * and current tile map. and updates
  * the frambuffer array.
  *
- * @param: address of selected tile map
+ * @param[in]: address of selected tile map
  */
 void Ppu::update_framebuff(uint16_t addr) {
     for (int x = 0; x <= 159; x++) {
@@ -95,10 +94,9 @@ void Ppu::enter_mode_1() {
 }
 /*
  * @brief Changes modes based on _dot_clock variable
- * @param current cpu T cycle
+ * @param[in] current cpu T cycle
  */
 void Ppu::mode_handler(int t_cycle) {
-    LY = _mmu->read8(LY_ADDR);
     _dot_clock += t_cycle;
 
     uint8_t _lcd = _mmu->read8(0xFF40);
@@ -123,6 +121,18 @@ void Ppu::enter_mode_2() {
     return;
 }
 
+void Ppu::write_reg(uint8_t& data, uint16_t addr) {
+    switch (addr & 0xF) {
+    case 0x4: /* LY reg */
+        break;
+    case 0x7: /* LY reg */
+        break;
+    }
+}
+
+uint8_t Ppu::read_ly() {
+    return LY;
+}
 void Ppu::dot_cycle(int t_cycle) {
 
     /* returns of LCDC flag is set to 0 */

@@ -6,6 +6,7 @@
 // #include "MBC.hpp"
 // #include "MBC0.hpp"
 #include "serial.hpp"
+#include "ppu.hpp"
 #include "timer.hpp"
 
 #include <fstream>
@@ -15,10 +16,6 @@
 #include <string>
 #include <vector>
 
-MMU::MMU(const std::string file) {
-    load_rom(file);
-    //  check_rom_type();
-}
 // void MMU::check_rom_type() {
 //   uint8_t type = romData[0x0147];
 //   switch (type) {
@@ -75,7 +72,8 @@ uint8_t MMU::read8(uint16_t addr) {
         if (addr >= 0xFF04 && addr <= 0xFF07) {
             return timer.read(addr);
         } else if (addr == 0xFF44) {
-            return 0x90;
+            // ppu returns here ly reg here
+            return _ppu->read_ly();
         } else {
             return IO_REGISTERS[addr - 0xFF00];
         }
@@ -120,6 +118,10 @@ void MMU::write8(uint16_t addr, uint8_t value) {
         } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
             return; // unused
         } else {
+            if (addr == 0xFF44) {
+                std::cout << "Cannot write to the 0xff44 memory\n";
+                return;
+            }
             this->IO_REGISTERS[addr - 0xFF00] = value;
             return;
         }

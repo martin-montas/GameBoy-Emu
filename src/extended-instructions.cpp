@@ -13,16 +13,16 @@
 void InstructionSet::rl_extended(uint8_t& reg) {
     // DONE
     bool bit7 = reg & 0x80;
-    reg       = (reg << 1) | (cpu->F & FLAG_CARRY ? 1 : 0);
+    reg       = (reg << 1) | (_cpu->F & FLAG_CARRY ? 1 : 0);
 
     if (bit7) {
-        cpu->F |= FLAG_CARRY;
+        _cpu->F |= FLAG_CARRY;
     } else {
-        cpu->F &= ~FLAG_CARRY;
+        _cpu->F &= ~FLAG_CARRY;
     }
-    cpu->set_flag(FLAG_SUBTRACT, false);
-    cpu->set_flag(FLAG_HALF_CARRY, false);
-    cpu->set_flag(FLAG_ZERO, reg == 0);
+    _cpu->set_flag(FLAG_SUBTRACT, false);
+    _cpu->set_flag(FLAG_HALF_CARRY, false);
+    _cpu->set_flag(FLAG_ZERO, reg == 0);
 }
 void InstructionSet::rlc_extended(uint8_t& reg) {
     // DONE
@@ -30,21 +30,21 @@ void InstructionSet::rlc_extended(uint8_t& reg) {
     reg          = (reg << 1);
     reg |= bit7;
     if (bit7) {
-        cpu->F |= 0x10;
+        _cpu->F |= 0x10;
     } else {
-        cpu->F &= ~0x10;
+        _cpu->F &= ~0x10;
     }
 
-    cpu->set_flag(FLAG_ZERO, reg == 0);
-    cpu->clear_flag(FLAG_HALF_CARRY);
-    cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->set_flag(FLAG_ZERO, reg == 0);
+    _cpu->clear_flag(FLAG_HALF_CARRY);
+    _cpu->clear_flag(FLAG_SUBTRACT);
 }
 
 void InstructionSet::rcc_extended(uint8_t* reg) {
     // DONE
     bool bit0 = *reg & 1;
-    cpu->F &= ~FLAG_CARRY;
-    cpu->F |= (bit0 << 4);
+    _cpu->F &= ~FLAG_CARRY;
+    _cpu->F |= (bit0 << 4);
     *reg >>= 1;
 
     if (bit0) {
@@ -56,27 +56,27 @@ void InstructionSet::rrc_extended(uint8_t& reg) {
     // DONE: should be checked
     uint8_t bit0 = reg & 0x01;
     if (bit0) {
-        cpu->F |= FLAG_CARRY;
+        _cpu->F |= FLAG_CARRY;
     } else {
-        cpu->F &= ~FLAG_CARRY;
+        _cpu->F &= ~FLAG_CARRY;
     }
     reg >>= 1;
-    if (cpu->F & FLAG_CARRY) {
+    if (_cpu->F & FLAG_CARRY) {
         reg |= 0x80;
     }
-    cpu->set_flag(FLAG_ZERO, reg == 0);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
+    _cpu->set_flag(FLAG_ZERO, reg == 0);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->clear_flag(FLAG_HALF_CARRY);
 }
 
 void InstructionSet::sla_extended(uint8_t& reg) {
     // DONE
     bool b7 = reg & 0x80;
     reg <<= 1;
-    cpu->set_flag(FLAG_ZERO, reg == 0);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
-    cpu->set_flag(FLAG_CARRY, b7);
+    _cpu->set_flag(FLAG_ZERO, reg == 0);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->clear_flag(FLAG_HALF_CARRY);
+    _cpu->set_flag(FLAG_CARRY, b7);
 }
 
 void InstructionSet::sra_extended(uint8_t& reg) {
@@ -89,15 +89,15 @@ void InstructionSet::sra_extended(uint8_t& reg) {
     if (b7) {
         reg |= 0x80;
     }
-    cpu->set_flag(FLAG_ZERO, reg == 0);
-    cpu->set_flag(FLAG_CARRY, b0);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
+    _cpu->set_flag(FLAG_ZERO, reg == 0);
+    _cpu->set_flag(FLAG_CARRY, b0);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->clear_flag(FLAG_HALF_CARRY);
 }
 
 void InstructionSet::rr_extended(uint8_t& reg) {
     // DONE
-    bool c  = cpu->F & FLAG_CARRY;
+    bool c  = _cpu->F & FLAG_CARRY;
     bool b0 = reg & 0x01;
     reg >>= 1;
     if (c) {
@@ -105,10 +105,10 @@ void InstructionSet::rr_extended(uint8_t& reg) {
     } else {
         reg &= ~0x80;
     }
-    cpu->set_flag(FLAG_ZERO, reg == 0);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->clear_flag(FLAG_HALF_CARRY);
-    cpu->set_flag(FLAG_CARRY, b0);
+    _cpu->set_flag(FLAG_ZERO, reg == 0);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->clear_flag(FLAG_HALF_CARRY);
+    _cpu->set_flag(FLAG_CARRY, b0);
 }
 
 void InstructionSet::swap_extended(uint8_t& reg) {
@@ -117,10 +117,10 @@ void InstructionSet::swap_extended(uint8_t& reg) {
     uint8_t hn = (reg >> 4) & 0xF;
 
     reg = (ln << 4) | hn;
-    cpu->set_flag(FLAG_ZERO, reg == 0);
-    cpu->set_flag(FLAG_SUBTRACT, false);
-    cpu->set_flag(FLAG_HALF_CARRY, false);
-    cpu->set_flag(FLAG_CARRY, false);
+    _cpu->set_flag(FLAG_ZERO, reg == 0);
+    _cpu->set_flag(FLAG_SUBTRACT, false);
+    _cpu->set_flag(FLAG_HALF_CARRY, false);
+    _cpu->set_flag(FLAG_CARRY, false);
 }
 
 void InstructionSet::srl_extended(uint8_t& reg) {
@@ -129,87 +129,87 @@ void InstructionSet::srl_extended(uint8_t& reg) {
 
     reg >>= 1;
     if (b0) {
-        cpu->F |= FLAG_CARRY;
+        _cpu->F |= FLAG_CARRY;
     } else {
-        cpu->F &= ~FLAG_CARRY;
+        _cpu->F &= ~FLAG_CARRY;
     }
-    cpu->set_flag(FLAG_ZERO, reg == 0);
-    cpu->set_flag(FLAG_SUBTRACT, false);
-    cpu->set_flag(FLAG_HALF_CARRY, false);
+    _cpu->set_flag(FLAG_ZERO, reg == 0);
+    _cpu->set_flag(FLAG_SUBTRACT, false);
+    _cpu->set_flag(FLAG_HALF_CARRY, false);
 }
 void InstructionSet::bit0_extended(uint8_t& reg) {
     // DONE
     bool b0 = reg & 0x01;
 
     if (!b0) {
-        cpu->F |= 0x80;
+        _cpu->F |= 0x80;
     } else {
-        cpu->F &= ~0x80;
+        _cpu->F &= ~0x80;
     }
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->set_flag(FLAG_HALF_CARRY, 1);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
 
 void InstructionSet::bit1_extended(uint8_t& reg) {
     // DONE
     bool b1 = (reg & 0x02);
 
-    cpu->set_flag(FLAG_ZERO, !b1);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->set_flag(FLAG_HALF_CARRY, 1);
+    _cpu->set_flag(FLAG_ZERO, !b1);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
 
 void InstructionSet::bit2_extended(uint8_t& reg) {
     // DONE
     bool b2 = reg & 0x04;
 
-    cpu->set_flag(FLAG_ZERO, !b2);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->set_flag(FLAG_HALF_CARRY, 1);
+    _cpu->set_flag(FLAG_ZERO, !b2);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
 
 void InstructionSet::bit3_extended(uint8_t& reg) {
     // DONE
     bool b3 = reg & 0x08;
 
-    cpu->set_flag(FLAG_ZERO, !b3);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->set_flag(FLAG_HALF_CARRY, 1);
+    _cpu->set_flag(FLAG_ZERO, !b3);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
 
 void InstructionSet::bit4_extended(uint8_t& reg) {
     // DONE
     bool b4 = reg & 0x10;
 
-    cpu->set_flag(FLAG_ZERO, b4 == 0);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->set_flag(FLAG_HALF_CARRY, 1);
+    _cpu->set_flag(FLAG_ZERO, b4 == 0);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
 void InstructionSet::bit5_extended(uint8_t& reg) {
     // DONE
     bool b5 = reg & 0x20;
 
-    cpu->set_flag(FLAG_ZERO, b5 == 0);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->set_flag(FLAG_HALF_CARRY, 1);
+    _cpu->set_flag(FLAG_ZERO, b5 == 0);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
 
 void InstructionSet::bit6_extended(uint8_t& reg) {
     // DONE
     bool b6 = reg & 0x40;
 
-    cpu->set_flag(FLAG_ZERO, b6 == 0);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->set_flag(FLAG_HALF_CARRY, 1);
+    _cpu->set_flag(FLAG_ZERO, b6 == 0);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
 
 void InstructionSet::bit7_extended(uint8_t& reg) {
     // DONE
     bool b7 = reg & 0x80;
 
-    cpu->set_flag(FLAG_ZERO, b7 == 0);
-    cpu->clear_flag(FLAG_SUBTRACT);
-    cpu->set_flag(FLAG_HALF_CARRY, 1);
+    _cpu->set_flag(FLAG_ZERO, b7 == 0);
+    _cpu->clear_flag(FLAG_SUBTRACT);
+    _cpu->set_flag(FLAG_HALF_CARRY, 1);
 }
 
 // DONE:

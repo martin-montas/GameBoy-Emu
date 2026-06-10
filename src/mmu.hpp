@@ -10,6 +10,7 @@
 #include "system-bus.hpp"
 #include "serial.hpp"
 #include "timer.hpp"
+#include "ppu.hpp"
 
 #include <memory>
 #include <stdint.h>
@@ -25,6 +26,8 @@
 
 using namespace std;
 
+class Ppu;
+
 class MMU : public SystemBus {
   private:
     std::unique_ptr<MBC> mbc;
@@ -34,6 +37,7 @@ class MMU : public SystemBus {
      */
     Timer  timer;
     Serial serial;
+    Ppu*   _ppu;
 
     uint8_t rom_bank = 1;
 
@@ -71,7 +75,10 @@ class MMU : public SystemBus {
      * from ROM/RAM.
      *
      */
-    MMU(const std::string file);
+    MMU(const std::string file) {
+        load_rom(file);
+        //  check_rom_type();
+    }
 
     /* @brief: methods made for memory operations:
      * read8, write8, read16, and write16.

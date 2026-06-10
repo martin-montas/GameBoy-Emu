@@ -31,8 +31,8 @@ class GameBoy {
     GameBoy(const std::string file) {
         _cpu          = new Cpu();
         _mmu          = new MMU(file);
-        _instructions = new InstructionSet(_mmu, _cpu);
         _ppu          = new Ppu(_mmu);
+        _instructions = new InstructionSet(_mmu, _cpu);
 
         emulationRunning = true;
         _instructions->post_boot_state();

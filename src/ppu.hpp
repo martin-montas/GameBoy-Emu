@@ -11,10 +11,10 @@
 #define BGP_ADDR  0xFF47 // BGP palette (0xFF47)
 #define LCDC_ADDR 0xFF40
 
-#define WHITE      0xFFFFFFFF
-#define LIGHT_GRAY 0xFFAAAAAA
-#define DARK_GRAY  0xFF555555
-#define BLACK      0xFF000000
+#define WHITE      0x9A9E3F
+#define LIGHT_GRAY 0x496B22
+#define DARK_GRAY  0x0E450B
+#define BLACK      0x1B2A09
 #define SCALE      4
 
 enum LCDFlag {

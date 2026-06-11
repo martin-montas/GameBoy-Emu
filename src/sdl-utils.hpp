@@ -10,12 +10,6 @@
 #define WIDTH  160
 #define HEIGHT 144
 
-#define WHITE      0xFFFFFFFF
-#define LIGHT_GRAY 0xFFAAAAAA
-#define DARK_GRAY  0xFF555555
-#define BLACK      0xFF000000
-#define SCALE      4
-
 class SDL {
   private:
     SDL_Renderer* renderer;

@@ -17,7 +17,6 @@ void Ppu::hblank_handler() {
         LY += 1;
         /* enters vblank */
         if (LY == 144) {
-            enter_mode_1();
         } else if (LY == 154) {
             /* enters new frame */
             enter_mode_2();
@@ -67,7 +66,7 @@ void Ppu::update_framebuff(uint16_t addr) {
             color_val = BLACK;
         }
 
-        _sdl.frame_buff[LY * WIDTH + x] = color_val;
+        frame_buff[LY * WIDTH + x] = color_val;
     }
 }
 
@@ -81,16 +80,6 @@ void Ppu::enter_mode_3() {
     } else {
         update_framebuff(0x9C00);
     }
-}
-
-/*
- * @brief:
- *
- */
-void Ppu::enter_mode_1() {}
-
-void Ppu::render_frame() {
-    _sdl.frame_step();
 }
 
 void Ppu::enter_mode_2() {
@@ -118,19 +107,17 @@ uint8_t Ppu::read_ly() {
 void Ppu::switch_mode(int mode) {
     if (mode == 0)
         hblank_handler();
-    else if (mode == 1)
-        enter_mode_1();
     else if (mode == 2)
         enter_mode_2();
     else if (mode == 3)
         enter_mode_3();
 }
 
+bool Ppu::frame_ready() const {
+    return can_render;
+}
+
 void Ppu::dot_cycle(int t_cycle) {
-    // dot:       0                         79 80                         251 252 455
-    //            |--------------------------|-------------------------------|-------------------------------|
-    // mode:             Mode 2                       Mode 3                         Mode 0
-    //                OAM search                pixel transfer                    HBlank
     /* returns of LCDC flag is set to 0 */
     LCDC = _mmu->read8(0xFF40);
     if ((LCDC & FLAG_LCD_ENABLE) == 0) {
@@ -141,24 +128,20 @@ void Ppu::dot_cycle(int t_cycle) {
     }
     _dot_clock += t_cycle;
     switch (_mode) {
-
     case 0: /* HBlank */
         if (_dot_clock >= 204) {
             _dot_clock -= 204;
             LY += 1;
             if (LY == 144) {
-                _mode      = 1; // VBlank
+                _mode      = 1;
                 can_render = true;
-                switch_mode(1);
-                render_frame();
             } else {
-                _mode = 2; // next scanline
+                _mode = 2;
                 switch_mode(2);
             }
         }
         break;
     case 1: /* vblank */
-        /* TODO */
         if (_dot_clock >= 456) {
             _dot_clock -= 456;
             LY += 1;

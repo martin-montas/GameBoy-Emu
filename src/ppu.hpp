@@ -32,16 +32,12 @@ class MMU;
 
 class Ppu {
   private:
-    uint32_t frame_buff[HEIGHT * WIDTH];
-
     MMU*    _mmu = nullptr;
-    SDL     _sdl;
     size_t  _dot_clock;
     size_t  _mode;
     uint8_t LCDC;
     uint8_t LY;
     uint8_t _scanline_counter;
-    bool    can_render;
 
     /*
      * @brief: this happens on mode 3 of the ppu.
@@ -52,7 +48,6 @@ class Ppu {
     void enter_mode_3();
     void enter_mode_2();
     void hblank_handler();
-    void enter_mode_1();
     void update_framebuff(uint16_t addr);
 
     // do something like this
@@ -64,15 +59,24 @@ class Ppu {
 
   public:
     Ppu() : can_render(false), _mode(2), _scanline_counter(0), LY(0) {
-        _sdl.init();
+
+        /* initilizes  frame buffer */
+        for (int i = 0; i < WIDTH * HEIGHT; i++) {
+            frame_buff[i] = 0xFF000000; // black
+        }
     }
     ~Ppu();
     void attach(MMU* mmu) {
         _mmu = mmu;
     }
 
-    void    dot_cycle(int t_cycle);
-    void    sdl_init();
+    uint32_t frame_buff[HEIGHT * WIDTH];
+    bool     frame_ready() const;
+    void     dot_cycle(int t_cycle);
+    void     clear_can_render() {
+        can_render = false;
+    }
+    bool    can_render;
     uint8_t read_ly();
 };
 #endif // SRC_PPU_HPP_

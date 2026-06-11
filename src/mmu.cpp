@@ -49,8 +49,21 @@ uint16_t MMU::read16(uint16_t addr) {
 }
 
 uint8_t MMU::read8(uint16_t addr) {
+    // 0000-00FF  Boot ROM (while enabled)
+    // 0100-3FFF  ROM bank 0
+    // 4000-7FFF  ROM bank n
+    // 8000-9FFF  VRAM
+    // A000-BFFF  Cartridge RAM
+    // C000-CFFF  WRAM bank 0
+    // D000-DFFF  WRAM bank 1
+    // E000-FDFF  Echo RAM
+    // FE00-FE9F  OAM
+    // FEA0-FEFF  Unusable
+    // FF00-FF7F  I/O registers
+    // FF80-FFFE  HRAM
+    // FFFF       IE register
+
     if (addr == 0xD800) {
-        // printf("[READ D800] = %02X\n", WRAM[0x0800]);
         return WRAM[addr - 0xC000];
     } else if (addr < 0x8000) {
         return this->romData[addr];
@@ -65,6 +78,8 @@ uint8_t MMU::read8(uint16_t addr) {
         return WRAM[addr - 0x2000];
     } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
         return OAM[addr - 0xFE00];
+    } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
+        return 0xFF;
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
             return serial.read(addr);
@@ -79,6 +94,10 @@ uint8_t MMU::read8(uint16_t addr) {
         }
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
         return this->HRAM[addr - 0xFF80];
+    } else if (addr == 0xFFFF) {
+        // TODO:
+        // handle interrupt here: IE
+        return 0xFF;
     } else {
         printf("Memory access out of bounds: %X\n", addr);
         exit(1);
@@ -87,6 +106,20 @@ uint8_t MMU::read8(uint16_t addr) {
 }
 
 void MMU::write8(uint16_t addr, uint8_t value) {
+    // 0000-00FF  Boot ROM (while enabled)
+    // 0100-3FFF  ROM bank 0
+    // 4000-7FFF  ROM bank n
+    // 8000-9FFF  VRAM
+    // A000-BFFF  Cartridge RAM
+    // C000-CFFF  WRAM bank 0
+    // D000-DFFF  WRAM bank 1
+    // E000-FDFF  Echo RAM
+    // FE00-FE9F  OAM
+    // FEA0-FEFF  Unusable
+    // FF00-FF7F  I/O registers
+    // FF80-FFFE  HRAM
+    // FFFF       IE register
+
     if (addr < 0x8000) {
         return;
     } else if (addr >= 0x8000 && addr <= 0x9FFF) {
@@ -129,6 +162,7 @@ void MMU::write8(uint16_t addr, uint8_t value) {
         this->HRAM[addr - 0xFF80] = value;
         return;
     } else if (addr == 0xFFFF) {
+        printf("IE not implemented %X\n", addr);
 
     } else {
         printf("Memory access out of bounds: %X\n", addr);

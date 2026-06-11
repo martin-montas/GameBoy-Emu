@@ -8,8 +8,8 @@ Another GameBoy emulator written in C++.
 
 
 ## Impelemented Features:
-[X]         CPU.
-[X]         MMU.
+[X]         Finish CPU.
+[X]         Finish MMU.
 [X]         Boot rom rendering.
 [ ]         Finish PPU.
 [ ]         CPU-PPU-TIMER sync.

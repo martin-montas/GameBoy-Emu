@@ -39,7 +39,8 @@ void Ppu::update_framebuff(uint16_t addr) {
         uint8_t background_y = (LY + _scy);
         int     tile_x       = background_x / 8;
         int     tile_y       = background_y / 8;
-        int     offset       = (tile_y * 32 + tile_x);
+        // fetches offset for the tile map
+        int offset = (tile_y * 32 + tile_x);
 
         //  gets tile number from tile map
         uint8_t  tile_number    = _mmu->read8(addr + offset);

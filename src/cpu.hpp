@@ -18,14 +18,6 @@ enum RegisterFlags {
     FLAG_CARRY      = (1 << 4)
 };
 
-enum Interrupt {
-    FLAG_VBLANK  = (1 << 0),
-    FLAG_STAT    = (1 << 1),
-    FLAG_TIMER   = (1 << 2),
-    FLAG_SERIAL  = (1 << 3),
-    FLAG_JOY_PAD = (1 << 4)
-};
-
 using namespace std;
 class Cpu {
   private:

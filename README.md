@@ -11,7 +11,7 @@ Another GameBoy emulator written in C++.
 [X]         Finish CPU.
 [X]         Finish MMU.
 [X]         Boot rom rendering.
+[ ]         Finish Interrupt
 [ ]         Finish PPU.
 [ ]         CPU-PPU-TIMER sync.
-[ ]         Finish interrupt.
 [ ]         Dmg Acid2 test rom.

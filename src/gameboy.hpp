@@ -13,23 +13,27 @@
 #include "mmu.hpp"
 #include "serial.hpp"
 #include "timer.hpp"
+#include "interrupt.hpp"
 #include "ppu.hpp"
 
 class GameBoy {
   private:
     bool            emulationRunning;
-    uint8_t         _opcode;
     int             cycle_count = 0;
+    uint8_t         _opcode;
     Cpu*            _cpu;
     Serial*         _serial;
     Timer*          _timer;
     MMU*            _mmu;
     Ppu*            _ppu;
     InstructionSet* _instructions;
+    Interrupt*      _interrupt;
     SDL*            _sdl;
 
   public:
     GameBoy(const std::string file) {
+        // pass Interrupt here:
+        // TODO
         _cpu          = new Cpu();
         _mmu          = new MMU(file);
         _ppu          = new Ppu();

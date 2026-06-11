@@ -31,7 +31,7 @@ void Ppu::hblank_handler() {
  *
  * @param[in]: address of selected tile map
  */
-void Ppu::update_framebuff(uint16_t addr) {
+void Ppu::bg_update_framebuff(uint16_t addr) {
     for (int x = 0; x <= 159; x++) {
         uint8_t _scy         = _mmu->read8(0xFF42);
         uint8_t _scx         = _mmu->read8(0xFF43);
@@ -71,16 +71,28 @@ void Ppu::update_framebuff(uint16_t addr) {
     }
 }
 
+void Ppu::win_update_framebuff(uint16_t addr) {
+    return;
+}
+
 void Ppu::enter_mode_3() {
     LCDC = _mmu->read8(LCDC_ADDR);
-    if (LCDC & FLAG_BG_ENABLE) {
+    if (_f_flag == bg)
         /* checks the bg map from LCDC reg */
         if (!(LCDC & FLAG_BG_MAP)) {
-            update_framebuff(0x9800);
+            bg_update_framebuff(0x9800);
+
+        } else {
+            bg_update_framebuff(0x9C00);
         }
-    } else {
-        update_framebuff(0x9C00);
-    }
+    else
+        /* update window component */
+        if (!(LCDC & FLAG_BG_MAP)) {
+            // win_update_framebuff(0x9800);
+
+        } else {
+            // win_update_framebuff(0x9C00);
+        }
 }
 
 void Ppu::enter_mode_2() {
@@ -120,7 +132,7 @@ bool Ppu::frame_ready() const {
 
 void Ppu::dot_cycle(int t_cycle) {
     /* returns of LCDC flag is set to 0 */
-    LCDC = _mmu->read8(0xFF40);
+    LCDC = _mmu->read8(LCDC_ADDR);
     if ((LCDC & FLAG_LCD_ENABLE) == 0) {
         LY         = 0;
         _mode      = 0;
@@ -128,6 +140,14 @@ void Ppu::dot_cycle(int t_cycle) {
         return;
     }
     _dot_clock += t_cycle;
+
+    if ((LCDC & FLAG_WIN_ENABLE) && (LCDC & FLAG_BG_ENABLE))
+        _f_flag = win;
+    else if (!(LCDC & FLAG_WIN_ENABLE) && (LCDC & FLAG_BG_ENABLE))
+        _f_flag = bg;
+    else
+        _f_flag = obj;
+
     switch (_mode) {
     case 0: /* HBlank */
         if (_dot_clock >= 204) {
@@ -135,6 +155,7 @@ void Ppu::dot_cycle(int t_cycle) {
             LY += 1;
             if (LY == 144) {
                 _mode      = 1;
+                y_cond     = false;
                 can_render = true;
             } else {
                 _mode = 2;

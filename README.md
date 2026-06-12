@@ -5,17 +5,19 @@ Another GameBoy emulator written in C++.
 
 ---
 
-## Things that require immediate action
+## requires immediate action:
 - [X] Better interrupt handling
-- [X] Finishing Halt instruction
+- [X] Finish Halt instruction
 - [X] Test halt instruction
 - [X] Test IME Interrupt with blarrgs
+- [ ] Finish Timer 
 - [ ] Test interrupt
 
-## nted Features:
+## Milestones:
 - [X] CPU.
 - [X] Finish MMU.
 - [X] Boot rom rendering.
+- [] Finish timer
 - [ ] Finish Interrupt
 - [ ] Finish PPU.
 - [ ] CPU-PPU-TIMER sync.

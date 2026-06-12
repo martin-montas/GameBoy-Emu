@@ -34,10 +34,12 @@ class GameBoy {
     GameBoy(const std::string file) {
         // pass Interrupt here:
         // TODO
-        _cpu          = new Cpu();
-        _mmu          = new MMU(file);
-        _ppu          = new Ppu();
-        _sdl          = new SDL();
+        _cpu       = new Cpu();
+        _mmu       = new MMU(file);
+        _ppu       = new Ppu();
+        _sdl       = new SDL();
+        _interrupt = new Interrupt();
+
         _instructions = new InstructionSet(_mmu, _cpu);
         _mmu->attach(_ppu);
         _ppu->attach(_mmu);

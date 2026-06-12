@@ -12,14 +12,16 @@
  */
 void Ppu::hblank_handler() {
     /* checks if scan line has ended */
-    if (_dot_clock == 456) {
-        _dot_clock = 0;
-        LY += 1;
-        /* enters vblank */
-        if (LY == 144) {
-        } else if (LY == 154) {
-            /* enters new frame */
-            enter_mode_2();
+    if (_f_flag == bg) {
+        if (_dot_clock == 456) {
+            _dot_clock = 0;
+            LY += 1;
+            /* enters vblank */
+            if (LY == 144) {
+            } else if (LY == 154) {
+                /* enters new frame */
+                enter_mode_2();
+            }
         }
     }
 }
@@ -72,6 +74,9 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
 }
 
 void Ppu::win_update_framebuff(uint16_t addr) {
+    uint8_t WY = _mmu->read8(WY_ADDR);
+    uint8_t WX = _mmu->read8(WX_ADDR);
+
     return;
 }
 
@@ -87,11 +92,11 @@ void Ppu::enter_mode_3() {
         }
     else
         /* update window component */
-        if (!(LCDC & FLAG_BG_MAP)) {
-            // win_update_framebuff(0x9800);
+        if (!(LCDC & FLAG_WIN_MAP)) {
+            win_update_framebuff(0x9800);
 
         } else {
-            // win_update_framebuff(0x9C00);
+            win_update_framebuff(0x9C00);
         }
 }
 
@@ -101,8 +106,6 @@ void Ppu::enter_mode_2() {
      */
     return;
 }
-
-void Ppu::enter_mode_0() {}
 
 void Ppu::write_reg(uint8_t& data, uint16_t addr) {
     switch (addr & 0xF) {
@@ -143,6 +146,7 @@ void Ppu::dot_cycle(int t_cycle) {
 
     if ((LCDC & FLAG_WIN_ENABLE) && (LCDC & FLAG_BG_ENABLE))
         _f_flag = win;
+
     else if (!(LCDC & FLAG_WIN_ENABLE) && (LCDC & FLAG_BG_ENABLE))
         _f_flag = bg;
     else

@@ -28,18 +28,28 @@ void GameBoy::run() {
                 break;
             }
         }
-        _opcode = _mmu->read8(_cpu->PC);
-        if (!_cpu->ime_pending) {
+
+        if ((cpu->_ime) &&)
+
+            _opcode = _mmu->read8(_cpu->PC);
+        if (_cpu->ime_pending) {
+
             _instructions->execute(_opcode);
             int current_cycle = _cpu->opcode_cycles[_opcode];
+
             _cpu->cycle_count += current_cycle;
             _ppu->dot_cycle(current_cycle);
             if (_ppu->can_render) {
                 _sdl->frame_step(_ppu->frame_buff);
                 _ppu->clear_can_render();
+                // handle interrupts here.
             }
         } else {
-            _cpu->cycle_count += 4;
+            if (_cpu->halted) {
+                // check for interrupts here
+                _cpu->ime_pending = false;
+                _cpu->cycle_count += 4;
+            }
         }
     }
 }

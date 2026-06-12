@@ -10,6 +10,8 @@
 
 #define BGP_ADDR  0xFF47 // BGP palette (0xFF47)
 #define LCDC_ADDR 0xFF40
+#define WY_ADDR   0xFF4A
+#define WX_ADDR   0xFF4B
 
 #define WHITE      0x9A9E3F
 #define LIGHT_GRAY 0x496B22
@@ -64,7 +66,6 @@ class Ppu {
     void write_reg(uint8_t& data, uint16_t addr);
     void switch_mode(int mode);
     void render_frame();
-    void enter_mode_0();
 
   public:
     Ppu() : can_render(false), _mode(2), LY(0) {

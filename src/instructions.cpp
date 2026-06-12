@@ -284,7 +284,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x10: {
         // this one should be checked out
-        // printf("STOP 0x10 \n");
+        // printf("STOP 0x10 : shouldn't be IMPLEMENTED \n");
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -3438,6 +3438,7 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xFB: {
         // printf("EI\n");
         _cpu->ime_pending = true;
+        _cpu->_ime        = 1;
         _cpu->PC += 1;
         break;
     }

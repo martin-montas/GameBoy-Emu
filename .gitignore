@@ -4,8 +4,10 @@ todo.md
 ROM/
 test_runner
 .map
+dummy/
 .sym
 test/*
+test_repos/
 ./gameboy-todo.md
 test/a.out
 gameboy

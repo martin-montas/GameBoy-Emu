@@ -6,23 +6,29 @@
 #define SRC_INTERRUPT_HPP_
 
 #include <stdint.h>
+#include "interface-interrupt.hpp"
 
 #define IE 0xFFFF
 #define IF 0xFF0F
 
 enum Interrupt_Flags {
-    FLAG_JOY    = (1 << 4),
-    FLAG_SERIAL = (1 << 3),
-    FLAG_TIMER  = (1 << 2),
-    FLAG_LCD    = (1 << 1),
-    FLAG_VBLANK = 1,
+    INTERRUPT_JOY    = (1 << 4),
+    INTERRUPT_SERIAL = (1 << 3),
+    INTERRUPT_TIMER  = (1 << 2),
+    INTERRUPT_LCD    = (1 << 1),
+    INTERRUPT_VBLANK = 1,
 };
 
-class Interrupt {
-  private:
+class Interrupt : public IInterrupt {
+    uint8_t _IF = 0;
+
   public:
-    void request_interrupt(uint16_t addr);
-    void enable();
+    void request_interrupt(uint8_t interrupt_bit) override {
+        _IF |= (1 << interrupt_bit);
+    }
+
+  private:
+    uint8_t _IF;
 };
 
 #endif // SRC_INTERRUPT_HPP_

@@ -5,8 +5,3 @@
 
 #include "interrupt.hpp"
 #include <stdint.h>
-
-void Interrupt::request_interrupt(uint16_t addr, bool condition) {
-    if (condition) {
-    }
-}

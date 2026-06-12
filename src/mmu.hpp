@@ -11,6 +11,7 @@
 #include "serial.hpp"
 #include "timer.hpp"
 #include "ppu.hpp"
+#include "interrupt.hpp"
 
 #include <memory>
 #include <stdint.h>
@@ -29,41 +30,11 @@ using namespace std;
 class Ppu;
 
 class MMU : public SystemBus {
-  private:
-    std::unique_ptr<MBC> mbc;
-
-    /* @brief: These 2 objects are io registers that either synchronize
-     * the timing of each game or prints the  serial data.
-     */
-    Timer  timer;
-    Serial serial;
-    Ppu*   _ppu = nullptr;
-
-    uint8_t rom_bank = 1;
-
-    /*
-     * @brief: Based on the 0x147 byte of the rom
-     * file the gameboy goes in different  different
-     * mode where diffent type of RAM memory gets
-     * allocated and more.
-     */
-    void check_rom_type();
-
-    /* @brief: memory arrays initialize with zeroes
-     * each of them hold the amount of memory specified
-     * in the official pandocs website.
-     */
-    uint8_t HRAM[HRAM_SIZE]       = {};
-    uint8_t IRAM[IRAM_SIZE]       = {};
-    uint8_t VRAM[VRAM_SIZE]       = {};
-    uint8_t WRAM[WRAM_SIZE]       = {};
-    uint8_t OAM[OAM_SIZE]         = {};
-    uint8_t IO_REGISTERS[IO_SIZE] = {};
-    uint8_t EXTERNAL_RAM[8192]    = {};
-    uint8_t INTERRUPT[1]          = {};
-
-    // auto InterruptEnabled;
   public:
+    MMU(const std::string file, InterruptInterface& interrupt) : _interrupt(interrupt) {
+        load_rom(file);
+        // check_rom_type();
+    }
     /* @brief: holds rom data. the ROM Can have extra memory
      * given by its type which can be MBC0, MBC1 etc.
      */
@@ -75,12 +46,8 @@ class MMU : public SystemBus {
      * from ROM/RAM.
      *
      */
-    MMU(const std::string file) {
-        load_rom(file);
-        // check_rom_type();
-    }
 
-    void attach(Ppu* ppu) {
+    void attach(Ppu* ppu, Interrupt* interrupt) {
         _ppu = ppu;
     }
 
@@ -115,6 +82,41 @@ class MMU : public SystemBus {
      * @param[in]: File name that will be used as rom.
      */
     void load_rom(const std::string& filename);
+
+  private:
+    std::unique_ptr<MBC> mbc;
+
+    /* @brief: These 2 objects are io registers that either synchronize
+     * the timing of each game or prints the  serial data.
+     */
+    Timer      timer;
+    Serial     serial;
+    Ppu*       _ppu       = nullptr;
+    Interrupt* _interrupt = nullptr;
+
+    uint8_t rom_bank = 1;
+
+    /*
+     * @brief: Based on the 0x147 byte of the rom
+     * file the gameboy goes in different  different
+     * mode where diffent type of RAM memory gets
+     * allocated and more.
+     */
+    void check_rom_type();
+
+    /* @brief: memory arrays initialize with zeroes
+     * each of them hold the amount of memory specified
+     * in the official pandocs website.
+     */
+    uint8_t             HRAM[HRAM_SIZE]       = {};
+    uint8_t             IRAM[IRAM_SIZE]       = {};
+    uint8_t             VRAM[VRAM_SIZE]       = {};
+    uint8_t             WRAM[WRAM_SIZE]       = {};
+    uint8_t             OAM[OAM_SIZE]         = {};
+    uint8_t             IO_REGISTERS[IO_SIZE] = {};
+    uint8_t             EXTERNAL_RAM[8192]    = {};
+    uint8_t             INTERRUPT[1]          = {};
+    InterruptInterface& _interrupt;
 };
 
 #endif // SRC_MMU_HPP_

@@ -14,10 +14,6 @@ class MMU;
 class Cpu;
 class InstructionSet {
 
-  private:
-    Cpu*       _cpu;
-    SystemBus* _mmu;
-
   public:
     void step();
     void execute(uint8_t opcode);
@@ -110,5 +106,9 @@ class InstructionSet {
     void set5_extended(uint8_t& reg);
     void set6_extended(uint8_t& reg);
     void set7_extended(uint8_t& reg);
+
+  private:
+    Cpu*       _cpu;
+    SystemBus* _mmu;
 };
 #endif // SRC_INSTRUCTIONS_HPP_

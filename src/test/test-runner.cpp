@@ -7,9 +7,9 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "test-runner.hpp"
-#include "sst-bus.hpp"
-#include "cpu.hpp"
-#include "instructions.hpp"
+#include "../sst-bus.hpp"
+#include "../cpu.hpp"
+#include "../instructions.hpp"
 
 void TestRunner::run_cpu_test(const std::string file) {
     std::ifstream jsonFileStream(file);

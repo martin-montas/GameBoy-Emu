@@ -5,9 +5,9 @@
 #define SRC_TEST_RUNNER_HPP_
 
 #include <nlohmann/json.hpp>
-#include "cpu.hpp"
-#include "sst-bus.hpp"
-#include "instructions.hpp"
+#include "../cpu.hpp"
+#include "../sst-bus.hpp"
+#include "../instructions.hpp"
 
 using j = nlohmann::json;
 class TestRunner {

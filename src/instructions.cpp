@@ -3199,7 +3199,7 @@ void InstructionSet::execute(uint8_t opcode) {
         // TODO
         // printf("-- 0xD9 -- RETI NOT DONE \n");
         pop_(true, _cpu->PC);
-        _cpu->_ime = true;
+        _cpu->_ime = 1;
         // _cpu->PC += 1;
         break;
     }
@@ -3438,7 +3438,6 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xFB: {
         // printf("EI\n");
         _cpu->ime_pending = true;
-        _cpu->_ime        = 1;
         _cpu->PC += 1;
         break;
     }
@@ -3765,8 +3764,8 @@ void InstructionSet::cpl(uint8_t& reg) {
 }
 
 uint8_t _opcode;
-void    InstructionSet::step() {
 
+void InstructionSet::step() {
     if (_cpu->ime_pending) {
         _cpu->ime_pending = false;
         _cpu->_ime        = 1;

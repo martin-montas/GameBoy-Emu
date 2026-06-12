@@ -24,9 +24,8 @@ void GameBoy::interrupt_handler() {
         uint8_t l = _cpu->PC & 0xFF;
         _mmu->write8(_cpu->SP, l);
 
-        uint8_t vec       = _interrupt->get_interrupt_vector();
-        _cpu->ime_pending = false;
-        _cpu->PC          = vec;
+        uint8_t vec = _interrupt->get_interrupt_vector();
+        _cpu->PC    = vec;
     }
     _cpu->cycle_count += 20;
 }
@@ -47,29 +46,32 @@ void GameBoy::run() {
                 break;
             }
         }
-
-        if (((_interrupt->_IF & _interrupt->_IE) & 0x1f) != 0) {
-            _cpu->halted = false;
-            if (_cpu->_ime) {
-                _cpu->_ime = false;
-                interrupt_handler();
-                continue;
+        if (!_cpu->ime_pending) {
+            if (((_interrupt->_IF & _interrupt->_IE) & 0x1f) != 0) {
+                _cpu->halted = false;
+                if (_cpu->_ime) {
+                    interrupt_handler();
+                } else {
+                    step();
+                    continue;
+                }
             } else {
-                _opcode = _mmu->read8(_cpu->PC);
-                step();
+                if (_cpu->halted) {
+                    _cpu->cycle_count += 4;
+                } else {
+                    step();
+                    continue;
+                }
             }
         } else {
-            if (_cpu->halted) {
-                _cpu->cycle_count += 4;
-            } else {
-                _opcode = _mmu->read8(_cpu->PC);
-                step();
-            }
+            _cpu->ime_pending = false;
+            _cpu->_ime        = 1;
         }
     }
 }
 
 void GameBoy::step() {
+    _opcode = _mmu->read8(_cpu->PC);
     _instructions->execute(_opcode);
     int current_cycle = _cpu->opcode_cycles[_opcode];
     _cpu->cycle_count += current_cycle;

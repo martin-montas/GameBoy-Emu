@@ -37,13 +37,11 @@ class Cpu {
     void print_flags();
 
     RegisterFlags*       flags;
-    void                 step();
     std::vector<uint8_t> load_rom(const std::string& filename);
     uint32_t             execute_opcode(uint8_t opcode);
     void                 emulate_cycles(uint32_t cyclesToRun);
 
     bool halted = false;
-    void init_opcode_table();
 
     // t_cycles used
     const int opcode_cycles[256] = {

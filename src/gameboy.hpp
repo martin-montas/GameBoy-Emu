@@ -52,8 +52,7 @@ class GameBoy {
         // _instructions->post_boot_state();
     }
 
-    uint32_t calculateCyclesForFrame();
-    void     run();
-    void     step();
+    void        run();
+    inline void step();
 };
 #endif // SRC_GAME_BOY_HPP_

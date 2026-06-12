@@ -81,14 +81,12 @@ uint8_t MMU::read8(uint16_t addr) {
     } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
         return 0xFF;
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
-
         if (addr >= 0xFF01 && addr <= 0xFF02) {
             return serial.read(addr);
         } else if (addr >= 0xFF04 && addr <= 0xFF07) {
             return timer.read(addr);
-        } else if (addr == 0xFFFF || addr == 0xFF0F)
+        } else if (addr == 0xFF0F)
             return _interrupt->read(addr);
-
         else if (addr == 0xFF44) {
             // ppu returns here ly reg here
             return _ppu->read_ly();
@@ -98,6 +96,8 @@ uint8_t MMU::read8(uint16_t addr) {
 
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
         return this->HRAM[addr - 0xFF80];
+    } else if (addr == 0xFFFF) {
+        return _interrupt->read(addr);
     } else {
         printf("Readable memory access out of bounds: %X\n", addr);
         // exit(1);
@@ -141,6 +141,9 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
         OAM[addr - 0xFE00] = value;
         return;
+    } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
+        std::cout << "tried to write to forbidden\n";
+        return; // unused
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
             serial.write(addr, value);
@@ -148,10 +151,9 @@ void MMU::write8(uint16_t addr, uint8_t value) {
         } else if (addr >= 0xFF04 && addr <= 0xFF07) {
             timer.write(addr, value);
             return;
-        } else if (addr == 0xFFFF || addr == 0xFF0F) {
+        } else if (addr == 0xFF0F) {
             _interrupt->write(addr, value);
-        } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
-            return; // unused
+            return;
         } else {
             if (addr == 0xFF44) {
                 std::cout << "Cannot write to the 0xff44 memory\n";
@@ -162,6 +164,9 @@ void MMU::write8(uint16_t addr, uint8_t value) {
         }
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
         this->HRAM[addr - 0xFF80] = value;
+        return;
+    } else if (addr == 0xFFFF) {
+        _interrupt->write(addr, value);
         return;
     } else {
         printf("Writable memory access out of bounds: %X\n", addr);

@@ -29,10 +29,10 @@ class Interrupt : public IInterrupt {
     }
 
     uint8_t read(uint16_t addr) override {
-        if (addr == 0xFFFF)
+        if (addr == 0xFFFF) {
             return _IE;
-        else if (addr == 0xFF0F)
-            return _IF;
+        }
+        return _IF;
     }
     void write(uint16_t addr, uint8_t value) override {
         if (addr == 0xFFFF)

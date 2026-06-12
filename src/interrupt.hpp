@@ -28,6 +28,19 @@ class Interrupt : public IInterrupt {
         _IF |= (1 << interrupt_bit);
     }
 
+    uint8_t read(uint16_t addr) override {
+        if (addr == 0xFFFF)
+            return _IE;
+        else if (addr == 0xFF0F)
+            return _IF;
+    }
+    void write(uint16_t addr, uint8_t value) override {
+        if (addr == 0xFFFF)
+            _IE = value;
+        else if (addr == 0xFF0F)
+            _IF = value;
+    }
+
     uint8_t get_interrupt_vector() {
         if ((IF & INTERRUPT_VBLANK) && (IE & INTERRUPT_VBLANK))
             return 0x0040;

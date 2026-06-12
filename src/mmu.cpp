@@ -86,7 +86,10 @@ uint8_t MMU::read8(uint16_t addr) {
             return serial.read(addr);
         } else if (addr >= 0xFF04 && addr <= 0xFF07) {
             return timer.read(addr);
-        } else if (addr == 0xFF44) {
+        } else if (addr == 0xFFFF || addr == 0xFF0F)
+            return _interrupt->read(addr);
+
+        else if (addr == 0xFF44) {
             // ppu returns here ly reg here
             return _ppu->read_ly();
         } else {
@@ -95,10 +98,6 @@ uint8_t MMU::read8(uint16_t addr) {
 
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
         return this->HRAM[addr - 0xFF80];
-    } else if (addr == 0xFFFF) {
-        // TODO:
-        // handle interrupt here: IE
-        return 0xFF;
     } else {
         printf("Readable memory access out of bounds: %X\n", addr);
         // exit(1);
@@ -149,6 +148,8 @@ void MMU::write8(uint16_t addr, uint8_t value) {
         } else if (addr >= 0xFF04 && addr <= 0xFF07) {
             timer.write(addr, value);
             return;
+        } else if (addr == 0xFFFF || addr == 0xFF0F) {
+            _interrupt->write(addr, value);
         } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
             return; // unused
         } else {
@@ -162,8 +163,6 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
         this->HRAM[addr - 0xFF80] = value;
         return;
-    } else if (addr == 0xFFFF) {
-
     } else {
         printf("Writable memory access out of bounds: %X\n", addr);
         // exit(1);

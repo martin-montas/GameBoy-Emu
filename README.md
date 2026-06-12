@@ -7,9 +7,9 @@ Another GameBoy emulator written in C++.
 
 ## Things that require immediate action
 - [X] Better interrupt handling
-- [X] finishing Halt instruction
-- [ ] test halt instruction
-- [ ] test interrupt
+- [X] Finishing Halt instruction
+- [ ] Test halt instruction
+- [ ] Test interrupt
 
 ## nted Features:
 - [X] CPU.

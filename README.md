@@ -10,6 +10,7 @@ Another GameBoy emulator written in C++.
 - [X] Finish Halt instruction
 - [X] Test halt instruction
 - [X] Test IME Interrupt with blarrgs
+- [ ] Blargg's  test
 - [ ] Finish Timer 
 - [ ] Test interrupt
 
@@ -22,4 +23,3 @@ Another GameBoy emulator written in C++.
 - [ ] Finish PPU.
 - [ ] CPU-PPU-TIMER sync.
 - [ ] Dmg Acid2 test rom.
-- [ ] Blargg's  test

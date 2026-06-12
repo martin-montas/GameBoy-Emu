@@ -3,24 +3,25 @@
 // Author: Martin Montas, martinmontas1@gmail.com
 //
 #include "timer.hpp"
+#include "interface-interrupt.hpp"
 #include <stddef.h>
 #include <stdint.h>
 // Timer::Timer() {}
-int Timer::get_time_frequency() {
-    switch ((_tac) & 0b11) {
-    case 0x00: {
+int Timer::clock_speed() {
+    switch (_tac & 0b11) {
+    case 0: {
         return curr_frequency = 1024;
         break;
     }
-    case 0x01: {
+    case 1: {
         return curr_frequency = 16;
         break;
     }
-    case 0x02: {
+    case 2: {
         return curr_frequency = 64;
         break;
     }
-    case 0x03: {
+    case 3: {
         return curr_frequency = 256;
         break;
     }
@@ -69,30 +70,29 @@ uint8_t Timer::read(uint16_t addr) {
     }
     return 0x00;
 }
-void Timer::tick(int cycles) {
-    _div_counter += cycles;
-    while (_div_counter >= 256) {
-        _div++;
-        _div_counter -= 256;
+
+void Timer::tick(int cycle) {
+    // TODO: finish the timer here:
+    int threshold = clock_speed();
+    _acc += cycle;
+
+    while (_acc >= threshold) {
+        _acc -= threshold;
+        _div_counter += 1;
+    }
+    if (_tac & 0b100) {
+        if (threshold != -1) {
+            while (_tima_accumulator >= threshold) {
+                _tima_accumulator -= threshold;
+                _tima = _tima + 1;
+                if (_tima == 0x00) {
+                    _tima = _tma;
+                }
+                if (_tima == 0xFF) {
+                    _tima = _tima + 1;
+                    _interrupt->request_interrupt(INTERRUPT_TIMER);
+                }
+            }
+        }
     }
 }
-
-// void Timer::tick(int cycle) {
-//   _div_counter += cycle;
-//   bool timer_enabled = _tac & 0b100;
-//   if (timer_enabled) {
-//     _tima_accumulator += cycle;
-//     int threshold = this->get_time_frequency();
-//     if (threshold != -1) {
-//       while (_tima_accumulator >= threshold) {
-//         _tima_accumulator -= threshold;
-//         _tima = _tima + 1;
-//         if (_tima == 0x00) {
-//           _tima = _tma;
-//           // TODO:
-//           // request_interrupt()
-//         }
-//       }
-//     }
-//   }
-//}

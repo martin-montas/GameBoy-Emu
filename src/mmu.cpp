@@ -84,7 +84,7 @@ uint8_t MMU::read8(uint16_t addr) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
             return serial.read(addr);
         } else if (addr >= 0xFF04 && addr <= 0xFF07) {
-            return timer.read(addr);
+            return _timer->read(addr);
         } else if (addr == 0xFF0F)
             return _interrupt->read(addr);
         else if (addr == 0xFF44) {
@@ -142,14 +142,13 @@ void MMU::write8(uint16_t addr, uint8_t value) {
         OAM[addr - 0xFE00] = value;
         return;
     } else if (addr >= 0xFEA0 && addr <= 0xFEFF) {
-        std::cout << "tried to write to forbidden\n";
         return; // unused
     } else if (addr >= 0xFF00 && addr <= 0xFF7F) {
         if (addr >= 0xFF01 && addr <= 0xFF02) {
             serial.write(addr, value);
             return;
         } else if (addr >= 0xFF04 && addr <= 0xFF07) {
-            timer.write(addr, value);
+            _timer->write(addr, value);
             return;
         } else if (addr == 0xFF0F) {
             _interrupt->write(addr, value);

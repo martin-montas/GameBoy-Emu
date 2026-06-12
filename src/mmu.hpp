@@ -31,7 +31,8 @@ class Ppu;
 
 class MMU : public SystemBus {
   public:
-    MMU(const std::string file, IInterrupt* interrupt) : _interrupt(interrupt) {
+    MMU(const std::string file, Timer* timer, IInterrupt* interrupt)
+        : _timer(timer), _interrupt(interrupt) {
         load_rom(file);
         // check_rom_type();
     }
@@ -89,9 +90,9 @@ class MMU : public SystemBus {
     /* @brief: These 2 objects are io registers that either synchronize
      * the timing of each game or prints the  serial data.
      */
-    Timer       timer;
     Serial      serial;
     Ppu*        _ppu       = nullptr;
+    Timer*      _timer     = nullptr;
     IInterrupt* _interrupt = nullptr;
 
     uint8_t rom_bank = 1;

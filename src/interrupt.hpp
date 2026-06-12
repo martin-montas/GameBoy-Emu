@@ -11,21 +11,14 @@
 #define IE 0xFFFF
 #define IF 0xFF0F
 
-enum Interrupt_Flags {
-    INTERRUPT_JOYPAD = (1 << 4),
-    INTERRUPT_SERIAL = (1 << 3),
-    INTERRUPT_TIMER  = (1 << 2),
-    INTERRUPT_LCD    = (1 << 1),
-    INTERRUPT_VBLANK = 1,
-};
-
 class Interrupt : public IInterrupt {
 
   public:
     uint8_t _IF;
     uint8_t _IE;
-    void    request_interrupt(uint8_t interrupt_bit) override {
-        _IF |= (1 << interrupt_bit);
+
+    void request_interrupt(Interrupt_Flags flag) override {
+        _IF |= flag;
     }
 
     uint8_t read(uint16_t addr) override {
@@ -42,16 +35,17 @@ class Interrupt : public IInterrupt {
     }
 
     uint8_t get_interrupt_vector() {
-        if ((IF & INTERRUPT_VBLANK) && (IE & INTERRUPT_VBLANK))
+        if ((_IF & INTERRUPT_VBLANK) && (_IE & INTERRUPT_VBLANK)) {
             return 0x0040;
-        else if ((IF & INTERRUPT_LCD) && (IE & INTERRUPT_LCD))
+        } else if ((_IF & INTERRUPT_LCD) && (_IE & INTERRUPT_LCD)) {
             return 0x0048;
-        else if ((IF & INTERRUPT_TIMER) && (IE & INTERRUPT_TIMER))
+        } else if ((_IF & INTERRUPT_TIMER) && (_IE & INTERRUPT_TIMER)) {
             return 0x0048;
-        else if ((IF & INTERRUPT_SERIAL) && (IE & INTERRUPT_SERIAL))
+        } else if ((_IF & INTERRUPT_SERIAL) && (_IE & INTERRUPT_SERIAL)) {
             return 0x0050;
-        else
+        } else {
             return 0x0060;
+        }
     }
 
   private:

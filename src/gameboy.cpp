@@ -16,18 +16,17 @@ void GameBoy::unhalt() {}
 
 void GameBoy::interrupt_handler() {
     if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
-        // check for interrupts here
+        /* check for interrupts here */
         _cpu->SP -= 1;
         uint8_t h = _cpu->PC >> 8;
         _mmu->write8(_cpu->SP, h);
         _cpu->SP -= 1;
         uint8_t l = _cpu->PC & 0xFF;
         _mmu->write8(_cpu->SP, l);
-
         uint8_t vec = _interrupt->get_interrupt_vector();
         _cpu->PC    = vec;
+        _cpu->cycle_count += 20;
     }
-    _cpu->cycle_count += 20;
 }
 
 void GameBoy::run() {
@@ -76,6 +75,7 @@ void GameBoy::step() {
     int current_cycle = _cpu->opcode_cycles[_opcode];
     _cpu->cycle_count += current_cycle;
     _ppu->dot_cycle(current_cycle);
+    _timer->tick(current_cycle);
     if (_ppu->can_render) {
         _sdl->frame_step(_ppu->frame_buff);
         _ppu->clear_can_render();

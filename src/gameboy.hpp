@@ -39,7 +39,8 @@ class GameBoy {
         // TODO
         _interrupt = new Interrupt();
         _cpu       = new Cpu();
-        _mmu       = new MMU(file, _interrupt);
+        _timer     = new Timer(_interrupt);
+        _mmu       = new MMU(file, _timer, _interrupt);
         _ppu       = new Ppu();
         _sdl       = new SDL();
 

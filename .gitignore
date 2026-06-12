@@ -7,8 +7,8 @@ test_runner
 dummy/
 .sym
 test/*
-./gameboy-todo.md
-test/a.out
+gameboy-todo.md
+test_repos/
 gameboy
 out.txt
 src/*.gch

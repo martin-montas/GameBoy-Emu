@@ -18,7 +18,7 @@ Another GameBoy emulator written in C++.
 - [X] CPU.
 - [X] Finish MMU.
 - [X] Boot rom rendering.
-- [] Finish timer
+- [ ] Finish timer
 - [ ] Finish Interrupt
 - [ ] Finish PPU.
 - [ ] CPU-PPU-TIMER sync.

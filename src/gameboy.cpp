@@ -29,10 +29,8 @@ void GameBoy::run() {
             }
         }
 
-        if ((cpu->_ime) &&)
-
-            _opcode = _mmu->read8(_cpu->PC);
-        if (_cpu->ime_pending) {
+        _opcode = _mmu->read8(_cpu->PC);
+        if (!_cpu->ime_pending) {
 
             _instructions->execute(_opcode);
             int current_cycle = _cpu->opcode_cycles[_opcode];

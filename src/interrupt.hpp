@@ -20,7 +20,6 @@ enum Interrupt_Flags {
 };
 
 class Interrupt : public IInterrupt {
-    uint8_t _IF = 0;
 
   public:
     void request_interrupt(uint8_t interrupt_bit) override {

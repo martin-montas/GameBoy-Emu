@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include "mmu.hpp"
+#include "./interface-interrupt.hpp"
 #include "sdl-utils.hpp"
 
 #define BGP_ADDR  0xFF47 // BGP palette (0xFF47)
@@ -41,7 +42,8 @@ class MMU;
 
 class Ppu {
   private:
-    MMU*           _mmu = nullptr;
+    MMU*           _mmu       = nullptr;
+    IInterrupt*    _interrupt = nullptr;
     size_t         _dot_clock;
     size_t         _mode;
     uint8_t        LCDC;
@@ -76,9 +78,10 @@ class Ppu {
         }
     }
     ~Ppu();
-    void attach(MMU* mmu) {
-        _mmu   = mmu;
-        y_cond = false;
+    void attach(MMU* mmu, IInterrupt* interrupt) {
+        _mmu       = mmu;
+        _interrupt = interrupt;
+        y_cond     = false;
     }
 
     uint32_t frame_buff[HEIGHT * WIDTH];

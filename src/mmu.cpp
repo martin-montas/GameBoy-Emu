@@ -86,12 +86,10 @@ uint8_t MMU::read8(uint16_t addr) {
             return serial.read(addr);
         } else if (addr >= 0xFF04 && addr <= 0xFF07) {
             return timer.read(addr);
-        } else if ()
-            else if (addr == 0xFF44) {
-                // ppu returns here ly reg here
-                return _ppu->read_ly();
-            }
-        else {
+        } else if (addr == 0xFF44) {
+            // ppu returns here ly reg here
+            return _ppu->read_ly();
+        } else {
             return IO_REGISTERS[addr - 0xFF00];
         }
 

@@ -11,7 +11,7 @@
 #include "serial.hpp"
 #include "timer.hpp"
 #include "ppu.hpp"
-#include "interrupt.hpp"
+#include "./interface-interrupt.hpp"
 
 #include <memory>
 #include <stdint.h>
@@ -31,7 +31,7 @@ class Ppu;
 
 class MMU : public SystemBus {
   public:
-    MMU(const std::string file, InterruptInterface& interrupt) : _interrupt(interrupt) {
+    MMU(const std::string file, IInterrupt* interrupt) : _interrupt(interrupt) {
         load_rom(file);
         // check_rom_type();
     }
@@ -47,8 +47,9 @@ class MMU : public SystemBus {
      *
      */
 
-    void attach(Ppu* ppu, Interrupt* interrupt) {
-        _ppu = ppu;
+    void attach(Ppu* ppu, IInterrupt* interrupt) {
+        _ppu       = ppu;
+        _interrupt = interrupt;
     }
 
     /* @brief: methods made for memory operations:
@@ -89,10 +90,10 @@ class MMU : public SystemBus {
     /* @brief: These 2 objects are io registers that either synchronize
      * the timing of each game or prints the  serial data.
      */
-    Timer      timer;
-    Serial     serial;
-    Ppu*       _ppu       = nullptr;
-    Interrupt* _interrupt = nullptr;
+    Timer       timer;
+    Serial      serial;
+    Ppu*        _ppu       = nullptr;
+    IInterrupt* _interrupt = nullptr;
 
     uint8_t rom_bank = 1;
 
@@ -108,15 +109,14 @@ class MMU : public SystemBus {
      * each of them hold the amount of memory specified
      * in the official pandocs website.
      */
-    uint8_t             HRAM[HRAM_SIZE]       = {};
-    uint8_t             IRAM[IRAM_SIZE]       = {};
-    uint8_t             VRAM[VRAM_SIZE]       = {};
-    uint8_t             WRAM[WRAM_SIZE]       = {};
-    uint8_t             OAM[OAM_SIZE]         = {};
-    uint8_t             IO_REGISTERS[IO_SIZE] = {};
-    uint8_t             EXTERNAL_RAM[8192]    = {};
-    uint8_t             INTERRUPT[1]          = {};
-    InterruptInterface& _interrupt;
+    uint8_t HRAM[HRAM_SIZE]       = {};
+    uint8_t IRAM[IRAM_SIZE]       = {};
+    uint8_t VRAM[VRAM_SIZE]       = {};
+    uint8_t WRAM[WRAM_SIZE]       = {};
+    uint8_t OAM[OAM_SIZE]         = {};
+    uint8_t IO_REGISTERS[IO_SIZE] = {};
+    uint8_t EXTERNAL_RAM[8192]    = {};
+    uint8_t INTERRUPT[1]          = {};
 };
 
 #endif // SRC_MMU_HPP_

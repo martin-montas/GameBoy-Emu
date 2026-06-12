@@ -34,15 +34,16 @@ class GameBoy {
     GameBoy(const std::string file) {
         // pass Interrupt here:
         // TODO
+        _interrupt = new Interrupt();
         _cpu       = new Cpu();
-        _mmu       = new MMU(file);
+        _mmu       = new MMU(file, _interrupt);
         _ppu       = new Ppu();
         _sdl       = new SDL();
-        _interrupt = new Interrupt();
 
         _instructions = new InstructionSet(_mmu, _cpu);
-        _mmu->attach(_ppu);
-        _ppu->attach(_mmu);
+
+        _mmu->attach(_ppu, _interrupt);
+        _ppu->attach(_mmu, _interrupt);
 
         emulationRunning = true;
         // _instructions->post_boot_state();

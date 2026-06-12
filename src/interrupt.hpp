@@ -12,7 +12,7 @@
 #define IF 0xFF0F
 
 enum Interrupt_Flags {
-    INTERRUPT_JOY    = (1 << 4),
+    INTERRUPT_JOYPAD = (1 << 4),
     INTERRUPT_SERIAL = (1 << 3),
     INTERRUPT_TIMER  = (1 << 2),
     INTERRUPT_LCD    = (1 << 1),
@@ -22,12 +22,26 @@ enum Interrupt_Flags {
 class Interrupt : public IInterrupt {
 
   public:
-    void request_interrupt(uint8_t interrupt_bit) override {
+    uint8_t _IF;
+    uint8_t _IE;
+    void    request_interrupt(uint8_t interrupt_bit) override {
         _IF |= (1 << interrupt_bit);
     }
 
+    uint8_t get_interrupt_vector() {
+        if ((IF & INTERRUPT_VBLANK) && (IE & INTERRUPT_VBLANK))
+            return 0x0040;
+        else if ((IF & INTERRUPT_LCD) && (IE & INTERRUPT_LCD))
+            return 0x0048;
+        else if ((IF & INTERRUPT_TIMER) && (IE & INTERRUPT_TIMER))
+            return 0x0048;
+        else if ((IF & INTERRUPT_SERIAL) && (IE & INTERRUPT_SERIAL))
+            return 0x0050;
+        else
+            return 0x0060;
+    }
+
   private:
-    uint8_t _IF;
 };
 
 #endif // SRC_INTERRUPT_HPP_

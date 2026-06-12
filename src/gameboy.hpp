@@ -30,6 +30,9 @@ class GameBoy {
     Interrupt*      _interrupt;
     SDL*            _sdl;
 
+    void interrupt_handler();
+    void unhalt();
+
   public:
     GameBoy(const std::string file) {
         // pass Interrupt here:
@@ -42,7 +45,7 @@ class GameBoy {
 
         _instructions = new InstructionSet(_mmu, _cpu);
 
-        _mmu->attach(_ppu, _interrupt);
+        _mmu->attach(_ppu);
         _ppu->attach(_mmu, _interrupt);
 
         emulationRunning = true;

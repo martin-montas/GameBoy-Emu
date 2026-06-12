@@ -41,6 +41,29 @@ enum bgwin_priority {
 class MMU;
 
 class Ppu {
+  public:
+    Ppu() : can_render(false), _mode(2), LY(0) {
+        /* initilizes  frame buffer */
+        for (int i = 0; i < WIDTH * HEIGHT; i++) {
+            frame_buff[i] = 0xFF000000; // black
+        }
+    }
+    ~Ppu();
+    void attach(MMU* mmu, IInterrupt* interrupt) {
+        _mmu       = mmu;
+        _interrupt = interrupt;
+        y_cond     = false;
+    }
+
+    uint32_t frame_buff[HEIGHT * WIDTH];
+    bool     frame_ready() const;
+    void     dot_cycle(int t_cycle);
+    void     clear_can_render() {
+        can_render = false;
+    }
+    bool    can_render;
+    uint8_t read_ly();
+
   private:
     MMU*           _mmu       = nullptr;
     IInterrupt*    _interrupt = nullptr;
@@ -68,29 +91,5 @@ class Ppu {
     void write_reg(uint8_t& data, uint16_t addr);
     void switch_mode(int mode);
     void render_frame();
-
-  public:
-    Ppu() : can_render(false), _mode(2), LY(0) {
-
-        /* initilizes  frame buffer */
-        for (int i = 0; i < WIDTH * HEIGHT; i++) {
-            frame_buff[i] = 0xFF000000; // black
-        }
-    }
-    ~Ppu();
-    void attach(MMU* mmu, IInterrupt* interrupt) {
-        _mmu       = mmu;
-        _interrupt = interrupt;
-        y_cond     = false;
-    }
-
-    uint32_t frame_buff[HEIGHT * WIDTH];
-    bool     frame_ready() const;
-    void     dot_cycle(int t_cycle);
-    void     clear_can_render() {
-        can_render = false;
-    }
-    bool    can_render;
-    uint8_t read_ly();
 };
 #endif // SRC_PPU_HPP_

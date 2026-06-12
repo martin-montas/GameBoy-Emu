@@ -19,7 +19,7 @@ enum RegisterFlags {
 };
 
 using namespace std;
-class Cpu {
+class Cpu : {
   private:
     uint32_t cycle;
     uint32_t globalCycles;

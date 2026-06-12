@@ -47,9 +47,8 @@ class MMU : public SystemBus {
      *
      */
 
-    void attach(Ppu* ppu, IInterrupt* interrupt) {
-        _ppu       = ppu;
-        _interrupt = interrupt;
+    void attach(Ppu* ppu) {
+        _ppu = ppu;
     }
 
     /* @brief: methods made for memory operations:

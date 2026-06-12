@@ -7,7 +7,6 @@ test_runner
 dummy/
 .sym
 test/*
-test_repos/
 ./gameboy-todo.md
 test/a.out
 gameboy

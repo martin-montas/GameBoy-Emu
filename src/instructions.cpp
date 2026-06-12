@@ -459,7 +459,6 @@ void InstructionSet::execute(uint8_t opcode) {
             if (_cpu->F & FLAG_CARRY)
                 correction |= 0x60;
         }
-        // TODO
         if (_cpu->F & FLAG_SUBTRACT)
             _cpu->A -= correction;
         else
@@ -619,7 +618,6 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x3D: {
-        // printf("DEC A TODO\n");
         dec(_cpu->A);
         _cpu->PC = _cpu->PC + 1;
         break;
@@ -3196,8 +3194,7 @@ void InstructionSet::execute(uint8_t opcode) {
         return;
     }
     case 0xD9: {
-        // TODO
-        // printf("-- 0xD9 -- RETI NOT DONE \n");
+        // printf("-- 0xD9 -- \n");
         pop_(true, _cpu->PC);
         _cpu->_ime = 1;
         // _cpu->PC += 1;

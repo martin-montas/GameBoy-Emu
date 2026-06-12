@@ -35,8 +35,6 @@ class GameBoy {
 
   public:
     GameBoy(const std::string file) {
-        // pass Interrupt here:
-        // TODO
         _interrupt = new Interrupt();
         _cpu       = new Cpu();
         _timer     = new Timer(_interrupt);

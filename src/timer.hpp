@@ -14,19 +14,18 @@
 enum TAC_TIMER_CONTROL : uint8_t { TIMER_0 = 0b00, TIMER_1 = 0b01, TIMER_2 = 0b10, TIMER_3 = 0b11 };
 
 class Timer : public Device {
-
-    uint16_t    _div_counter;   /* Divider counter */
     uint8_t     _tma;           /* Timer reload controller */
     uint8_t     _tima;          /* Current tima register */
-    uint8_t     _tac;           /* Timer control register */
     uint16_t    _div;           /* Div register */
-    int         _acc;           /* Used for syncing */
+    int         _div_acc;       /* Used for syncing */
+    int         _tima_acc;      /* Used for syncing */
     IInterrupt* _interrupt;     /* pointer to interrupt object */
     int         curr_frequency; /* used for getting frequency t cycles */
+    uint8_t     _tac;           /* Timer control register */
 
   public:
-    Timer(IInterrupt* interrupt)
-        : _div(0), _tima(0), _tma(0), _tac(0), _div_counter(0), _interrupt(interrupt), _acc(0) {}
+    explicit Timer(IInterrupt* interrupt)
+        : _div(0), _tima(0), _tma(0), _tac(0), _interrupt(interrupt), _div_acc(0), _tima_acc(0) {}
 
     /*
      * @brief: this happens every iteration of the game loop
@@ -64,7 +63,6 @@ class Timer : public Device {
      * @return: Retuns the given timing register.
      */
     uint8_t read(uint16_t addr);
-
     uint8_t write(uint16_t addr);
 };
 

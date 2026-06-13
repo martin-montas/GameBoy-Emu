@@ -18,28 +18,28 @@
 
 /*
  * @brief: starts the main GameBoy components and runs most of
- * subsystems. its the main class for the whole game
+ * subsystems. its the main class for the whole game.
  */
 class GameBoy {
     Cpu*       _cpu;             /* pointer to cpu object */
     Serial*    _serial;          /* pointer to serial object */
     Timer*     _timer;           /* pointer to timer object */
-    MMU*       _mmu;             /* pointer to mmu object */
+    Mmu*       _mmu;             /* pointer to mmu object */
     Ppu*       _ppu;             /* pointer to ppu object */
     Interrupt* _interrupt;       /* pointer to interrupt object */
     SDL*       _sdl;             /* pointer to SDL2 object */
     bool       emulationRunning; /* bool to emulator running state */
-    int        cycle_count = 0;
-    uint8_t    _opcode;
+    int        cycle_count = 0;  /* counter to CPU's T cycles */
+    uint8_t    _opcode;          /* current instruction */
 
     void interrupt_handler();
     void unhalt();
 
   public:
-    GameBoy(const std::string file) {
+    explicit GameBoy(const std::string file) {
         _interrupt = new Interrupt();
         _timer     = new Timer(_interrupt);
-        _mmu       = new MMU(file, _timer, _interrupt);
+        _mmu       = new Mmu(file, _timer, _interrupt);
         _ppu       = new Ppu();
         _sdl       = new SDL();
         _cpu       = new Cpu(_ppu, _timer, _sdl, _mmu, _interrupt);

@@ -12,8 +12,6 @@
 #include <cstdio>
 #include <stdint.h>
 
-void GameBoy::unhalt() {}
-
 void GameBoy::run() {
     _sdl->init();
     while (_sdl->display_running) {

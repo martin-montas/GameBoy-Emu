@@ -29,7 +29,7 @@
 //   }
 // }
 
-void MMU::load_rom(const std::string& filename) {
+void Mmu::load_rom(const std::string& filename) {
     std::ifstream     file(filename, std::ios::binary);
     const size_t      chunk_size = 1024;
     std::vector<char> chunk(chunk_size);
@@ -42,13 +42,13 @@ void MMU::load_rom(const std::string& filename) {
     }
 }
 
-uint16_t MMU::read16(uint16_t addr) {
+uint16_t Mmu::read16(uint16_t addr) {
     uint8_t low_byte  = read8(addr);
     uint8_t high_byte = read8(addr + 1);
     return (high_byte << 8) | low_byte;
 }
 
-uint8_t MMU::read8(uint16_t addr) {
+uint8_t Mmu::read8(uint16_t addr) {
     // 0000-00FF  Boot ROM (while enabled)
     // 0100-3FFF  ROM bank 0
     // 4000-7FFF  ROM bank n
@@ -105,7 +105,7 @@ uint8_t MMU::read8(uint16_t addr) {
     return 0xFF;
 }
 
-void MMU::write8(uint16_t addr, uint8_t value) {
+void Mmu::write8(uint16_t addr, uint8_t value) {
     // 0000-00FF  Boot ROM (while enabled)
     // 0100-3FFF  ROM bank 0
     // 4000-7FFF  ROM bank n
@@ -173,7 +173,7 @@ void MMU::write8(uint16_t addr, uint8_t value) {
     }
 }
 
-void MMU::write16(uint16_t addr, uint16_t value) {
+void Mmu::write16(uint16_t addr, uint16_t value) {
     uint8_t low_byte  = value & 0xFF;
     uint8_t high_byte = (value >> 8) & 0xFF;
     write8(addr, low_byte);

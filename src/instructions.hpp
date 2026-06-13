@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <stdint.h>
 
-class MMU;
+class Mmu;
 class Cpu;
 /*
  * @brief: Holds the implementation of the
@@ -19,11 +19,11 @@ class Cpu;
  * in 2 files.
  */
 class InstructionSet {
-    MMU* _mmu; /* object to mem class */
+    Mmu* _mmu; /* object to mem class */
     Cpu* _cpu; /* object to cpu class */
 
   public:
-    InstructionSet(MMU* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
+    InstructionSet(Mmu* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
 
         /* initializes regs */
         pre_boot_state();

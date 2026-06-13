@@ -8,7 +8,7 @@
 #include <stdint.h>
 // Timer::Timer() {}
 int Timer::clock_speed() {
-    switch (_tac & 0b11) {
+    switch (_tac & 0x03) {
     case 0: {
         return curr_frequency = 1024;
         break;
@@ -35,10 +35,8 @@ void Timer::write(uint16_t addr, uint8_t value) {
         /*
          * Writing any value to DIV resets it.
          */
-        _div         = 0;
-        _div_counter = 0;
+        _div = 0;
         break;
-
     case 0xFF05:
         _tima = value;
         break;
@@ -72,26 +70,24 @@ uint8_t Timer::read(uint16_t addr) {
 }
 
 void Timer::tick(int cycle) {
-    // TODO: finish the timer here:
-    int threshold = clock_speed();
-    _acc += cycle;
-
-    while (_acc >= threshold) {
-        _acc -= threshold;
-        _div_counter += 1;
+    // TODO: you are here!!
+    _div_acc += cycle;
+    if (_div_acc == 256) {
+        _div_acc -= 256;
+        _div += 1;
     }
-    if (_tac & 0b100) {
-        if (threshold != -1) {
-            while (_tima >= threshold) {
-                _tima -= threshold;
-                _tima = _tima + 1;
-                if (_tima == 0x00) {
-                    _tima = _tma;
-                }
-                if (_tima == 0xFF) {
-                    _tima = _tima + 1;
-                    _interrupt->request_interrupt(INTERRUPT_TIMER);
-                }
+    _tima_acc += cycle;
+
+    /* checks if TIMA is enabled */
+    if (_tac & 0x04) {
+        int speed = clock_speed();
+        if (_tima_acc >= speed) {
+            _tima_acc -= speed;
+            _tima += 1;
+            if (_tima == _tma) {
+                _tima = 0;
+                /* request interrupt */
+                _interrupt->request_interrupt(INTERRUPT_TIMER);
             }
         }
     }

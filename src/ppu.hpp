@@ -9,7 +9,7 @@
 #include "./interface-interrupt.hpp"
 #include "sdl-utils.hpp"
 
-#define BGP_ADDR  0xFF47 // BGP palette (0xFF47)
+#define BGP_ADDR  0xFF47
 #define LCDC_ADDR 0xFF40
 #define WY_ADDR   0xFF4A
 #define WX_ADDR   0xFF4B
@@ -20,28 +20,40 @@
 #define BLACK      0x1B2A09
 #define SCALE      4
 
+/*
+ * @brief: helper fot the lcdc flag.
+ * Can get/set bits for the
+ * lcd register.
+ */
 enum LCDFlag {
-    FLAG_LCD_ENABLE = (1 << 7),
-    FLAG_WIN_MAP    = (1 << 6),
-    FLAG_WIN_ENABLE = (1 << 5),
+    FLAG_LCD_ENABLE = (1 << 7), /* checks if lcd should be on */
+    FLAG_WIN_MAP    = (1 << 6), /* says which map should window use*/
+    FLAG_WIN_ENABLE = (1 << 5), /* checks window memember off/on */
     FLAG_BG_AREA    = (1 << 4),
-    FLAG_BG_MAP     = (1 << 3),
-    FLAG_OBJ_SIZE   = (1 << 2),
-    FLAG_OBJ_ENABLE = (1 << 1),
-    FLAG_BG_ENABLE  = 1
+    FLAG_BG_MAP     = (1 << 3), /* says which map should bg use */
+    FLAG_OBJ_SIZE   = (1 << 2), /* checks sprites (oam) size */
+    FLAG_OBJ_ENABLE = (1 << 1), /* whether the sprites are enabled */
+    FLAG_BG_ENABLE  = 1         /* checks whether background is enabled */
 };
 
+/*
+ * @brief: use to know current type of
+ * lcd members should be rendered at a
+ * given moment.
+ */
 enum bgwin_priority {
-    bg  = 0,
-    win = 1,
-    obj = 2
-
+    bg  = 0, /* background member */
+    win = 1, /* window member */
+    obj = 2  /* sprite oam member */
 };
 
-class MMU;
+class Mmu;
+/*
+ * @brief: deals with pixels rendering and lcd related
+ * registers from  the game boy.
+ */
 class Ppu {
-
-    MMU*           _mmu;       /* pointer to memory object */
+    Mmu*           _mmu;       /* pointer to memory object */
     IInterrupt*    _interrupt; /* pointer to interrupt */
     size_t         _dot_clock; /* updates the t cycles */
     size_t         _mode;      /* updates to current mode */
@@ -51,21 +63,28 @@ class Ppu {
     bool           y_cond;
 
   public:
-    Ppu() : can_render(false), _mode(2), LY(0) {
-
+    inline explicit Ppu() : can_render(false), _mode(2), LY(0) {
         /* updates frame buffer to black */
         for (int i = 0; i < WIDTH * HEIGHT; i++) {
             frame_buff[i] = 0xFF000000; // black
         }
     }
     ~Ppu();
-    /* gets interrupt object */
-    void attach(MMU* mmu, IInterrupt* interrupt) {
+    /*
+     * @brief: gets interrupt object for later use.
+     * @param[in]: mmu object pointer.
+     * @param[in] interrupt object pointer.
+     */
+    inline void attach(Mmu* mmu, IInterrupt* interrupt) {
         _mmu       = mmu;
         _interrupt = interrupt;
         y_cond     = false;
     }
 
+    /*
+     * @brief: frame buffer used on every vblank
+     * mode of the ppu. the size its 160x144
+     */
     uint32_t frame_buff[HEIGHT * WIDTH];
     bool     frame_ready() const;
     void     dot_cycle(int t_cycle);
@@ -77,19 +96,18 @@ class Ppu {
     uint8_t read_ly();
 
     /*
-     * @brief: this happens on mode 3 of the ppu.
-     * where the value at 0xFF40 is read and
+     * @brief: handles each each mode
+     * seperately since the ppu for the
+     * gameboy is based on modes.
+     * @param[in] current T cycle.
      */
     void mode_handler(int t_cycle);
-
     void enter_mode_3();
     void enter_mode_2();
     void hblank_handler();
     void bg_update_framebuff(uint16_t addr);
     void win_update_framebuff(uint16_t addr);
 
-    // do something like this
-    // uint8_t read_reg(uint8_t& data, uint16_t addr);
     void write_reg(uint8_t& data, uint16_t addr);
     void switch_mode(int mode);
     void render_frame();

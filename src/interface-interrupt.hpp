@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 
+/*
+ * @brief: helper for interrupt bitwise
+ * operations. used for both: the interrupt
+ * flag and the interrupt enable registers
+ */
 enum Interrupt_Flags {
     INTERRUPT_JOYPAD = (1 << 4),
     INTERRUPT_SERIAL = (1 << 3),
@@ -10,6 +15,11 @@ enum Interrupt_Flags {
     INTERRUPT_LCD    = (1 << 1),
     INTERRUPT_VBLANK = 1,
 };
+
+/*
+ * @brief: interrupt interface, where most of its members
+ * get inmplemented by the actual interrupt class.
+ */
 class IInterrupt {
   public:
     virtual ~IInterrupt()                                         = default;

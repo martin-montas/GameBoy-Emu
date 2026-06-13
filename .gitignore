@@ -12,6 +12,7 @@ test_repos/
 gameboy
 out.txt
 src/*.gch
+*.vim
 SameBoy
 gameboy-doctor/
 dmg_boot.bin

@@ -7,21 +7,29 @@
 
 #include <SDL2/SDL.h>
 
+/* sdl window dimentions */
 #define WIDTH  160
 #define HEIGHT 144
 
+/*
+ * @brief: sdl2 helper class. does rendering and
+ * event type management.
+ */
 class SDL {
-  private:
-    SDL_Renderer* renderer;
-    SDL_Surface*  screen;
-    SDL_Texture*  texture;
-    SDL_Window*   window;
+    SDL_Renderer* renderer; /* render to the screen */
+    SDL_Surface*  screen;   /* screen to write to */
+    SDL_Texture*  texture;  /* deals with textures */
+    SDL_Window*   window;   /* window to display */
 
   public:
     SDL_Event event;
     void      init();
-    void      frame_step(uint32_t* frame_buff);
-    bool      display_running;
+    /*
+     * @brief: Updates frames per vblank
+     * @param[in]: pointer  to frame buffer
+     */
+    void frame_step(uint32_t* frame_buff);
+    bool display_running;
 
     ~SDL();
 };

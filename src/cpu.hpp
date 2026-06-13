@@ -15,7 +15,11 @@
 #include "ppu.hpp"
 #include "sdl-utils.hpp"
 #include "timer.hpp"
-
+/*
+ * @brief: helper for the CPU's F flag.
+ * can be used for getting and settings
+ * its bit accordinly.
+ */
 enum RegisterFlags {
     FLAG_ZERO       = (1 << 7),
     FLAG_SUBTRACT   = (1 << 6),
@@ -26,8 +30,7 @@ enum RegisterFlags {
  * @brief: Holds the collection of instructions for the z80-like
  * cpu in the family of the 8080 by intel.
  */
-
-class MMU;
+class Mmu;
 class Ppu;
 class Timer;
 class SDL;
@@ -36,11 +39,10 @@ class InstructionSet;
 
 using namespace std;
 class Cpu {
-  private:
     Ppu*            _ppu;         /* pointer to ppu object */
     Timer*          _timer;       /* pointer to timer object */
     SDL*            _sdl;         /* pointer to sdl object */
-    MMU*            _mmu;         /* pointer to mmu object */
+    Mmu*            _mmu;         /* pointer to mmu object */
     uint32_t        _cycle;       /* current cycle */
     InstructionSet* _instruction; /* pointer to instruction */
 
@@ -50,12 +52,8 @@ class Cpu {
     uint16_t    PC;                  /* program counter register */
     uint16_t    SP;                  /* stack pointer register */
     bool        ime_pending = false; /* helper for ime flag */
-
-    uint32_t cycle_count;
-
-    // _cpu       = new Cpu(_ppu, _timer, _sdl, _interrupt);
-
-    Cpu(Ppu* ppu, Timer* timer, SDL* sdl, MMU* mmu, IInterrupt* interrupt);
+    uint32_t    cycle_count;
+    Cpu(Ppu* ppu, Timer* timer, SDL* sdl, Mmu* mmu, IInterrupt* interrupt);
 
     void step(uint8_t cycle_count);
     bool is_flag_set(uint8_t flag);

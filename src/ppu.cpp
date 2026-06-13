@@ -81,10 +81,10 @@ void Ppu::win_update_framebuff(uint16_t addr) {
 }
 
 void Ppu::enter_mode_3() {
-    LCDC = _mmu->read8(LCDC_ADDR);
+    _LCDC = _mmu->read8(LCDC_ADDR);
     if (_f_flag == bg)
-        /* checks the bg map from LCDC reg */
-        if (!(LCDC & FLAG_BG_MAP)) {
+        /* checks the bg map from _LCDC reg */
+        if (!(_LCDC & FLAG_BG_MAP)) {
             bg_update_framebuff(0x9800);
 
         } else {
@@ -92,7 +92,7 @@ void Ppu::enter_mode_3() {
         }
     else
         /* update window component */
-        if (!(LCDC & FLAG_WIN_MAP)) {
+        if (!(_LCDC & FLAG_WIN_MAP)) {
             win_update_framebuff(0x9800);
 
         } else {
@@ -134,9 +134,9 @@ bool Ppu::frame_ready() const {
 }
 
 void Ppu::dot_cycle(int t_cycle) {
-    /* returns of LCDC flag is set to 0 */
-    LCDC = _mmu->read8(LCDC_ADDR);
-    if ((LCDC & FLAG_LCD_ENABLE) == 0) {
+    /* returns of _LCDC flag is set to 0 */
+    _LCDC = _mmu->read8(LCDC_ADDR);
+    if ((_LCDC & FLAG_LCD_ENABLE) == 0) {
         LY         = 0;
         _mode      = 0;
         _dot_clock = 0;
@@ -144,10 +144,10 @@ void Ppu::dot_cycle(int t_cycle) {
     }
     _dot_clock += t_cycle;
 
-    if ((LCDC & FLAG_WIN_ENABLE) && (LCDC & FLAG_BG_ENABLE))
+    if ((_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_BG_ENABLE))
         _f_flag = win;
 
-    else if (!(LCDC & FLAG_WIN_ENABLE) && (LCDC & FLAG_BG_ENABLE))
+    else if (!(_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_BG_ENABLE))
         _f_flag = bg;
     else
         _f_flag = obj;

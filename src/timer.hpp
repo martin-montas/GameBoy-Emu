@@ -7,16 +7,26 @@
 
 #include <stdint.h>
 #include "./interface-interrupt.hpp"
+#include "device.hpp"
 
 #define TAC_SELECT 0b11
 
 enum TAC_TIMER_CONTROL : uint8_t { TIMER_0 = 0b00, TIMER_1 = 0b01, TIMER_2 = 0b10, TIMER_3 = 0b11 };
 
-class Timer {
+class Timer : public Device {
+
+    uint16_t    _div_counter;   /* Divider counter */
+    uint8_t     _tma;           /* Timer reload controller */
+    uint8_t     _tima;          /* Current tima register */
+    uint8_t     _tac;           /* Timer control register */
+    uint16_t    _div;           /* Div register */
+    int         _acc;           /* Used for syncing */
+    IInterrupt* _interrupt;     /* pointer to interrupt object */
+    int         curr_frequency; /* used for getting frequency t cycles */
+
   public:
     Timer(IInterrupt* interrupt)
-        : _sb(0), _div(0), _sc(0), _tima(0), _tma(0), _tac(0), _tima_accumulator(0),
-          _div_counter(0), _interrupt(interrupt), _acc(0) {}
+        : _div(0), _tima(0), _tma(0), _tac(0), _div_counter(0), _interrupt(interrupt), _acc(0) {}
 
     /*
      * @brief: this happens every iteration of the game loop
@@ -56,18 +66,6 @@ class Timer {
     uint8_t read(uint16_t addr);
 
     uint8_t write(uint16_t addr);
-
-  private:
-    uint8_t     _sb;
-    uint8_t     _sc;
-    uint8_t     _tima;
-    uint8_t     _tma;
-    uint8_t     _tac;
-    uint16_t    _div;
-    uint8_t     _tima_accumulator;
-    uint16_t    _div_counter;
-    IInterrupt* _interrupt;
-    int         curr_frequency;
-    int         _acc;
 };
+
 #endif // !SRC_TIMER_HPP_

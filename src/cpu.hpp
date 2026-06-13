@@ -10,6 +10,11 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include "instructions.hpp"
+#include "interface-interrupt.hpp"
+#include "ppu.hpp"
+#include "sdl-utils.hpp"
+#include "timer.hpp"
 
 enum RegisterFlags {
     FLAG_ZERO       = (1 << 7),
@@ -17,20 +22,42 @@ enum RegisterFlags {
     FLAG_HALF_CARRY = (1 << 5),
     FLAG_CARRY      = (1 << 4)
 };
+/*
+ * @brief: Holds the collection of instructions for the z80-like
+ * cpu in the family of the 8080 by intel.
+ */
+
+class MMU;
+class Ppu;
+class Timer;
+class SDL;
+class IInterrupt;
+class InstructionSet;
 
 using namespace std;
 class Cpu {
   private:
-    uint32_t cycle;
-    uint32_t globalCycles;
-    // SystemBus& bus;
+    Ppu*            _ppu;         /* pointer to ppu object */
+    Timer*          _timer;       /* pointer to timer object */
+    SDL*            _sdl;         /* pointer to sdl object */
+    MMU*            _mmu;         /* pointer to mmu object */
+    uint32_t        _cycle;       /* current cycle */
+    InstructionSet* _instruction; /* pointer to instruction */
 
   public:
-    // Cpu();
-    ~Cpu() = default;
+    IInterrupt* _interrupt;          /* pointer to instruction */
+    uint8_t     _ime;                /* interrupt master enable */
+    uint16_t    PC;                  /* program counter register */
+    uint16_t    SP;                  /* stack pointer register */
+    bool        ime_pending = false; /* helper for ime flag */
 
-    // explicit Cpu(SystemBus& bus) : bus(bus) {}
+    uint32_t cycle_count;
 
+    // _cpu       = new Cpu(_ppu, _timer, _sdl, _interrupt);
+
+    Cpu(Ppu* ppu, Timer* timer, SDL* sdl, MMU* mmu, IInterrupt* interrupt);
+
+    void step(uint8_t cycle_count);
     bool is_flag_set(uint8_t flag);
     void set_flag(uint8_t flags, bool state);
     void clear_flag(uint8_t flag);
@@ -102,15 +129,6 @@ class Cpu {
             uint16_t HL;
         };
     };
-
-    // Stack pointer
-    uint16_t SP;
-
-    // Program counter
-    uint16_t PC;
-    uint32_t cycle_count;
-    uint8_t  _ime;                // interrupt master enable
-    bool     ime_pending = false; // delayed enable (after EI)
 };
 
 #endif // SRC_CPU_CPU_HPP_

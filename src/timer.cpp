@@ -82,8 +82,8 @@ void Timer::tick(int cycle) {
     }
     if (_tac & 0b100) {
         if (threshold != -1) {
-            while (_tima_accumulator >= threshold) {
-                _tima_accumulator -= threshold;
+            while (_tima >= threshold) {
+                _tima -= threshold;
                 _tima = _tima + 1;
                 if (_tima == 0x00) {
                     _tima = _tma;

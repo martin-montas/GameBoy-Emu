@@ -4,25 +4,35 @@
 #ifndef SRC_INSTRUCTIONS_HPP_
 #define SRC_INSTRUCTIONS_HPP_
 
+// #include "system-bus.hpp"
 #include "cpu.hpp"
-#include "system-bus.hpp"
+#include "device.hpp"
 #include "mmu.hpp"
 #include <cstdint>
 #include <stdint.h>
 
 class MMU;
 class Cpu;
+/*
+ * @brief: Holds the implementation of the
+ * instructions of the cpu. It holds them
+ * in 2 files.
+ */
 class InstructionSet {
+    MMU* _mmu; /* object to mem class */
+    Cpu* _cpu; /* object to cpu class */
 
   public:
+    InstructionSet(MMU* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
+
+        /* initializes regs */
+        pre_boot_state();
+    }
+
     void step();
     void execute(uint8_t opcode);
     void pre_boot_state();
     void post_boot_state();
-    InstructionSet(SystemBus* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
-        /* initializes regs to 0 */
-        pre_boot_state();
-    }
 
     void get_mbc_type();
     void rrca(uint8_t& reg);
@@ -107,8 +117,6 @@ class InstructionSet {
     void set6_extended(uint8_t& reg);
     void set7_extended(uint8_t& reg);
 
-  private:
-    Cpu*       _cpu;
-    SystemBus* _mmu;
+    void interrupt_handler();
 };
 #endif // SRC_INSTRUCTIONS_HPP_

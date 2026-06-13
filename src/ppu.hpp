@@ -39,16 +39,27 @@ enum bgwin_priority {
 };
 
 class MMU;
-
 class Ppu {
+
+    MMU*           _mmu;       /* pointer to memory object */
+    IInterrupt*    _interrupt; /* pointer to interrupt */
+    size_t         _dot_clock; /* updates the t cycles */
+    size_t         _mode;      /* updates to current mode */
+    uint8_t        _LCDC;      /* lcdc register */
+    uint8_t        LY;         /* LY register for scanlines */
+    bgwin_priority _f_flag;    /* updates ppu rendering component */
+    bool           y_cond;
+
   public:
     Ppu() : can_render(false), _mode(2), LY(0) {
-        /* initilizes  frame buffer */
+
+        /* updates frame buffer to black */
         for (int i = 0; i < WIDTH * HEIGHT; i++) {
             frame_buff[i] = 0xFF000000; // black
         }
     }
     ~Ppu();
+    /* gets interrupt object */
     void attach(MMU* mmu, IInterrupt* interrupt) {
         _mmu       = mmu;
         _interrupt = interrupt;
@@ -58,21 +69,12 @@ class Ppu {
     uint32_t frame_buff[HEIGHT * WIDTH];
     bool     frame_ready() const;
     void     dot_cycle(int t_cycle);
-    void     clear_can_render() {
+
+    inline void clear_can_render() {
         can_render = false;
     }
     bool    can_render;
     uint8_t read_ly();
-
-  private:
-    MMU*           _mmu       = nullptr;
-    IInterrupt*    _interrupt = nullptr;
-    size_t         _dot_clock;
-    size_t         _mode;
-    uint8_t        LCDC;
-    uint8_t        LY;
-    bgwin_priority _f_flag;
-    bool           y_cond;
 
     /*
      * @brief: this happens on mode 3 of the ppu.

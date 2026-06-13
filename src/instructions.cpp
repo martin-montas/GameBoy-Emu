@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include <sys/types.h>
 
+#include "cpu.hpp"
+#include "mmu.hpp"
+
 void InstructionSet::pre_boot_state() {
 
     _mmu->write8(0xFF01, 0x00); // SB (Serial Link Data Buffer)
@@ -3771,4 +3774,18 @@ void InstructionSet::step() {
     execute(_opcode);
     int current_cycle = _cpu->opcode_cycles[_opcode];
     _cpu->cycle_count += current_cycle;
+}
+
+void InstructionSet::interrupt_handler() {
+    /* check for interrupts here */
+    _cpu->SP -= 1;
+    _cpu->_ime = false;
+    uint8_t h  = _cpu->PC >> 8;
+    _mmu->write8(_cpu->SP, h);
+    _cpu->SP -= 1;
+    uint8_t l = _cpu->PC & 0xFF;
+    _mmu->write8(_cpu->SP, l);
+    uint8_t vec = _cpu->_interrupt->get_interrupt_vector();
+    _cpu->PC    = vec;
+    _cpu->cycle_count += 20;
 }

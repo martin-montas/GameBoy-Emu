@@ -16,19 +16,21 @@
 #include "interrupt.hpp"
 #include "ppu.hpp"
 
+/*
+ * @brief: starts the main GameBoy components and runs most of
+ * subsystems. its the main class for the whole game
+ */
 class GameBoy {
-  private:
-    bool            emulationRunning;
-    int             cycle_count = 0;
-    uint8_t         _opcode;
-    Cpu*            _cpu;
-    Serial*         _serial;
-    Timer*          _timer;
-    MMU*            _mmu;
-    Ppu*            _ppu;
-    InstructionSet* _instructions;
-    Interrupt*      _interrupt;
-    SDL*            _sdl;
+    Cpu*       _cpu;             /* pointer to cpu object */
+    Serial*    _serial;          /* pointer to serial object */
+    Timer*     _timer;           /* pointer to timer object */
+    MMU*       _mmu;             /* pointer to mmu object */
+    Ppu*       _ppu;             /* pointer to ppu object */
+    Interrupt* _interrupt;       /* pointer to interrupt object */
+    SDL*       _sdl;             /* pointer to SDL2 object */
+    bool       emulationRunning; /* bool to emulator running state */
+    int        cycle_count = 0;
+    uint8_t    _opcode;
 
     void interrupt_handler();
     void unhalt();
@@ -36,14 +38,11 @@ class GameBoy {
   public:
     GameBoy(const std::string file) {
         _interrupt = new Interrupt();
-        _cpu       = new Cpu();
         _timer     = new Timer(_interrupt);
         _mmu       = new MMU(file, _timer, _interrupt);
         _ppu       = new Ppu();
         _sdl       = new SDL();
-
-        _instructions = new InstructionSet(_mmu, _cpu);
-
+        _cpu       = new Cpu(_ppu, _timer, _sdl, _mmu, _interrupt);
         _mmu->attach(_ppu);
         _ppu->attach(_mmu, _interrupt);
 
@@ -51,7 +50,6 @@ class GameBoy {
         // _instructions->post_boot_state();
     }
 
-    void        run();
-    inline void step();
+    void run();
 };
 #endif // SRC_GAME_BOY_HPP_

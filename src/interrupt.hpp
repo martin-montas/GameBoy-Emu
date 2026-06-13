@@ -11,11 +11,16 @@
 #define IE 0xFFFF
 #define IF 0xFF0F
 
+/*
+ * @brief: implementation of the IInterrupt class.
+ * deals with handling of states and execution of
+ * the interrupt subsystem of the GameBoy
+ *
+ */
 class Interrupt : public IInterrupt {
-
   public:
-    uint8_t _IF;
-    uint8_t _IE;
+    uint8_t _IF; /* pointer to interrupt flag reg */
+    uint8_t _IE; /* pointer to interrupt enable reg */
 
     void request_interrupt(Interrupt_Flags flag) override {
         _IF |= flag;
@@ -34,7 +39,14 @@ class Interrupt : public IInterrupt {
             _IF = value;
     }
 
-    uint8_t get_interrupt_vector() {
+    bool pending_interrupt() override {
+        if (((_IF & _IE) & 0x1F) != 0) {
+            return true;
+        }
+        return false;
+    }
+
+    uint8_t get_interrupt_vector() override {
         if ((_IF & INTERRUPT_VBLANK) && (_IE & INTERRUPT_VBLANK)) {
             return 0x0040;
         } else if ((_IF & INTERRUPT_LCD) && (_IE & INTERRUPT_LCD)) {
@@ -47,8 +59,6 @@ class Interrupt : public IInterrupt {
             return 0x0060;
         }
     }
-
-  private:
 };
 
 #endif // SRC_INTERRUPT_HPP_

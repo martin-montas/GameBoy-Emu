@@ -5,25 +5,22 @@
 #define SRC_SERIAL_HPP_
 
 #include <stdint.h>
+#include "device.hpp"
 
 #define TRANSFER_STATUS (1 << 7)
-#define CLOCK_STATUS    (1 << 1)
-
-#define check_flag(value, bit) ((value) & (bit))
+#define CLOCK_SPEED     (1 << 1)
+#define CLOCK_STATUS    1
 
 /*
- * @brief: this class deals with everything realated to
+ * @brief: this class deals with everything related to
  * the GameBoy's SB and SC addresses (0xFF01,0xFF02
  respectively).
  */
-class Serial {
-
-  private:
-    uint8_t _sb;
-    uint8_t _sc;
+class Serial : public Device {
+    uint8_t _sb;                /* serial transfer data */
+    uint8_t _sc;                /* serial transfer control */
+    bool    _extern_clock_mode; /* updates clock mode */
     int     _acc;
-    bool    _extern_clock_mode;
-    bool    _transfer_active;
     uint8_t _shift_reg;
     uint8_t _bit_count;
 
@@ -39,8 +36,8 @@ class Serial {
      * @param[in]: t_cycle per instructions.
      */
     void    tick(int cycle);
-    void    write(uint16_t addr, uint8_t value);
-    uint8_t read(uint16_t addr);
+    void    write(uint16_t addr, uint8_t value) override;
+    uint8_t read(uint16_t addr) override;
 };
 
 #endif // SRC_SERIAL_HPP_

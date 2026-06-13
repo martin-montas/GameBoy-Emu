@@ -18,7 +18,7 @@ void Serial::write(uint16_t addr, uint8_t value) {
 }
 
 void Serial::tick(int cycle) {
-    if (_transfer_active) {
+    if (_sc & TRANSFER_STATUS) {
         _acc += cycle;
         while (_acc >= 512) {
             _acc -= 512;

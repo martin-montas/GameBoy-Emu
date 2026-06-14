@@ -40,11 +40,12 @@ class GameBoy {
         _interrupt = new Interrupt();
         _timer     = new Timer(_interrupt);
         _mmu       = new Mmu(file, _timer, _interrupt);
-        _ppu       = new Ppu();
+        _ppu       = new Ppu(_interrupt);
         _sdl       = new SDL();
         _cpu       = new Cpu(_ppu, _timer, _sdl, _mmu, _interrupt);
         _mmu->attach(_ppu);
-        _ppu->attach(_mmu, _interrupt);
+        _ppu->attach(_mmu);
+        _interrupt->attach(_cpu);
 
         emulationRunning = true;
         // _instructions->post_boot_state();

@@ -116,10 +116,6 @@ void Ppu::write_reg(uint8_t& data, uint16_t addr) {
     }
 }
 
-uint8_t Ppu::read_ly() {
-    return LY;
-}
-
 void Ppu::switch_mode(int mode) {
     if (mode == 0)
         hblank_handler();

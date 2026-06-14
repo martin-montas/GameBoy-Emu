@@ -39,23 +39,23 @@ class InstructionSet;
 
 using namespace std;
 class Cpu {
-    Ppu*            _ppu;         /* pointer to ppu object */
-    Timer*          _timer;       /* pointer to timer object */
-    SDL*            _sdl;         /* pointer to sdl object */
-    Mmu*            _mmu;         /* pointer to mmu object */
-    uint32_t        _cycle;       /* current cycle */
-    InstructionSet* _instruction; /* pointer to instruction */
+    Ppu*     _ppu;   /* pointer to ppu object */
+    Timer*   _timer; /* pointer to timer object */
+    SDL*     _sdl;   /* pointer to sdl object */
+    Mmu*     _mmu;   /* pointer to mmu object */
+    uint32_t _cycle; /* current cycle */
 
   public:
-    IInterrupt* _interrupt;          /* pointer to instruction */
-    uint8_t     _ime;                /* interrupt master enable */
-    uint16_t    PC;                  /* program counter register */
-    uint16_t    SP;                  /* stack pointer register */
-    bool        ime_pending = false; /* helper for ime flag */
-    uint32_t    cycle_count;
+    InstructionSet* _instruction;        /* pointer to instruction */
+    IInterrupt*     _interrupt;          /* pointer to instruction */
+    uint8_t         _ime;                /* interrupt master enable */
+    uint16_t        PC;                  /* program counter register */
+    uint16_t        SP;                  /* stack pointer register */
+    bool            ime_pending = false; /* helper for ime flag */
+    uint32_t        cycle_count;
     Cpu(Ppu* ppu, Timer* timer, SDL* sdl, Mmu* mmu, IInterrupt* interrupt);
 
-    void step(uint8_t cycle_count);
+    void step();
     bool is_flag_set(uint8_t flag);
     void set_flag(uint8_t flags, bool state);
     void clear_flag(uint8_t flag);

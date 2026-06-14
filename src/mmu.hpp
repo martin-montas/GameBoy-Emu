@@ -8,7 +8,7 @@
 // #include "IO.hpp"
 #include "MBC.hpp"
 #include "serial.hpp"
-#include "timer.hpp"
+// #include "timer.hpp"
 #include "ppu.hpp"
 #include "./interface-interrupt.hpp"
 
@@ -29,6 +29,7 @@
  * for reading and writing to RAM and reading to ROM.
  */
 class Ppu;
+class Timer;
 class Mmu {
     Serial      serial;     /* serial buffer object */
     Ppu*        _ppu;       /* pointer to pixel object */

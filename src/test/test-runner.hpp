@@ -6,15 +6,20 @@
 
 #include <nlohmann/json.hpp>
 #include "../cpu.hpp"
-#include "../sst-bus.hpp"
-#include "../instructions.hpp"
+#include "../mmu.hpp"
+#include "../sdl-utils.hpp"
+#include "../timer.hpp"
+#include "../ppu.hpp"
+#include "../interface-interrupt.hpp"
 
 using j = nlohmann::json;
 class TestRunner {
-  private:
-    Cpu*            cpu;
-    SST*            mmu;
-    InstructionSet* instruction;
+    Ppu*        ppu;
+    Cpu*        cpu;
+    Timer*      timer;
+    Mmu*        mmu;
+    SDL*        sdl;
+    IInterrupt* interrupt;
 
   public:
     bool runFile();

@@ -28,26 +28,18 @@ void GameBoy::run() {
                 break;
             }
         }
-        uint8_t opcode = _mmu->read8(_cpu->PC);
+        /* main part */
         if (!_cpu->ime_pending) {
-            if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
-                _cpu->halted = false;
-                if (_cpu->_ime) {
-                } else {
-                    _cpu->step(opcode);
-                    continue;
-                }
-            } else {
-                if (_cpu->halted) {
-                    _cpu->cycle_count += 4;
-                } else {
-                    _cpu->step(opcode);
-                    continue;
-                }
+            if ((((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) && (_cpu->halted)) {
+                _cpu->cycle_count += 4;
+            } else if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) >= 1) {
+
+            } else if (!_cpu->halted) {
+            } else if (_cpu->halted) {
             }
-        } else {
-            _cpu->ime_pending = false;
-            _cpu->_ime        = 1;
+        } else if (_cpu->ime_pending) {
+            _cpu->_ime = true;
+            continue;
         }
     }
 }

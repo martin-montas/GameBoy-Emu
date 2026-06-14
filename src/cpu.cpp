@@ -12,7 +12,7 @@ const uint32_t timeSlice            = 1000;
 uint32_t       cyclesToRun          = timeSlice * cyclesPerMicrosecond;
 
 Cpu::Cpu(Ppu* ppu, Timer* timer, SDL* sdl, Mmu* mmu, IInterrupt* interrupt)
-    : _ppu(ppu), _timer(timer), _sdl(sdl), _mmu(mmu), _interrupt(interrupt) {
+    : _ime(false), _ppu(ppu), _timer(timer), _sdl(sdl), _mmu(mmu), _interrupt(interrupt) {
     _instruction = new InstructionSet(mmu, this);
 }
 
@@ -28,13 +28,13 @@ void Cpu::set_flag(uint8_t flags, bool state) {
     this->F = state ? (this->F | flags) : (this->F & ~flags);
 }
 
-void Cpu::step(uint8_t cycle_count) {
-
+void Cpu::step() {
     if (this->_ime && _interrupt->pending_interrupt()) {
         _instruction->interrupt_handler();
-        return; // Skip fetching normal opcode this cycle
+        return;
     }
 
+    uint8_t cycle_count = _mmu->read8(PC);
     _instruction->execute(cycle_count);
     int current_cycle = opcode_cycles[cycle_count];
     cycle_count += current_cycle;

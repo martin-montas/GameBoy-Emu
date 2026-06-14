@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include "mmu.hpp"
-#include "./interface-interrupt.hpp"
 #include "sdl-utils.hpp"
 
 #define BGP_ADDR  0xFF47
@@ -47,6 +46,7 @@ enum bgwin_priority {
     obj = 2  /* sprite oam member */
 };
 
+class IInterrupt;
 class Mmu;
 /*
  * @brief: deals with pixels rendering and lcd related
@@ -63,7 +63,9 @@ class Ppu {
     bool           y_cond;
 
   public:
-    inline explicit Ppu() : can_render(false), _mode(2), LY(0) {
+    inline explicit Ppu(IInterrupt* interrupt) : can_render(false), _mode(2), LY(0) {
+        _interrupt = interrupt;
+
         /* updates frame buffer to black */
         for (int i = 0; i < WIDTH * HEIGHT; i++) {
             frame_buff[i] = 0xFF000000; // black
@@ -75,10 +77,28 @@ class Ppu {
      * @param[in]: mmu object pointer.
      * @param[in] interrupt object pointer.
      */
-    inline void attach(Mmu* mmu, IInterrupt* interrupt) {
-        _mmu       = mmu;
-        _interrupt = interrupt;
-        y_cond     = false;
+    inline void attach(Mmu* mmu) {
+        _mmu   = mmu;
+        y_cond = false;
+    }
+    /*
+     * @brief: Used by memory subsystem
+     * to read the ly register from
+     * the ppu.
+     * @return: the ly register
+     */
+
+    inline uint8_t read_ly() {
+        return LY;
+    }
+
+    /*
+     * @brief: makes the memory
+     * management unit write
+     * to the ppu ly register
+     */
+    inline void write_ly(uint8_t value) {
+        LY = 0;
     }
 
     /*
@@ -92,8 +112,7 @@ class Ppu {
     inline void clear_can_render() {
         can_render = false;
     }
-    bool    can_render;
-    uint8_t read_ly();
+    bool can_render;
 
     /*
      * @brief: handles each each mode

@@ -9,7 +9,11 @@
 #include "test-runner.hpp"
 #include "../sst-bus.hpp"
 #include "../cpu.hpp"
-#include "../instructions.hpp"
+#include "../timer.hpp"
+#include "../mmu.hpp"
+#include "../sdl-utils.hpp"
+#include "../interrupt.hpp"
+#include "../ppu.hpp"
 
 void TestRunner::run_cpu_test(const std::string file) {
     std::ifstream jsonFileStream(file);
@@ -18,23 +22,29 @@ void TestRunner::run_cpu_test(const std::string file) {
         printf("Failed to open file: %s\n", file.c_str());
         exit(1);
     }
-    cpu         = new Cpu();
-    mmu         = new SST();
-    instruction = new InstructionSet(mmu, cpu);
+    // Cpu(Ppu* ppu, Timer* timer, SDL* sdl, Mmu* mmu, IInterrupt* interrupt);
+    sdl       = new SDL();
+    interrupt = new Interrupt();
+    ppu       = new Ppu(interrupt);
+    timer     = new Timer(interrupt);
+    mmu       = new Mmu(file, timer, interrupt);
+    cpu       = new Cpu(ppu, timer, sdl, mmu, interrupt);
     for (const auto& test : jsonData) {
         delete cpu;
         delete mmu;
-        delete instruction;
 
-        cpu         = new Cpu();
-        mmu         = new SST();
-        instruction = new InstructionSet(mmu, cpu);
+        sdl       = new SDL();
+        interrupt = new Interrupt();
+        ppu       = new Ppu(interrupt);
+        timer     = new Timer(interrupt);
+        mmu       = new Mmu(file, timer, interrupt);
+        cpu       = new Cpu(ppu, timer, sdl, mmu, interrupt);
 
         std::string name = test["name"].get<std::string>();
         printf("Running: %s\n", name.c_str());
         const auto& initial = test["initial"];
         load_initial_state(initial);
-        instruction->step();
+        cpu->step();
         const auto& final = test["final"];
         verify_final_state(final);
     }

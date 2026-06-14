@@ -24,7 +24,6 @@ class InstructionSet {
 
   public:
     InstructionSet(Mmu* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
-
         /* initializes regs */
         pre_boot_state();
     }

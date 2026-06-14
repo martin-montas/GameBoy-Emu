@@ -6,13 +6,14 @@
 #define SRC_TIMER_HPP_
 
 #include <stdint.h>
-#include "./interface-interrupt.hpp"
+// #include "./interface-interrupt.hpp"
 #include "device.hpp"
 
 #define TAC_SELECT 0b11
 
 enum TAC_TIMER_CONTROL : uint8_t { TIMER_0 = 0b00, TIMER_1 = 0b01, TIMER_2 = 0b10, TIMER_3 = 0b11 };
 
+class IInterrupt;
 class Timer : public Device {
     uint8_t     _tma;           /* Timer reload controller */
     uint8_t     _tima;          /* Current tima register */

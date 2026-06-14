@@ -6,7 +6,9 @@
 #define SRC_INTERRUPT_HPP_
 
 #include <stdint.h>
+#include <stdio.h>
 #include "interface-interrupt.hpp"
+#include "cpu.hpp"
 
 /* interrupt addresses */
 #define IE 0xFFFF
@@ -18,10 +20,14 @@
  * the interrupt subsystem of the GameBoy.
  *
  */
+class Cpu;
 class Interrupt : public IInterrupt {
   public:
-    uint8_t _IF; /* pointer to interrupt flag reg */
-    uint8_t _IE; /* pointer to interrupt enable reg */
+    uint8_t         _IF;            /* pointer to interrupt flag reg */
+    Cpu*            _cpu;           /* pointer to cpu object */
+    uint8_t         _IE;            /* pointer to interrupt enable reg */
+    Interrupt_Flags _flags;         /* interrupt with higher priority */
+    Interrupt() : _IF(0), _IE(0) {} /* interrupt contructor */
 
     /*
      * @brief: override of the interrupt interface.
@@ -29,8 +35,28 @@ class Interrupt : public IInterrupt {
      * @param[in]: bits to be inserted in the interrupt
      * flag.
      */
-    void request_interrupt(Interrupt_Flags flag) override {
+    inline void request_exec_interrupt(Interrupt_Flags flag) override {
+        // TODO: you are here!!
         _IF |= flag;
+        if (!(pending_interrupt())) {
+            return;
+        }
+        // TODO: interrupt should happen here
+        // instantly
+        if ((_IF & INTERRUPT_VBLANK) && (_IE & INTERRUPT_VBLANK)) {
+            _flags = flag;
+        } else if ((_IF & INTERRUPT_LCD) && (_IE & INTERRUPT_LCD)) {
+            _flags = flag;
+        } else if ((_IF & INTERRUPT_TIMER) && (_IE & INTERRUPT_TIMER)) {
+            _flags = flag;
+        } else if ((_IF & INTERRUPT_SERIAL) && (_IE & INTERRUPT_SERIAL)) {
+            _flags = flag;
+        } else if ((_IF & INTERRUPT_SERIAL) && (_IE & INTERRUPT_JOYPAD)) {
+            _flags = flag;
+        } else {
+            return;
+        }
+        _cpu->_instruction->interrupt_handler();
     }
 
     /*
@@ -39,7 +65,7 @@ class Interrupt : public IInterrupt {
      * interrupt interface.
      * @param[in]: address to read.
      */
-    uint8_t read(uint16_t addr) override {
+    inline uint8_t read(uint16_t addr) override {
         if (addr == 0xFFFF) {
             return _IE;
         }
@@ -52,19 +78,24 @@ class Interrupt : public IInterrupt {
      * @param[in]: address to write.
      * @param[in]: value being written.
      */
-    void write(uint16_t addr, uint8_t value) override {
-        if (addr == 0xFFFF)
+    inline void write(uint16_t addr, uint8_t value) override {
+        if (addr == 0xFFFF) {
             _IE = value;
-        else if (addr == 0xFF0F)
+        } else {
             _IF = value;
+        }
+    }
+
+    inline void attach(Cpu* cpu) {
+        _cpu = cpu;
     }
 
     /*
      * @brief: tells its its handler if there is an interrupt
      * at the current call time.
-     * @return:  boolean, pending, true, not pending, false.
+     * @return: boolean, pending, true, not pending, false.
      */
-    bool pending_interrupt() override {
+    inline bool pending_interrupt() override {
         if (((_IF & _IE) & 0x1F) != 0) {
             return true;
         }
@@ -76,15 +107,23 @@ class Interrupt : public IInterrupt {
      * needed.
      * @return: unsigned 16 bit value for the vector.
      */
-    uint8_t get_interrupt_vector() override {
-        if ((_IF & INTERRUPT_VBLANK) && (_IE & INTERRUPT_VBLANK)) {
+    inline uint16_t get_interrupt_vector() override {
+        if (_flags == INTERRUPT_VBLANK) {
+            _IF &= ~INTERRUPT_VBLANK;
+            printf("vlblank fired\n");
             return 0x0040;
-        } else if ((_IF & INTERRUPT_LCD) && (_IE & INTERRUPT_LCD)) {
+        } else if (_flags == INTERRUPT_LCD) {
+            _IF &= ~INTERRUPT_LCD;
+            printf("lcd fired\n");
             return 0x0048;
-        } else if ((_IF & INTERRUPT_TIMER) && (_IE & INTERRUPT_TIMER)) {
-            return 0x0048;
-        } else if ((_IF & INTERRUPT_SERIAL) && (_IE & INTERRUPT_SERIAL)) {
+        } else if (_flags == INTERRUPT_TIMER) {
+            _IF &= ~INTERRUPT_TIMER;
+            printf("timer fired\n");
             return 0x0050;
+        } else if (_flags == INTERRUPT_SERIAL) {
+            _IF &= ~INTERRUPT_SERIAL;
+            printf("serial fired\n");
+            return 0x0058;
         } else {
             return 0x0060;
         }

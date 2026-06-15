@@ -28,17 +28,20 @@ void GameBoy::run() {
                 break;
             }
         }
-        /* main part */
-        if (!_cpu->ime_pending) {
-            if ((((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) && (_cpu->halted)) {
-                _cpu->cycle_count += 4;
-            } else if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) >= 1) {
-
-            } else if (!_cpu->halted) {
-            } else if (_cpu->halted) {
+        if (_cpu->ime_pending) {
+            _cpu->_ime        = 1;
+            _cpu->ime_pending = false;
+            _cpu->step();
+        } else {
+            /* no interrupt and cpu halted */
+            if ((_interrupt->_IF & _interrupt->_IE) & 0x1F) > 0) {
+                    _cpu->cycle_count += 4;
+                    continue;
+                }
+            else if ((_interrupt->_IF & _interrupt->_IE) & 0x1F) {
+                _cpu->halted = false;
             }
-        } else if (_cpu->ime_pending) {
-            _cpu->_ime = true;
+            _cpu->step();
             continue;
         }
     }

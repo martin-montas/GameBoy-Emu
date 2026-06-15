@@ -30,20 +30,20 @@ enum RegisterFlags {
  * @brief: Holds the collection of instructions for the z80-like
  * cpu in the family of the 8080 by intel.
  */
-class Mmu;
 class Ppu;
 class Timer;
 class SDL;
 class IInterrupt;
+class SystemBus;
 class InstructionSet;
 
 using namespace std;
 class Cpu {
-    Ppu*     _ppu;   /* pointer to ppu object */
-    Timer*   _timer; /* pointer to timer object */
-    SDL*     _sdl;   /* pointer to sdl object */
-    Mmu*     _mmu;   /* pointer to mmu object */
-    uint32_t _cycle; /* current cycle */
+    Ppu*       _ppu;   /* pointer to ppu object */
+    Timer*     _timer; /* pointer to timer object */
+    SDL*       _sdl;   /* pointer to sdl object */
+    SystemBus* _mmu;   /* pointer to mmu object */
+    uint32_t   _cycle; /* current cycle */
 
   public:
     InstructionSet* _instruction;        /* pointer to instruction */
@@ -53,7 +53,7 @@ class Cpu {
     uint16_t        SP;                  /* stack pointer register */
     bool            ime_pending = false; /* helper for ime flag */
     uint32_t        cycle_count;
-    Cpu(Ppu* ppu, Timer* timer, SDL* sdl, Mmu* mmu, IInterrupt* interrupt);
+    Cpu(Ppu* ppu, Timer* timer, SDL* sdl, SystemBus* mmu, IInterrupt* interrupt);
 
     void step();
     bool is_flag_set(uint8_t flag);

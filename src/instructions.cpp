@@ -3438,6 +3438,7 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xFB: {
         // printf("EI\n");
         _cpu->ime_pending = true;
+        _cpu->_ime        = 0;
         _cpu->PC += 1;
         break;
     }

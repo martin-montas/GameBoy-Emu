@@ -7,10 +7,9 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "test-runner.hpp"
-#include "../sst-bus.hpp"
+#include "../system-bus.hpp"
 #include "../cpu.hpp"
 #include "../timer.hpp"
-#include "../mmu.hpp"
 #include "../sdl-utils.hpp"
 #include "../interrupt.hpp"
 #include "../ppu.hpp"
@@ -22,12 +21,11 @@ void TestRunner::run_cpu_test(const std::string file) {
         printf("Failed to open file: %s\n", file.c_str());
         exit(1);
     }
-    // Cpu(Ppu* ppu, Timer* timer, SDL* sdl, Mmu* mmu, IInterrupt* interrupt);
     sdl       = new SDL();
     interrupt = new Interrupt();
     ppu       = new Ppu(interrupt);
     timer     = new Timer(interrupt);
-    mmu       = new Mmu(file, timer, interrupt);
+    mmu       = new SST();
     cpu       = new Cpu(ppu, timer, sdl, mmu, interrupt);
     for (const auto& test : jsonData) {
         delete cpu;
@@ -37,7 +35,7 @@ void TestRunner::run_cpu_test(const std::string file) {
         interrupt = new Interrupt();
         ppu       = new Ppu(interrupt);
         timer     = new Timer(interrupt);
-        mmu       = new Mmu(file, timer, interrupt);
+        mmu       = new SST();
         cpu       = new Cpu(ppu, timer, sdl, mmu, interrupt);
 
         std::string name = test["name"].get<std::string>();
@@ -68,7 +66,7 @@ void TestRunner::load_initial_state(j initial) {
     cpu->H    = initial["h"].get<uint8_t>();
     cpu->L    = initial["l"].get<uint8_t>();
     cpu->_ime = initial["ime"].get<uint8_t>();
-    // mmu->_ie  = initial["ie"];
+    // interrupt->_IE = initial["ie"].get<uint8_t>();
 
     j ram = initial["ram"];
     for (auto r : ram) {

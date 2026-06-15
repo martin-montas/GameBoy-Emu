@@ -20,6 +20,7 @@
  * @brief: starts the main GameBoy components and runs most of
  * subsystems. its the main class for the whole game.
  */
+// class SystemBus;
 class GameBoy {
     Cpu*       _cpu;             /* pointer to cpu object */
     Serial*    _serial;          /* pointer to serial object */

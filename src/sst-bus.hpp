@@ -1,6 +1,3 @@
-// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
-// All components of this software are licensed under the GNU License.
-// Author: Martin Montas, martinmontas1@gmail.com
 #ifndef SRC_SST_BUS_HPP_
 #define SRC_SST_BUS_HPP_
 
@@ -9,8 +6,6 @@
 
 class SST : public SystemBus {
   public:
-    uint8_t _ie;
-
     uint8_t memory[65536]{};
 
     uint8_t read8(uint16_t addr) override {
@@ -30,17 +25,6 @@ class SST : public SystemBus {
         uint8_t high_byte = (value >> 8) & 0xFF;
         write8(addr, low_byte);
         write8(addr + 1, high_byte);
-    }
-
-    uint8_t getIE() override {
-        return 0;
-    }
-    uint8_t getIF() override {
-        return 0;
-    }
-
-    void setIF(uint8_t value) override {
-        return;
     }
 };
 #endif // !SRC_SST_BUS_HPP_

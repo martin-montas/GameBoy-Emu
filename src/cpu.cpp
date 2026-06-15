@@ -11,7 +11,7 @@ const double   cyclesPerMicrosecond = 4.194304;
 const uint32_t timeSlice            = 1000;
 uint32_t       cyclesToRun          = timeSlice * cyclesPerMicrosecond;
 
-Cpu::Cpu(Ppu* ppu, Timer* timer, SDL* sdl, Mmu* mmu, IInterrupt* interrupt)
+Cpu::Cpu(Ppu* ppu, Timer* timer, SDL* sdl, SystemBus* mmu, IInterrupt* interrupt)
     : _ime(false), _ppu(ppu), _timer(timer), _sdl(sdl), _mmu(mmu), _interrupt(interrupt) {
     _instruction = new InstructionSet(mmu, this);
 }

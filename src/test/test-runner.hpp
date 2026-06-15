@@ -9,15 +9,17 @@
 #include "../mmu.hpp"
 #include "../sdl-utils.hpp"
 #include "../timer.hpp"
+#include "../sst-bus.hpp"
 #include "../ppu.hpp"
 #include "../interface-interrupt.hpp"
 
+class SystemBus;
 using j = nlohmann::json;
 class TestRunner {
     Ppu*        ppu;
     Cpu*        cpu;
     Timer*      timer;
-    Mmu*        mmu;
+    SST*        mmu;
     SDL*        sdl;
     IInterrupt* interrupt;
 

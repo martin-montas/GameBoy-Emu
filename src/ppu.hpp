@@ -48,12 +48,13 @@ enum bgwin_priority {
 
 class IInterrupt;
 class Mmu;
+class SystemBus;
 /*
  * @brief: deals with pixels rendering and lcd related
  * registers from  the game boy.
  */
 class Ppu {
-    Mmu*           _mmu;       /* pointer to memory object */
+    SystemBus*     _mmu;       /* pointer to memory object */
     IInterrupt*    _interrupt; /* pointer to interrupt */
     size_t         _dot_clock; /* updates the t cycles */
     size_t         _mode;      /* updates to current mode */
@@ -77,7 +78,7 @@ class Ppu {
      * @param[in]: mmu object pointer.
      * @param[in] interrupt object pointer.
      */
-    inline void attach(Mmu* mmu) {
+    inline void attach(SystemBus* mmu) {
         _mmu   = mmu;
         y_cond = false;
     }

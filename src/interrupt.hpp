@@ -79,11 +79,11 @@ class Interrupt : public IInterrupt {
      * @param[in]: value being written.
      */
     inline void write(uint16_t addr, uint8_t value) override {
-        if (addr == 0xFFFF) {
-            _IE = value;
-        } else {
-            _IF = value;
-        }
+        if (addr == 0xFFFF)
+            _IE = value & 0x1F;
+
+        if (addr == 0xFF0F)
+            _IF = value & 0x1F;
     }
 
     inline void attach(Cpu* cpu) {

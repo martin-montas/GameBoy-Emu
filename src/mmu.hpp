@@ -8,7 +8,7 @@
 // #include "IO.hpp"
 #include "MBC.hpp"
 #include "serial.hpp"
-// #include "timer.hpp"
+#include "system-bus.hpp"
 #include "ppu.hpp"
 #include "./interface-interrupt.hpp"
 
@@ -30,7 +30,7 @@
  */
 class Ppu;
 class Timer;
-class Mmu {
+class Mmu : public SystemBus {
     Serial      serial;     /* serial buffer object */
     Ppu*        _ppu;       /* pointer to pixel object */
     Timer*      _timer;     /* pointer to timer object */

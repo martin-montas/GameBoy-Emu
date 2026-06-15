@@ -6,12 +6,10 @@
 
 // #include "system-bus.hpp"
 #include "cpu.hpp"
-#include "device.hpp"
-#include "mmu.hpp"
 #include <cstdint>
 #include <stdint.h>
 
-class Mmu;
+class SystemBus;
 class Cpu;
 /*
  * @brief: Holds the implementation of the
@@ -19,11 +17,11 @@ class Cpu;
  * in 2 files.
  */
 class InstructionSet {
-    Mmu* _mmu; /* object to mem class */
-    Cpu* _cpu; /* object to cpu class */
+    SystemBus* _mmu; /* object to mem class */
+    Cpu*       _cpu; /* object to cpu class */
 
   public:
-    InstructionSet(Mmu* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
+    InstructionSet(SystemBus* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
         /* initializes regs */
         pre_boot_state();
     }

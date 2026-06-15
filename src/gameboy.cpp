@@ -3,11 +3,7 @@
 // Author: Martin Montas, martinmontas1@gmail.com
 //
 #include "gameboy.hpp"
-#include "serial.hpp"
 #include "cpu.hpp"
-#include "mmu.hpp"
-#include "timer.hpp"
-#include "ppu.hpp"
 
 #include <cstdio>
 #include <stdint.h>
@@ -28,21 +24,20 @@ void GameBoy::run() {
                 break;
             }
         }
+        /* main emu part */
         if (_cpu->ime_pending) {
             _cpu->_ime        = 1;
             _cpu->ime_pending = false;
             _cpu->step();
         } else {
-            /* no interrupt and cpu halted */
-            if ((_interrupt->_IF & _interrupt->_IE) & 0x1F) > 0) {
-                    _cpu->cycle_count += 4;
-                    continue;
-                }
-            else if ((_interrupt->_IF & _interrupt->_IE) & 0x1F) {
+            if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
                 _cpu->halted = false;
+                continue;
+            } else if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) == 0) {
+                _cpu->cycle_count += 4;
+                continue;
             }
-            _cpu->step();
-            continue;
         }
+        _cpu->step();
     }
 }

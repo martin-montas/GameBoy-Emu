@@ -14,6 +14,7 @@
 #include "../interface-interrupt.hpp"
 
 class SystemBus;
+class Mmu;
 using j = nlohmann::json;
 class TestRunner {
     Ppu*        ppu;

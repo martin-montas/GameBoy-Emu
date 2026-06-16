@@ -13,8 +13,6 @@
 #include "instructions.hpp"
 #include "interface-interrupt.hpp"
 #include "ppu.hpp"
-#include "sdl-utils.hpp"
-#include "timer.hpp"
 /*
  * @brief: helper for the CPU's F flag.
  * can be used for getting and settings
@@ -31,21 +29,16 @@ enum RegisterFlags {
  * cpu in the family of the 8080 by intel.
  */
 class Ppu;
-class Timer;
-class SDL;
 class IInterrupt;
 class SystemBus;
 class InstructionSet;
 
-using namespace std;
 class Cpu {
-    Ppu*       _ppu;   /* pointer to ppu object */
-    Timer*     _timer; /* pointer to timer object */
-    SDL*       _sdl;   /* pointer to sdl object */
-    SystemBus* _mmu;   /* pointer to mmu object */
-    uint32_t   _cycle; /* current cycle */
+    SystemBus* _mmu = nullptr; /* pointer to mmu object */
+    uint32_t   _cycle;         /* current cycle */
 
   public:
+    Cpu(SystemBus* mmu, IInterrupt* interrupt);
     InstructionSet* _instruction;        /* pointer to instruction */
     IInterrupt*     _interrupt;          /* pointer to instruction */
     uint8_t         _ime;                /* interrupt master enable */
@@ -53,9 +46,8 @@ class Cpu {
     uint16_t        SP;                  /* stack pointer register */
     bool            ime_pending = false; /* helper for ime flag */
     uint32_t        cycle_count;
-    Cpu(Ppu* ppu, Timer* timer, SDL* sdl, SystemBus* mmu, IInterrupt* interrupt);
 
-    void step();
+    int  step();
     bool is_flag_set(uint8_t flag);
     void set_flag(uint8_t flags, bool state);
     void clear_flag(uint8_t flag);

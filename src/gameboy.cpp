@@ -25,19 +25,28 @@ void GameBoy::run() {
             }
         }
         /* main emu part */
+        int current_cycle = _cpu->step();
+
         if (_cpu->ime_pending) {
             _cpu->_ime        = 1;
             _cpu->ime_pending = false;
-            _cpu->step();
-        } else {
+            continue;
+        }
+
+        if (current_cycle > 0) {
+            _timer->tick(current_cycle);
+            _ppu->dot_cycle(current_cycle);
+            if (_ppu->can_render) {
+                _sdl->frame_step(_ppu->frame_buff);
+                _ppu->clear_can_render();
+            }
+        }
+
+        if (_cpu->halted) {
             if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
                 _cpu->halted = false;
                 continue;
-            } else if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) == 0) {
-                _cpu->cycle_count += 4;
-                continue;
             }
         }
-        _cpu->step();
     }
 }

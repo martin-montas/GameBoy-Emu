@@ -72,7 +72,6 @@ class Ppu {
             frame_buff[i] = 0xFF000000; // black
         }
     }
-    ~Ppu();
     /*
      * @brief: gets interrupt object for later use.
      * @param[in]: mmu object pointer.

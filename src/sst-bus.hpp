@@ -5,9 +5,9 @@
 #include "system-bus.hpp"
 
 class SST : public SystemBus {
-  public:
     uint8_t memory[65536]{};
 
+  public:
     uint8_t read8(uint16_t addr) override {
         return memory[addr];
     }

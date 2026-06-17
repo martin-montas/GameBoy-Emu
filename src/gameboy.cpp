@@ -25,6 +25,7 @@ void GameBoy::run() {
             }
         }
         int current_cycle = _cpu->step();
+
         if (_cpu->ime_pending) {
             _cpu->_ime        = 1;
             _cpu->ime_pending = false;
@@ -44,12 +45,14 @@ void GameBoy::run() {
             if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
                 _cpu->halted = false;
             }
+            _ppu->clear_can_render();
         }
+
         if (_cpu->_ime) {
             if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
                 _interrupt->exec_handler();
+                _cpu->_ime = 0;
             }
-            _cpu->_ime = false;
         }
     }
 }

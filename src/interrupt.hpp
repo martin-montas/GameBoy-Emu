@@ -50,16 +50,21 @@ class Interrupt : public IInterrupt {
         if (!_cpu->_ime) {
             return;
         } else if ((_IF & INTERRUPT_VBLANK) && (_IE & INTERRUPT_VBLANK)) {
+            _IF &= ~INTERRUPT_VBLANK;
             _cpu->_instruction->interrupt_handler(VECTOR_VBLANK);
         } else if ((_IF & INTERRUPT_LCD) && (_IE & INTERRUPT_LCD)) {
+
+            _IF &= ~INTERRUPT_LCD;
             _cpu->_instruction->interrupt_handler(VECTOR_LDC_STAT);
         } else if ((_IF & INTERRUPT_TIMER) && (_IE & INTERRUPT_TIMER)) {
 
+            _IF &= ~INTERRUPT_TIMER;
             _cpu->_instruction->interrupt_handler(VECTOR_TIMER);
         } else if ((_IF & INTERRUPT_SERIAL) && (_IE & INTERRUPT_SERIAL)) {
-
+            _IF &= ~INTERRUPT_SERIAL;
             _cpu->_instruction->interrupt_handler(VECTOR_SERIAL);
-        } else if ((_IF & INTERRUPT_SERIAL) && (_IE & INTERRUPT_JOYPAD)) {
+        } else if ((_IF & INTERRUPT_JOYPAD) && (_IE & INTERRUPT_JOYPAD)) {
+            _IF &= ~INTERRUPT_JOYPAD;
             _cpu->_instruction->interrupt_handler(VECTOR_JOYPAD);
         }
         _cpu->_ime = false;

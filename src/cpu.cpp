@@ -11,7 +11,7 @@ const double   cyclesPerMicrosecond = 4.194304;
 const uint32_t timeSlice            = 1000;
 uint32_t       cyclesToRun          = timeSlice * cyclesPerMicrosecond;
 
-Cpu::Cpu(SystemBus* mmu, IInterrupt* interrupt) : _ime(false), _mmu(mmu), _interrupt(interrupt) {
+Cpu::Cpu(SystemBus* mmu, IInterrupt* interrupt) : _ime(0), _mmu(mmu), _interrupt(interrupt) {
     _instruction = new InstructionSet(mmu, this);
 }
 bool Cpu::is_flag_set(uint8_t flag) {
@@ -27,6 +27,9 @@ void Cpu::set_flag(uint8_t flags, bool state) {
 }
 
 int Cpu::step() {
+    if (halted) {
+        return 4;
+    }
     uint8_t opcode = _mmu->read8(PC);
     _instruction->execute(opcode);
     int current_cycle = opcode_cycles[opcode];

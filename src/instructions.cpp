@@ -17,7 +17,7 @@
 #include "mmu.hpp"
 
 void InstructionSet::pre_boot_state() {
-    _cpu->PC = 0x0000;
+    _cpu->PC = 0x0100;
     _cpu->SP = 0xFFFE;
 
     _cpu->A = 0x01;
@@ -29,7 +29,7 @@ void InstructionSet::pre_boot_state() {
     _cpu->H = 0x01;
     _cpu->L = 0x4D;
 
-    _cpu->_ime = false;
+    _cpu->_ime = 0;
 
     _mmu->write8(0xFF01, 0x00); // SB (Serial Link Data Buffer)
     _mmu->write8(0xFF02, 0x7E); // SC (Serial Link Control - Unused bits read as 1)
@@ -3791,7 +3791,7 @@ void InstructionSet::step() {
 }
 
 void InstructionSet::interrupt_handler(uint16_t vector) {
-    _cpu->_ime  = false;
+    _cpu->_ime  = 0;
     uint16_t pc = _cpu->PC;
     _cpu->SP -= 1;
     _mmu->write8(_cpu->SP, (pc >> 8) & 0xFF);

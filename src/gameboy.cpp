@@ -45,7 +45,6 @@ void GameBoy::run() {
             if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
                 _cpu->halted = false;
             }
-            _ppu->clear_can_render();
         }
 
         if (_cpu->_ime) {

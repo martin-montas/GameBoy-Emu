@@ -1,5 +1,5 @@
-#ifndef _SRC_IINTERRUPT_HPP_
-#define _SRC_IINTERRUPT_HPP_
+#ifndef INTERFACE_IINTERRUPT_HPP
+#define INTERFACE_IINTERRUPT_HPP
 
 #include <stdint.h>
 #include "cpu.hpp"
@@ -37,4 +37,4 @@ class IInterrupt {
     Interrupt_Flags _interrupt;
 };
 
-#endif // _SRC_IINTERRUPT_HPP_
+#endif // INTERFACE_IINTERRUPT_HPP

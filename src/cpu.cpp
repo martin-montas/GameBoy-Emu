@@ -27,10 +27,6 @@ void Cpu::set_flag(uint8_t flags, bool state) {
 }
 
 int Cpu::step() {
-    if (this->_ime && _interrupt->pending_interrupt()) {
-        _instruction->interrupt_handler();
-        return -1;
-    }
     uint8_t opcode = _mmu->read8(PC);
     _instruction->execute(opcode);
     int current_cycle = opcode_cycles[opcode];

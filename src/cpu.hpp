@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 #include "instructions.hpp"
-#include "interface-interrupt.hpp"
 #include "ppu.hpp"
 /*
  * @brief: helper for the CPU's F flag.
@@ -29,10 +28,10 @@ enum RegisterFlags {
  * cpu in the family of the 8080 by intel.
  */
 class Ppu;
+class Timer;
 class IInterrupt;
 class SystemBus;
 class InstructionSet;
-
 class Cpu {
     SystemBus* _mmu = nullptr; /* pointer to mmu object */
     uint32_t   _cycle;         /* current cycle */

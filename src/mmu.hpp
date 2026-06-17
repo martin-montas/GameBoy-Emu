@@ -9,8 +9,8 @@
 #include "MBC.hpp"
 #include "serial.hpp"
 #include "system-bus.hpp"
+// #include "interface-interrupt.hpp"
 #include "ppu.hpp"
-#include "./interface-interrupt.hpp"
 
 #include <memory>
 #include <stdint.h>
@@ -30,6 +30,7 @@
  */
 class Ppu;
 class Timer;
+class IInterrupt;
 class Mmu : public SystemBus {
     Serial      serial;     /* serial buffer object */
     Ppu*        _ppu;       /* pointer to pixel object */

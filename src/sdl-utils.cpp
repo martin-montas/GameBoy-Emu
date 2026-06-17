@@ -12,7 +12,7 @@ void SDL::init() {
         exit(1);
     }
 
-    window = SDL_CreateWindow("Game Boy: (DMG)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    window = SDL_CreateWindow("Game Boy (DMG)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                               WIDTH * 2, HEIGHT * 2, SDL_WINDOW_SHOWN);
 
     SDL_StopTextInput();

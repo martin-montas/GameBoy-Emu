@@ -4,10 +4,10 @@
 #ifndef SRC_INSTRUCTIONS_HPP_
 #define SRC_INSTRUCTIONS_HPP_
 
-// #include "system-bus.hpp"
 #include "cpu.hpp"
 #include <cstdint>
 #include <stdint.h>
+#include "interface-interrupt.hpp"
 
 class SystemBus;
 class Cpu;
@@ -17,8 +17,9 @@ class Cpu;
  * in 2 files.
  */
 class InstructionSet {
-    SystemBus* _mmu; /* object to mem class */
-    Cpu*       _cpu; /* object to cpu class */
+    SystemBus* _mmu; /* pointer to mem class */
+    Cpu*       _cpu; /* pointer to cpu class */
+                     // Interrupt_Flags flags; /* interrupt enum */
 
   public:
     InstructionSet(SystemBus* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
@@ -114,6 +115,6 @@ class InstructionSet {
     void set6_extended(uint8_t& reg);
     void set7_extended(uint8_t& reg);
 
-    void interrupt_handler();
+    void interrupt_handler(uint16_t _vector);
 };
 #endif // SRC_INSTRUCTIONS_HPP_

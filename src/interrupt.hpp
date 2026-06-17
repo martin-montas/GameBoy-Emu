@@ -14,6 +14,12 @@
 #define IE 0xFFFF
 #define IF 0xFF0F
 
+#define VECTOR_VBLANK   0x0040
+#define VECTOR_LDC_STAT 0x0048
+#define VECTOR_TIMER    0x0050
+#define VECTOR_SERIAL   0x0058
+#define VECTOR_JOYPAD   0x0050
+
 /*
  * @brief: implementation of the IInterrupt class.
  * deals with handling of states and execution of
@@ -24,8 +30,8 @@ class Cpu;
 class Interrupt : public IInterrupt {
   public:
     uint8_t         _IF;            /* pointer to interrupt flag reg */
-    Cpu*            _cpu;           /* pointer to cpu object */
     uint8_t         _IE;            /* pointer to interrupt enable reg */
+    Cpu*            _cpu;           /* pointer to cpu object */
     Interrupt_Flags _flags;         /* interrupt with higher priority */
     Interrupt() : _IF(0), _IE(0) {} /* interrupt contructor */
 
@@ -36,27 +42,27 @@ class Interrupt : public IInterrupt {
      * flag.
      */
     inline void request_exec_interrupt(Interrupt_Flags flag) override {
-        // TODO: you are here!!
         _IF |= flag;
         if (!(pending_interrupt())) {
             return;
         }
-        // TODO: interrupt should happen here
-        // instantly
+        // TODO: interrupt should happen here instantly
         if ((_IF & INTERRUPT_VBLANK) && (_IE & INTERRUPT_VBLANK)) {
-            _flags = flag;
+            _cpu->_instruction->interrupt_handler(VECTOR_VBLANK);
         } else if ((_IF & INTERRUPT_LCD) && (_IE & INTERRUPT_LCD)) {
-            _flags = flag;
+            _cpu->_instruction->interrupt_handler(VECTOR_LDC_STAT);
+
         } else if ((_IF & INTERRUPT_TIMER) && (_IE & INTERRUPT_TIMER)) {
-            _flags = flag;
+
+            _cpu->_instruction->interrupt_handler(VECTOR_TIMER);
         } else if ((_IF & INTERRUPT_SERIAL) && (_IE & INTERRUPT_SERIAL)) {
-            _flags = flag;
+
+            _cpu->_instruction->interrupt_handler(VECTOR_SERIAL);
         } else if ((_IF & INTERRUPT_SERIAL) && (_IE & INTERRUPT_JOYPAD)) {
-            _flags = flag;
+            _cpu->_instruction->interrupt_handler(VECTOR_JOYPAD);
         } else {
             return;
         }
-        _cpu->_instruction->interrupt_handler();
     }
 
     /*

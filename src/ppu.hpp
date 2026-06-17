@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include "mmu.hpp"
+#include "interface-interrupt.hpp"
 #include "sdl-utils.hpp"
 
 #define BGP_ADDR  0xFF47

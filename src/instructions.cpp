@@ -3777,8 +3777,8 @@ void InstructionSet::step() {
     _cpu->cycle_count += current_cycle;
 }
 
-void InstructionSet::interrupt_handler() {
-    /* check for interrupts here */
+void InstructionSet::interrupt_handler(uint16_t _vector) {
+
     _cpu->SP -= 1;
     _cpu->_ime = false;
     uint8_t h  = _cpu->PC >> 8;
@@ -3786,7 +3786,6 @@ void InstructionSet::interrupt_handler() {
     _cpu->SP -= 1;
     uint8_t l = _cpu->PC & 0xFF;
     _mmu->write8(_cpu->SP, l);
-    uint8_t vec = _cpu->_interrupt->get_interrupt_vector();
-    _cpu->PC    = vec;
+    _cpu->PC = _vector;
     _cpu->cycle_count += 20;
 }

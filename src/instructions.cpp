@@ -17,6 +17,19 @@
 #include "mmu.hpp"
 
 void InstructionSet::pre_boot_state() {
+    _cpu->PC = 0x0000;
+    _cpu->SP = 0xFFFE;
+
+    _cpu->A = 0x01;
+    _cpu->F = 0xB0;
+    _cpu->B = 0x00;
+    _cpu->C = 0x13;
+    _cpu->D = 0x00;
+    _cpu->E = 0xD8;
+    _cpu->H = 0x01;
+    _cpu->L = 0x4D;
+
+    _cpu->_ime = false;
 
     _mmu->write8(0xFF01, 0x00); // SB (Serial Link Data Buffer)
     _mmu->write8(0xFF02, 0x7E); // SC (Serial Link Control - Unused bits read as 1)
@@ -26,7 +39,6 @@ void InstructionSet::pre_boot_state() {
     _mmu->write8(0xFF05, 0x00); // TIMA
     _mmu->write8(0xFF06, 0x00); // TMA
     _mmu->write8(0xFF07, 0x00); // TAC
-    _mmu->write8(0xFF0F, 0x00); // IF (Interrupt Flag - Top 3 bits always 1)
 
     // 3. Audio Registers (APU)
     _mmu->write8(0xFF10, 0x00);
@@ -49,23 +61,24 @@ void InstructionSet::pre_boot_state() {
     _mmu->write8(0xFF26, 0x00);
 
     // 4. Graphics Registers (PPU) - CRITICAL ADDITIONS
-    _mmu->write8(0xFF40, 0x00); // LCDC (Turns LCD Main Display ON)
-    _mmu->write8(0xFF41, 0x00); // LCDC (Turns LCD Main Display ON)
-    _mmu->write8(0xFF42, 0x00); // SCY (Scroll Y)
-    _mmu->write8(0xFF43, 0x00); // SCX (Scroll X)
+    _mmu->write8(0xFF40, 0x91); // LCDC
+    _mmu->write8(0xFF41, 0x85); // STAT
+    _mmu->write8(0xFF42, 0x00); // SCY
+    _mmu->write8(0xFF43, 0x00); // SCX
+    _mmu->write8(0xFF44, 0x00); // LY
     _mmu->write8(0xFF45, 0x00); // LYC
-    _mmu->write8(0xFF46, 0x00); // LYC
-    _mmu->write8(0xFF47, 0xFC); // BGP (Background Palette mapping)
-    _mmu->write8(0xFF48, 0xFF); // OBP0 (Object Palette 0)
-    _mmu->write8(0xFF49, 0xFF); // OBP1 (Object Palette 1)
-    _mmu->write8(0xFF4A, 0x00); // WY (Window Y)
-    _mmu->write8(0xFF4B, 0x00); // WX (Window X)
+    _mmu->write8(0xFF47, 0xFC); // BGP
+    _mmu->write8(0xFF48, 0xFF); // OBP0
+    _mmu->write8(0xFF49, 0xFF); // OBP1
+    _mmu->write8(0xFF4A, 0x00); // WY
+    _mmu->write8(0xFF4B, 0x00); // WX
 
     // 5. Unmap Boot ROM
     // _mmu->write8(0xFF50, 0x01); // Unmaps Boot ROM, enabling Cartridge mapping
 
     // 6. Interrupt Enable
-    _mmu->write8(0xFFFF, 0x00); // IE (Disable all interrupts at boot)
+    _mmu->write8(0xFF0F, 0xE1);
+    _mmu->write8(0xFFFF, 0x00);
 }
 void InstructionSet::post_boot_state() {
     // 1. CPU Registers
@@ -3437,7 +3450,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xFB: {
-        // printf("EI\n");
+        printf("EI\n");
         _cpu->ime_pending = true;
         _cpu->PC += 1;
         break;
@@ -3777,15 +3790,13 @@ void InstructionSet::step() {
     _cpu->cycle_count += current_cycle;
 }
 
-void InstructionSet::interrupt_handler(uint16_t _vector) {
-
+void InstructionSet::interrupt_handler(uint16_t vector) {
+    _cpu->_ime  = false;
+    uint16_t pc = _cpu->PC;
     _cpu->SP -= 1;
-    _cpu->_ime = false;
-    uint8_t h  = _cpu->PC >> 8;
-    _mmu->write8(_cpu->SP, h);
+    _mmu->write8(_cpu->SP, (pc >> 8) & 0xFF);
     _cpu->SP -= 1;
-    uint8_t l = _cpu->PC & 0xFF;
-    _mmu->write8(_cpu->SP, l);
-    _cpu->PC = _vector;
+    _mmu->write8(_cpu->SP, pc & 0xFF);
+    _cpu->PC = vector;
     _cpu->cycle_count += 20;
 }

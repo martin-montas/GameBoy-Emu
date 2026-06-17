@@ -87,7 +87,7 @@ void Timer::tick(int cycle) {
             if (_tima == _tma) {
                 _tima = 0;
                 /* request interrupt */
-                _interrupt->request_exec_interrupt(INTERRUPT_TIMER);
+                _interrupt->request_interrupt(INTERRUPT_TIMER);
             }
         }
     }

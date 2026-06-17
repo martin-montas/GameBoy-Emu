@@ -45,5 +45,11 @@ void GameBoy::run() {
                 _cpu->halted = false;
             }
         }
+        if (_cpu->_ime) {
+            if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
+                _interrupt->exec_handler();
+            }
+            _cpu->_ime = false;
+        }
     }
 }

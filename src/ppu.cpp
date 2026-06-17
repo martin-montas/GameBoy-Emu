@@ -18,6 +18,7 @@ void Ppu::hblank_handler() {
             LY += 1;
             /* enters vblank */
             if (LY == 144) {
+                // _interrupt->request_interrupt(INTERRUPT_VBLANK);
             } else if (LY == 154) {
                 /* enters new frame */
                 enter_mode_2();

@@ -41,17 +41,18 @@ class Interrupt : public IInterrupt {
      * @param[in]: bits to be inserted in the interrupt
      * flag.
      */
-    inline void request_exec_interrupt(Interrupt_Flags flag) override {
+    inline void request_interrupt(Interrupt_Flags flag) override {
         _IF |= flag;
-        if (!(pending_interrupt())) {
+    }
+
+    inline void exec_handler() override {
+        // TODO: interrupt should happen here
+        if (!_cpu->_ime) {
             return;
-        }
-        // TODO: interrupt should happen here instantly
-        if ((_IF & INTERRUPT_VBLANK) && (_IE & INTERRUPT_VBLANK)) {
+        } else if ((_IF & INTERRUPT_VBLANK) && (_IE & INTERRUPT_VBLANK)) {
             _cpu->_instruction->interrupt_handler(VECTOR_VBLANK);
         } else if ((_IF & INTERRUPT_LCD) && (_IE & INTERRUPT_LCD)) {
             _cpu->_instruction->interrupt_handler(VECTOR_LDC_STAT);
-
         } else if ((_IF & INTERRUPT_TIMER) && (_IE & INTERRUPT_TIMER)) {
 
             _cpu->_instruction->interrupt_handler(VECTOR_TIMER);
@@ -60,9 +61,8 @@ class Interrupt : public IInterrupt {
             _cpu->_instruction->interrupt_handler(VECTOR_SERIAL);
         } else if ((_IF & INTERRUPT_SERIAL) && (_IE & INTERRUPT_JOYPAD)) {
             _cpu->_instruction->interrupt_handler(VECTOR_JOYPAD);
-        } else {
-            return;
         }
+        _cpu->_ime = false;
     }
 
     /*
@@ -70,12 +70,16 @@ class Interrupt : public IInterrupt {
      * registers. Its an override of the
      * interrupt interface.
      * @param[in]: address to read.
+     * @return: the register in question.
      */
     inline uint8_t read(uint16_t addr) override {
         if (addr == 0xFFFF) {
-            return _IE;
+            return _IE | 0xE0;
         }
-        return _IF;
+        if (addr == 0xFF0F) {
+            return _IF | 0xE0;
+        }
+        return 0xFF;
     }
     /*
      * @brief: writes to either the IF and the Ie

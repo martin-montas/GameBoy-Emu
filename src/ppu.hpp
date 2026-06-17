@@ -99,7 +99,7 @@ class Ppu {
      * to the ppu ly register
      */
     inline void write_ly(uint8_t value) {
-        LY = 0;
+        LY = 0x00;
     }
 
     /*

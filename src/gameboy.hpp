@@ -40,12 +40,11 @@ class GameBoy {
     explicit GameBoy(const std::string file) {
         _interrupt = new Interrupt();
         _timer     = new Timer(_interrupt);
-        _mmu       = new Mmu(file, _timer, _interrupt);
         _ppu       = new Ppu(_interrupt);
-        _sdl       = new SDL();
-
-        _cpu = new Cpu(_mmu, _interrupt);
+        _mmu       = new Mmu(file, _timer, _interrupt);
         _mmu->attach(_ppu);
+        _sdl = new SDL();
+        _cpu = new Cpu(_mmu, _interrupt);
         _ppu->attach(_mmu);
         // _interrupt->attach(_cpu);
 

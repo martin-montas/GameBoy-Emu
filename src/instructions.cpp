@@ -17,7 +17,7 @@
 #include "mmu.hpp"
 
 void InstructionSet::pre_boot_state() {
-    _cpu->PC = 0x0100;
+    _cpu->PC = 0x0000;
     _cpu->SP = 0xFFFE;
 
     _cpu->A = 0x01;
@@ -82,7 +82,7 @@ void InstructionSet::pre_boot_state() {
 }
 void InstructionSet::post_boot_state() {
     // 1. CPU Registers
-    _cpu->PC = 0x0000;
+    _cpu->PC = 0x0100;
     _cpu->SP = 0xFFFE;
     _cpu->AF = 0x01B0;
     _cpu->BC = 0x0013;

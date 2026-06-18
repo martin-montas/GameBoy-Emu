@@ -45,53 +45,38 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             if ((LCDC & FLAG_WIN_ENABLE)) {
                 continue;
             }
-            /* gets current pixel being drawn */
-            uint8_t wx_pixel = x - (_wx - 7);
-            uint8_t wy_pixel = LY - _wy;
+            /* pixel to be rendered */
+            uint8_t pix_x = x - (_wx - 7);
+            uint8_t pix_y = LY - _wy;
 
-            /* get the tiles number for the map */
-            uint8_t tile_x = wx_pixel / 8;
-            uint8_t tile_y = wy_pixel / 8;
+            /* get tile tile map index */
 
-            /* gets the title map for the window */
-            if ((LCDC & FLAG_WIN_MAP) == 0)
-                uint8_t tile = _mmu->read8(0x9800 + tile_y * 32 + tile_x);
-            else
-                uint8_t tile = _mmu->read8(0x9C00 + tile_y * 32 + tile_x);
-
-            // uint8_t background_x = (x + _scx);
-            // uint8_t background_y = (LY + _scy);
-            // int     tile_x       = background_x / 8;
-            // int     tile_y       = background_y / 8;
-            // // fetches offset for the tile map
-            // int offset = (tile_y * 32 + tile_x);
-
-            // //  gets tile number from tile map
-            // uint8_t  tile_number    = _mmu->read8(addr + offset);
-            // uint16_t tile_data_addr = (0x8000 + tile_number * 16);
-
-            // int pixel_y = background_y % 8;
-            // int pixel_x = background_x % 8;
-
-            // uint8_t byte0 = _mmu->read8(tile_data_addr + (pixel_y * 2));
-            // uint8_t byte1 = _mmu->read8(tile_data_addr + (pixel_y * 2) + 1);
-
-            // bool msb = ((byte0 >> (7 - pixel_x)) & 1);
-            // bool lsb = ((byte1 >> (7 - pixel_x)) & 1);
-
-            // uint8_t  color = (msb << 1) | lsb;
-            // uint32_t color_val;
-            // if (color == 0) {
-            //     color_val = WHITE;
-            // } else if (color == 1) {
-            //     color_val = LIGHT_GRAY;
-            // } else if (color == 2) {
-            //     color_val = DARK_GRAY;
-            // } else {
-            //     color_val = BLACK;
-            // }
-
-            // frame_buff[LY * WIDTH + x] = color_val;
+            if ((LCDC & FLAG_WIN_MAP) == 0) {
+                // _mmu->read8(0x9800 +);
+            } else {
+                // _mmu->read8(0x9800 +);
+            }
+            /*
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             */
 
         } else {
 

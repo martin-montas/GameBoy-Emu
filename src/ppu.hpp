@@ -62,7 +62,6 @@ class Ppu {
     uint8_t        _LCDC;      /* lcdc register */
     uint8_t        LY;         /* LY register for scanlines */
     bgwin_priority _f_flag;    /* updates ppu rendering component */
-    bool           y_cond;
 
   public:
     inline explicit Ppu(IInterrupt* interrupt) : can_render(false), _mode(2), LY(0) {

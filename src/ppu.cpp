@@ -38,25 +38,71 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
     bool window      = false;
     int  rendered_px = 0;
     for (int x = 0; x <= 159; x++) {
-        uint8_t _wy = _mmu->read8(0xFF4A);
-        uint8_t _wx = _mmu->read8(0xFF4B);
+        uint8_t _wy  = _mmu->read8(0xFF4A);
+        uint8_t _wx  = _mmu->read8(0xFF4B);
+        uint8_t LCDC = _mmu->read8(0xFF40);
         if ((LY >= _wy) && (x >= _wx - 7)) {
-            uint8_t LCDC = _mmu->read8(0xFF40);
-            if ((LCDC & FLAG_WIN_ENABLE)) {
+            if (!(LCDC & FLAG_WIN_ENABLE)) {
                 continue;
             }
-            /* pixel to be rendered */
-            uint8_t pix_x = x - (_wx - 7);
-            uint8_t pix_y = LY - _wy;
+            uint8_t px_x = x - (_wx - 7);
+            uint8_t px_y = LY - _wy;
 
-            /* get tile tile map index */
+            /* used to get which tile the curent
+             * pixel belongs to
+             */
+            int tile_x = px_x / 8;
+            int tile_y = px_y / 8;
 
+            /* get tile map index with offset */
+            int     offset = tile_y * 32 + tile_x;
+            uint8_t tile_index;
+
+            /* fetches window tile  map index with offset */
             if ((LCDC & FLAG_WIN_MAP) == 0) {
-                // _mmu->read8(0x9800 +);
+                tile_index = _mmu->read8(0x9800 + offset);
             } else {
-                // _mmu->read8(0x9800 +);
+                tile_index = _mmu->read8(0x9C00 + offset);
             }
+
+            uint8_t tile_data_addr;
+
+            /* get tile data address
+            TODO: you are here !!!
+            */
+            if ((LCDC_ADDR & FLAG_BG_AREA) == 0) {
+                tile_data_addr = _mmu->read8(0x8000);
+            } else {
+                tile_data_addr = _mmu->read8(0x9000);
+            }
+
             /*
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
+             *
              *
              *
              *
@@ -118,120 +164,120 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             frame_buff[LY * WIDTH + x] = color_val;
         }
     }
+}
 
-    void Ppu::win_update_framebuff(uint16_t addr) {
-        uint8_t WY = _mmu->read8(WY_ADDR);
-        uint8_t WX = _mmu->read8(WX_ADDR);
+void Ppu::win_update_framebuff(uint16_t addr) {
+    uint8_t WY = _mmu->read8(WY_ADDR);
+    uint8_t WX = _mmu->read8(WX_ADDR);
+    return;
+}
 
+void Ppu::enter_mode_3() {
+    _LCDC = _mmu->read8(LCDC_ADDR);
+    if (_f_flag == bg)
+        /* checks the bg map from _LCDC reg */
+        if (!(_LCDC & FLAG_BG_MAP)) {
+            bg_update_framebuff(0x9800);
+
+        } else {
+            bg_update_framebuff(0x9C00);
+        }
+    else
+        /* update window component */
+        if (!(_LCDC & FLAG_WIN_MAP)) {
+            win_update_framebuff(0x9800);
+
+        } else {
+            win_update_framebuff(0x9C00);
+        }
+}
+
+void Ppu::enter_mode_2() {
+    /* Beginning of line -> Mode 2
+     * oams its located at 0xFE00 - 0xFE9F
+     */
+    return;
+}
+
+void Ppu::write_reg(uint8_t& data, uint16_t addr) {
+    switch (addr & 0xF) {
+    case 0x4: /* LY reg */
+        break;
+    case 0x7: /* LY reg */
+        break;
+    }
+}
+
+void Ppu::switch_mode(int mode) {
+    if (mode == 0)
+        hblank_handler();
+    else if (mode == 2)
+        enter_mode_2();
+    else if (mode == 3)
+        enter_mode_3();
+}
+
+bool Ppu::frame_ready() const {
+    return can_render;
+}
+
+void Ppu::dot_cycle(int t_cycle) {
+    /* returns of _LCDC flag is set to 0 */
+    _LCDC = _mmu->read8(LCDC_ADDR);
+    if ((_LCDC & FLAG_LCD_ENABLE) == 0) {
+        LY         = 0;
+        _mode      = 0;
+        _dot_clock = 0;
         return;
     }
+    _dot_clock += t_cycle;
 
-    void Ppu::enter_mode_3() {
-        _LCDC = _mmu->read8(LCDC_ADDR);
-        if (_f_flag == bg)
-            /* checks the bg map from _LCDC reg */
-            if (!(_LCDC & FLAG_BG_MAP)) {
-                bg_update_framebuff(0x9800);
+    if ((_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_WIN_ENABLE))
+        _f_flag = win;
 
+    else if (!(_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_BG_ENABLE))
+        _f_flag = bg;
+    else
+        _f_flag = obj;
+
+    switch (_mode) {
+    case 0: /* HBlank */
+        if (_dot_clock >= 204) {
+            _dot_clock -= 204;
+            LY += 1;
+            if (LY == 144) {
+                _mode      = 1;
+                can_render = true;
             } else {
-                bg_update_framebuff(0x9C00);
+                _mode = 2;
+                switch_mode(2);
             }
-        else
-            /* update window component */
-            if (!(_LCDC & FLAG_WIN_MAP)) {
-                win_update_framebuff(0x9800);
-
-            } else {
-                win_update_framebuff(0x9C00);
-            }
-    }
-
-    void Ppu::enter_mode_2() {
-        /* Beginning of line -> Mode 2
-         * oams its located at 0xFE00 - 0xFE9F
-         */
-        return;
-    }
-
-    void Ppu::write_reg(uint8_t & data, uint16_t addr) {
-        switch (addr & 0xF) {
-        case 0x4: /* LY reg */
-            break;
-        case 0x7: /* LY reg */
-            break;
         }
-    }
-
-    void Ppu::switch_mode(int mode) {
-        if (mode == 0)
-            hblank_handler();
-        else if (mode == 2)
-            enter_mode_2();
-        else if (mode == 3)
-            enter_mode_3();
-    }
-
-    bool Ppu::frame_ready() const {
-        return can_render;
-    }
-
-    void Ppu::dot_cycle(int t_cycle) {
-        /* returns of _LCDC flag is set to 0 */
-        _LCDC = _mmu->read8(LCDC_ADDR);
-        if ((_LCDC & FLAG_LCD_ENABLE) == 0) {
-            LY         = 0;
-            _mode      = 0;
-            _dot_clock = 0;
-            return;
+        break;
+    case 1: /* vblank */
+        if (_dot_clock >= 456) {
+            _dot_clock -= 456;
+            LY += 1;
+            if (LY == 154) {
+                _mode = 2;
+                LY    = 0;
+                switch_mode(2);
+            }
         }
-        _dot_clock += t_cycle;
-
-        if ((_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_WIN_ENABLE))
-            _f_flag = win;
-
-        else if (!(_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_BG_ENABLE))
-            _f_flag = bg;
-        else
-            _f_flag = obj;
-
-        switch (_mode) {
-        case 0: /* HBlank */
-            if (_dot_clock >= 204) {
-                _dot_clock -= 204;
-                LY += 1;
-                if (LY == 144) {
-                    _mode      = 1;
-                    can_render = true;
-                } else {
-                    _mode = 2;
-                    switch_mode(2);
-                }
-            }
-            break;
-        case 1: /* vblank */
-            if (_dot_clock >= 456) {
-                _dot_clock -= 456;
-                LY += 1;
-                if (LY == 154) {
-                    _mode = 2;
-                    LY    = 0;
-                    switch_mode(2);
-                }
-            }
-            break;
-        case 2: /* oam scan */
-            if (_dot_clock >= 80) {
-                _dot_clock -= 80;
-                _mode = 3;
-                switch_mode(3);
-            }
-            break;
-        case 3: /* render */
-            if (_dot_clock >= 172) {
-                _dot_clock -= 172;
-                _mode = 0;
-                switch_mode(0);
-            }
-            break;
+        break;
+    case 2: /* oam scan */
+        if (_dot_clock >= 80) {
+            _dot_clock -= 80;
+            _mode = 3;
+            switch_mode(3);
         }
+        break;
+    case 3: /* render */
+        if (_dot_clock >= 172) {
+            _dot_clock -= 172;
+            _mode = 0;
+            switch_mode(0);
+        }
+        break;
     }
+}

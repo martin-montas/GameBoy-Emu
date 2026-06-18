@@ -70,7 +70,6 @@ uint8_t Timer::read(uint16_t addr) {
 }
 
 void Timer::tick(int cycle) {
-    // TODO: you are here!!
     _div_acc += cycle;
     if (_div_acc == 256) {
         _div_acc -= 256;

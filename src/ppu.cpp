@@ -153,7 +153,7 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
         return;
     }
 
-    void Ppu::write_reg(uint8_t& data, uint16_t addr) {
+    void Ppu::write_reg(uint8_t & data, uint16_t addr) {
         switch (addr & 0xF) {
         case 0x4: /* LY reg */
             break;

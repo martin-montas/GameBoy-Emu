@@ -154,6 +154,7 @@ void Ppu::win_update_framebuff(uint16_t addr) {
 
 void Ppu::enter_mode_3() {
     _LCDC = _mmu->read8(LCDC_ADDR);
+    // TODO: refactor this here
     if (_f_flag == bg)
         /* checks the bg map from _LCDC reg */
         if (!(_LCDC & FLAG_BG_MAP)) {

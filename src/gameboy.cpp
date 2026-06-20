@@ -33,7 +33,6 @@ void GameBoy::run() {
 
         if (current_cycle > 0) {
             _timer->tick(current_cycle);
-            // _serial->tick(current_cycle);
             _ppu->dot_cycle(current_cycle);
             if (_ppu->can_render) {
                 _sdl->frame_step(_ppu->frame_buff);

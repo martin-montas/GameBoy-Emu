@@ -86,7 +86,6 @@ uint8_t Mmu::read8(uint16_t addr) {
         } else if (addr >= 0xFF04 && addr <= 0xFF07) {
             return _timer->read(addr);
         } else if (addr == 0xFF0F) {
-            printf("interurpt read by 0xFF0F\n");
             return _interrupt->read(addr);
         } else if (addr == 0xFF44) {
             return _ppu->read_ly();
@@ -97,7 +96,6 @@ uint8_t Mmu::read8(uint16_t addr) {
     } else if (addr >= 0xFF80 && addr <= 0xFFFE) {
         return this->HRAM[addr - 0xFF80];
     } else if (addr == 0xFFFF) {
-        printf("interurpt read by 0xFFFF\n");
         return _interrupt->read(addr);
     } else {
         printf("Readable memory access out of bounds: %x\n", addr);
@@ -156,7 +154,7 @@ void Mmu::write8(uint16_t addr, uint8_t value) {
             _interrupt->write(addr, value);
             return;
         } else if (addr == 0xFF44) {
-            _ppu->write_ly(value);
+            _ppu->reset_ly(value);
             return;
         } else {
             this->IO_REGISTERS[addr - 0xFF00] = value;

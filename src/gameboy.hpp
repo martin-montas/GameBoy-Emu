@@ -5,7 +5,6 @@
 #define SRC_GAME_BOY_HPP_
 
 #include <stdint.h>
-#include <string>
 
 #include "cpu.hpp"
 #include "sdl-utils.hpp"

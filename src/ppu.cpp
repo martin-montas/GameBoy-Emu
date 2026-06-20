@@ -1,9 +1,8 @@
 // Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
 // All components of this software are licensed under the GNU License.
 // Author: Martin Montas, martinmontas1@gmail.com
-#include <stdio.h>
-
 #include "ppu.hpp"
+#include <stdio.h>
 
 /*
  * @brief Handles hblank-related things like
@@ -35,18 +34,23 @@ void Ppu::hblank_handler() {
  * @param[in]: address of selected tile map
  */
 void Ppu::bg_update_framebuff(uint16_t addr) {
-    bool window      = false;
-    int  rendered_px = 0;
+    bool    window            = false;
+    int     rendered_px       = 0;
+    uint8_t _wy               = _mmu->read8(0xFF4A);
+    uint8_t _wx               = _mmu->read8(0xFF4B);
+    uint8_t LCDC              = _mmu->read8(0xFF40);
+    bool    windown_v_trigger = LY >= _wy;
+    uint8_t window_line       = 0;
     for (int x = 0; x <= 159; x++) {
-        uint8_t _wy  = _mmu->read8(0xFF4A);
-        uint8_t _wx  = _mmu->read8(0xFF4B);
-        uint8_t LCDC = _mmu->read8(0xFF40);
-        if ((LY >= _wy) && (x >= _wx - 7)) {
+        if (windown_v_trigger && (x >= _wx - 7)) {
             if (!(LCDC & FLAG_WIN_ENABLE)) {
                 continue;
             }
             uint8_t px_x = x - (_wx - 7);
-            uint8_t px_y = LY - _wy;
+            // TODO: Use a new variable like ly
+            // that increments for every pixel drawn
+            //
+            uint8_t px_y = window_line;
 
             /* used to get which tile the curent
              * pixel belongs to
@@ -55,76 +59,45 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             int tile_y = px_y / 8;
 
             /* get tile map index with offset */
-            int     offset = tile_y * 32 + tile_x;
-            uint8_t tile_index;
+            int offset = tile_y * 32 + tile_x;
+            int tile_index;
 
             /* fetches window tile  map index with offset */
-            if ((LCDC & FLAG_WIN_MAP) == 0) {
-                tile_index = _mmu->read8(0x9800 + offset);
+            tile_index = _mmu->read8(addr + offset);
+
+            uint16_t tile_data_addr;
+
+            if ((LCDC & FLAG_BG_AREA) == 0) {
+                tile_index     = (uint8_t)tile_index;
+                tile_data_addr = _mmu->read8(0x8000 + (tile_index * 16));
             } else {
-                tile_index = _mmu->read8(0x9C00 + offset);
+                tile_data_addr = _mmu->read8(0x9000 + (tile_index * 16));
             }
 
-            uint8_t tile_data_addr;
+            int pixel_y = px_y % 8;
+            int pixel_x = px_x % 8;
 
-            /* get tile data address
-            TODO: you are here !!!
-            */
-            if ((LCDC_ADDR & FLAG_BG_AREA) == 0) {
-                tile_data_addr = _mmu->read8(0x8000);
+            uint8_t byte0 = _mmu->read8(tile_data_addr + (pixel_x * 2));
+            uint8_t byte1 = _mmu->read8(tile_data_addr + (pixel_y * 2) + 1);
+
+            bool msb = ((byte0 >> (7 - px_y)) & 1);
+            bool lsb = ((byte1 >> (7 - px_x)) & 1);
+
+            uint8_t  color = (msb << 1) | lsb;
+            uint32_t color_val;
+            if (color == 0) {
+                color_val = WHITE;
+            } else if (color == 1) {
+                color_val = LIGHT_GRAY;
+            } else if (color == 2) {
+                color_val = DARK_GRAY;
             } else {
-                tile_data_addr = _mmu->read8(0x9000);
+                color_val = BLACK;
             }
-
-            /*
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             *
-             */
-
+            frame_buff[LY * WIDTH + x] = color_val;
         } else {
+            // TODO: make the background use the 2 addressing modes as well
+            //
 
             uint8_t _scy         = _mmu->read8(0xFF42);
             uint8_t _scx         = _mmu->read8(0xFF43);
@@ -137,8 +110,15 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             int offset = (tile_y * 32 + tile_x);
 
             //  gets tile number from tile map
-            uint8_t  tile_number    = _mmu->read8(addr + offset);
-            uint16_t tile_data_addr = (0x8000 + tile_number * 16);
+            uint8_t  tile_number = _mmu->read8(addr + offset);
+            uint16_t tile_data_addr;
+
+            if ((LCDC & FLAG_BG_AREA) == 0) {
+                tile_number    = (uint8_t)tile_number;
+                tile_data_addr = _mmu->read8(0x8000 + (tile_number * 16));
+            } else {
+                tile_data_addr = _mmu->read8(0x9000 + (tile_number * 16));
+            }
 
             int pixel_y = background_y % 8;
             int pixel_x = background_x % 8;
@@ -197,15 +177,6 @@ void Ppu::enter_mode_2() {
      * oams its located at 0xFE00 - 0xFE9F
      */
     return;
-}
-
-void Ppu::write_reg(uint8_t& data, uint16_t addr) {
-    switch (addr & 0xF) {
-    case 0x4: /* LY reg */
-        break;
-    case 0x7: /* LY reg */
-        break;
-    }
 }
 
 void Ppu::switch_mode(int mode) {

@@ -56,27 +56,27 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             uint8_t _scx = _mmu->read8(0xFF43);
 
             uint8_t px = (_scx + t);
+            uint8_t py = (LY + _scy);
+
             for (int p = 0; p < 8; p++) {
-            }
 
-            uint16_t tile_map_addr;
-            if ((LCDC & FLAG_BG_MAP) == 0) {
-                tile_map_addr = 0x9800;
-            } else {
-                tile_map_addr = 0x9C00;
-            }
-            uint8_t tile_index = _mmu->read8(tile_map_addr + t);
-
-            /* signed 8 bit integer for the indexing tile data */
-            int8_t tile_data;
-
-            if ((LCDC & FLAG_BG_AREA) == 0) {
-                /* unsigned method */
-                tile_data = _mmu->read8(0x9000 + (tile_index * 16));
-            } else {
-                /* unsigned method */
-                tile_index = (uint8_t)tile_index;
-                tile_data  = _mmu->read8(0x8800 + (tile_index * 16));
+                uint16_t tile_map_addr;
+                if ((LCDC & FLAG_BG_MAP) == 0) {
+                    tile_map_addr = 0x9800;
+                } else {
+                    tile_map_addr = 0x9C00;
+                }
+                uint8_t tile_index = _mmu->read8(tile_map_addr + t);
+                /* signed 8 bit integer for the indexing tile data */
+                int8_t tile_data;
+                if ((LCDC & FLAG_BG_AREA) == 0) {
+                    /* signed method */
+                    tile_data = _mmu->read8(0x9000 + (tile_index * 16));
+                } else {
+                    /* unsigned method */
+                    tile_index = (uint8_t)tile_index;
+                    tile_data  = _mmu->read8(0x8800 + (tile_index * 16));
+                }
             }
         }
 
@@ -290,4 +290,3 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             }
             break;
         }
-    }

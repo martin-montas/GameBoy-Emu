@@ -60,9 +60,9 @@ class Ppu {
     size_t         _dot_clock; /* updates the t cycles */
     size_t         _mode;      /* updates to current mode */
     uint8_t        _LCDC;      /* lcdc register */
-    bool           y_cond;
-    uint8_t        LY;      /* LY register for scanlines */
-    bgwin_priority _f_flag; /* updates ppu rendering component */
+    uint8_t        _win_line;  /* used for window y */
+    uint8_t        LY;         /* LY register for scanlines */
+    bgwin_priority _f_flag;    /* updates ppu rendering component */
 
   public:
     inline explicit Ppu(IInterrupt* interrupt) : can_render(false), _mode(2), LY(0) {
@@ -79,8 +79,7 @@ class Ppu {
      * @param[in] interrupt object pointer.
      */
     inline void attach(SystemBus* mmu) {
-        _mmu   = mmu;
-        y_cond = false;
+        _mmu = mmu;
     }
     /*
      * @brief: Used by memory subsystem

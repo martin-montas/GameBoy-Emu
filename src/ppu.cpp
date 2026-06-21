@@ -51,6 +51,14 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             uint8_t win_y = _win_line;
             win_used      = true;
         } else {
+
+            uint8_t _scy = _mmu->read8(0xFF42);
+            uint8_t _scx = _mmu->read8(0xFF43);
+
+            uint8_t px = (_scx + t);
+            for (int p = 0; p < 8; p++) {
+            }
+
             uint16_t tile_map_addr;
             if ((LCDC & FLAG_BG_MAP) == 0) {
                 tile_map_addr = 0x9800;

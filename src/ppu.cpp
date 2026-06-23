@@ -66,11 +66,10 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             } else {
                 tile_map_addr = 0x9C00;
             }
-            uint8_t tile_map_index =
-                _mmu->read8(tile_map_addr + (32 * start_tile_y) + start_tile_x);
+            uint8_t tile_index = _mmu->read8(tile_map_addr + (32 * start_tile_y) + start_tile_x);
 
             /* signed 8 bit integer for the indexing tile data */
-            int8_t tile_data;
+            uint16_t tile_data;
 
             // 13 / 8 = tile column 1
             // 13 % 8 = pixel 5 inside that tile
@@ -88,8 +87,11 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
                 tile_index = (uint8_t)tile_index;
                 tile_data  = _mmu->read8(0x8800 + (tile_index * 16));
             }
-            for (int p = 0; p < 8; p++) {
-            }
+            uint8_t tile_row = background_y % 8;
+
+            /* TODO: find a way to index the proper tile row */
+            uint8_t lsb = _mmu->read8(tile_data);
+            uint8_t msb = _mmu->read8(tile_data + 1);
         }
 
         // for (int x = 0; x <= 159; x++) {

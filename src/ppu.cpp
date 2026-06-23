@@ -51,32 +51,44 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             uint8_t win_y = _win_line;
             win_used      = true;
         } else {
-
             uint8_t _scy = _mmu->read8(0xFF42);
             uint8_t _scx = _mmu->read8(0xFF43);
 
-            uint8_t px = (_scx + t);
-            uint8_t py = (LY + _scy);
+            uint8_t background_x = (_scx + t);
+            uint8_t background_y = (LY + _scy);
 
+            int      start_tile_x = background_x / 8;
+            int      start_tile_y = background_y / 8;
+            uint16_t tile_map_addr;
+
+            if ((LCDC & FLAG_BG_MAP) == 0) {
+                tile_map_addr = 0x9800;
+            } else {
+                tile_map_addr = 0x9C00;
+            }
+            uint8_t tile_map_index =
+                _mmu->read8(tile_map_addr + (32 * start_tile_y) + start_tile_x);
+
+            /* signed 8 bit integer for the indexing tile data */
+            int8_t tile_data;
+
+            // 13 / 8 = tile column 1
+            // 13 % 8 = pixel 5 inside that tile
+
+            // background_y = SCY + LY
+            //
+            // tile row = background_y / 8
+            // row inside tile = background_y % 8
+            //
+            if ((LCDC & FLAG_BG_AREA) == 0) {
+                /* signed method */
+                tile_data = _mmu->read8(0x9000 + (tile_index * 16));
+            } else {
+                /* unsigned method */
+                tile_index = (uint8_t)tile_index;
+                tile_data  = _mmu->read8(0x8800 + (tile_index * 16));
+            }
             for (int p = 0; p < 8; p++) {
-
-                uint16_t tile_map_addr;
-                if ((LCDC & FLAG_BG_MAP) == 0) {
-                    tile_map_addr = 0x9800;
-                } else {
-                    tile_map_addr = 0x9C00;
-                }
-                uint8_t tile_index = _mmu->read8(tile_map_addr + t);
-                /* signed 8 bit integer for the indexing tile data */
-                int8_t tile_data;
-                if ((LCDC & FLAG_BG_AREA) == 0) {
-                    /* signed method */
-                    tile_data = _mmu->read8(0x9000 + (tile_index * 16));
-                } else {
-                    /* unsigned method */
-                    tile_index = (uint8_t)tile_index;
-                    tile_data  = _mmu->read8(0x8800 + (tile_index * 16));
-                }
             }
         }
 
@@ -184,109 +196,110 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
         //     }
         // }
     }
+}
 
-    void Ppu::win_update_framebuff(uint16_t addr) {
-        uint8_t WY = _mmu->read8(WY_ADDR);
-        uint8_t WX = _mmu->read8(WX_ADDR);
+void Ppu::win_update_framebuff(uint16_t addr) {
+    uint8_t WY = _mmu->read8(WY_ADDR);
+    uint8_t WX = _mmu->read8(WX_ADDR);
+    return;
+}
+
+void Ppu::enter_mode_3() {
+    _LCDC = _mmu->read8(LCDC_ADDR);
+    // TODO: refactor this here
+    if (_f_flag == bg)
+        /* checks the bg map from _LCDC reg */
+        if (!(_LCDC & FLAG_BG_MAP)) {
+            bg_update_framebuff(0x9800);
+        } else {
+            bg_update_framebuff(0x9C00);
+        }
+    else
+        /* update window component */
+        if (!(_LCDC & FLAG_WIN_MAP)) {
+            win_update_framebuff(0x9800);
+        } else {
+            win_update_framebuff(0x9C00);
+        }
+}
+
+void Ppu::enter_mode_2() {
+    /* Beginning of line -> Mode 2
+     * oams its located at 0xFE00 - 0xFE9F
+     */
+    return;
+}
+
+void Ppu::switch_mode(int mode) {
+    if (mode == 0)
+        hblank_handler();
+    else if (mode == 2)
+        enter_mode_2();
+    else if (mode == 3)
+        enter_mode_3();
+}
+
+bool Ppu::frame_ready() const {
+    return can_render;
+}
+
+void Ppu::dot_cycle(int t_cycle) {
+    /* returns of _LCDC flag is set to 0 */
+    _LCDC = _mmu->read8(LCDC_ADDR);
+    if ((_LCDC & FLAG_LCD_ENABLE) == 0) {
+        LY         = 0;
+        _mode      = 0;
+        _dot_clock = 0;
         return;
     }
+    _dot_clock += t_cycle;
 
-    void Ppu::enter_mode_3() {
-        _LCDC = _mmu->read8(LCDC_ADDR);
-        // TODO: refactor this here
-        if (_f_flag == bg)
-            /* checks the bg map from _LCDC reg */
-            if (!(_LCDC & FLAG_BG_MAP)) {
-                bg_update_framebuff(0x9800);
+    if ((_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_WIN_ENABLE))
+        _f_flag = win;
+
+    else if (!(_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_BG_ENABLE))
+        _f_flag = bg;
+    else
+        _f_flag = obj;
+
+    switch (_mode) {
+    case 0: /* HBlank */
+        if (_dot_clock >= 204) {
+            _dot_clock -= 204;
+            LY += 1;
+            if (LY == 144) {
+                _mode      = 1;
+                can_render = true;
             } else {
-                bg_update_framebuff(0x9C00);
+                _mode = 2;
+                switch_mode(2);
             }
-        else
-            /* update window component */
-            if (!(_LCDC & FLAG_WIN_MAP)) {
-                win_update_framebuff(0x9800);
-            } else {
-                win_update_framebuff(0x9C00);
-            }
-    }
-
-    void Ppu::enter_mode_2() {
-        /* Beginning of line -> Mode 2
-         * oams its located at 0xFE00 - 0xFE9F
-         */
-        return;
-    }
-
-    void Ppu::switch_mode(int mode) {
-        if (mode == 0)
-            hblank_handler();
-        else if (mode == 2)
-            enter_mode_2();
-        else if (mode == 3)
-            enter_mode_3();
-    }
-
-    bool Ppu::frame_ready() const {
-        return can_render;
-    }
-
-    void Ppu::dot_cycle(int t_cycle) {
-        /* returns of _LCDC flag is set to 0 */
-        _LCDC = _mmu->read8(LCDC_ADDR);
-        if ((_LCDC & FLAG_LCD_ENABLE) == 0) {
-            LY         = 0;
-            _mode      = 0;
-            _dot_clock = 0;
-            return;
         }
-        _dot_clock += t_cycle;
-
-        if ((_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_WIN_ENABLE))
-            _f_flag = win;
-
-        else if (!(_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_BG_ENABLE))
-            _f_flag = bg;
-        else
-            _f_flag = obj;
-
-        switch (_mode) {
-        case 0: /* HBlank */
-            if (_dot_clock >= 204) {
-                _dot_clock -= 204;
-                LY += 1;
-                if (LY == 144) {
-                    _mode      = 1;
-                    can_render = true;
-                } else {
-                    _mode = 2;
-                    switch_mode(2);
-                }
+        break;
+    case 1: /* vblank */
+        if (_dot_clock >= 456) {
+            _dot_clock -= 456;
+            LY += 1;
+            if (LY == 154) {
+                _mode = 2;
+                LY    = 0;
+                switch_mode(2);
             }
-            break;
-        case 1: /* vblank */
-            if (_dot_clock >= 456) {
-                _dot_clock -= 456;
-                LY += 1;
-                if (LY == 154) {
-                    _mode = 2;
-                    LY    = 0;
-                    switch_mode(2);
-                }
-            }
-            break;
-        case 2: /* oam scan */
-            if (_dot_clock >= 80) {
-                _dot_clock -= 80;
-                _mode     = 3;
-                _win_line = 0;
-                switch_mode(3);
-            }
-            break;
-        case 3: /* render */
-            if (_dot_clock >= 172) {
-                _dot_clock -= 172;
-                _mode = 0;
-                switch_mode(0);
-            }
-            break;
         }
+        break;
+    case 2: /* oam scan */
+        if (_dot_clock >= 80) {
+            _dot_clock -= 80;
+            _mode     = 3;
+            _win_line = 0;
+            switch_mode(3);
+        }
+        break;
+    case 3: /* render */
+        if (_dot_clock >= 172) {
+            _dot_clock -= 172;
+            _mode = 0;
+            switch_mode(0);
+        }
+        break;
+    }

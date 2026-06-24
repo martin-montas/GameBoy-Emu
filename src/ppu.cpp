@@ -92,9 +92,8 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             uint8_t lsb = _mmu->read8(tile_data + (2 * tile_row));
             uint8_t msb = _mmu->read8(tile_data + (2 * tile_row) + 1);
 
-            for (int k = 7; k > 0; k--) {
-
-                uint8_t  color = (msb >> k) | (lsb >> k);
+            for (int k = 0; k <= 7; k++) {
+                uint8_t  color = (((msb >> k) & 1) << 1) | (((lsb >> k) & 1));
                 uint32_t color_val;
                 if (color == 0) {
                     color_val = WHITE;

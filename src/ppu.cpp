@@ -2,7 +2,6 @@
 // All components of this software are licensed under the GNU License.
 // Author: Martin Montas, martinmontas1@gmail.com
 #include "ppu.hpp"
-#include <stdio.h>
 
 /*
  * @brief Handles hblank-related things like
@@ -90,8 +89,25 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             uint8_t tile_row = background_y % 8;
 
             /* TODO: find a way to index the proper tile row */
-            uint8_t lsb = _mmu->read8(tile_data);
-            uint8_t msb = _mmu->read8(tile_data + 1);
+            uint8_t lsb = _mmu->read8(tile_data + (2 * tile_row));
+            uint8_t msb = _mmu->read8(tile_data + (2 * tile_row) + 1);
+
+            for (int k = 7; k > 0; k--) {
+
+                uint8_t  color = (msb >> k) | (lsb >> k);
+                uint32_t color_val;
+                if (color == 0) {
+                    color_val = WHITE;
+                } else if (color == 1) {
+                    color_val = LIGHT_GRAY;
+                } else if (color == 2) {
+                    color_val = DARK_GRAY;
+                } else {
+                    color_val = BLACK;
+                }
+
+                // frame_buff[LY * WIDTH + x] = color_val;
+            }
         }
 
         // for (int x = 0; x <= 159; x++) {
@@ -305,3 +321,4 @@ void Ppu::dot_cycle(int t_cycle) {
         }
         break;
     }
+}

@@ -24,7 +24,7 @@ class InstructionSet {
   public:
     InstructionSet(SystemBus* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
         /* initializes regs */
-        post_boot_state();
+        pre_boot_state();
     }
 
     void step();

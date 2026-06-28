@@ -42,8 +42,6 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
     bool    win_used          = false;
 
     for (int x = 0; x < 159; x++) {
-        // TODO: make the background use the 2 addressing modes as well
-        //
         uint8_t _scy         = _mmu->read8(0xFF42);
         uint8_t _scx         = _mmu->read8(0xFF43);
         uint8_t background_x = (x + _scx);

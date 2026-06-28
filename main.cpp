@@ -4,7 +4,7 @@
 #include "src/gameboy.hpp"
 #include <iostream>
 #include <SDL2/SDL.h>
-#include "src/test/test-runner.hpp"
+// #include "src/test/test-runner.hpp"
 
 int main(int argc, char** argv) {
     GameBoy* game = new GameBoy(argv[1]);

@@ -36,7 +36,7 @@ class GameBoy {
     void unhalt();
 
   public:
-    explicit GameBoy(const std::string file) {
+    inline explicit GameBoy(const std::string file) {
         _interrupt = new Interrupt();
         _timer     = new Timer(_interrupt);
         _ppu       = new Ppu(_interrupt);

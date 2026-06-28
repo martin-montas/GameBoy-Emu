@@ -6,7 +6,6 @@
 #define SRC_TIMER_HPP_
 
 #include <stdint.h>
-// #include "./interface-interrupt.hpp"
 #include "device.hpp"
 
 #define TAC_SELECT 0b11

@@ -124,6 +124,7 @@ class Ppu {
     void enter_mode_3();
     void enter_mode_2();
     void hblank_handler();
+
     void bg_update_framebuff(uint16_t addr);
     void win_update_framebuff(uint16_t addr);
 

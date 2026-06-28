@@ -66,4 +66,4 @@ class Timer : public Device {
     uint8_t write(uint16_t addr);
 };
 
-#endif // !SRC_TIMER_HPP_
+#endif //  !SRC_TIMER_HPP_

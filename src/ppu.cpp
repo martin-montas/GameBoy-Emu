@@ -32,7 +32,7 @@ void Ppu::hblank_handler() {
  *
  * @param[in]: address of selected tile map
  */
-void Ppu::bg_update_framebuff(uint16_t addr) {
+void Ppu::update_framebuff() {
     bool    window            = false;
     int     rendered_px       = 0;
     uint8_t _wy               = _mmu->read8(0xFF4A);
@@ -41,7 +41,10 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
     bool    windown_v_trigger = LY >= _wy;
     bool    win_used          = false;
 
-    for (int x = 0; x < 159; x++) {
+    // TODO try to werite the window:
+    // please use WY register for it.
+
+    for (int x = 0; x < 160; x++) {
         // if (windown_v_trigger && (x >= _wx - 7)) {
         // if (!(LCDC & FLAG_WIN_ENABLE)) {
         //     continue;
@@ -100,8 +103,14 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
         int     tile_y       = background_y / 8;
 
         /* fetches offset for the tile map */
-        int offset = (tile_y * 32 + tile_x);
+        int      offset = (tile_y * 32 + tile_x);
+        uint16_t addr;
 
+        if (!(_LCDC & FLAG_BG_MAP)) {
+            addr = 0x9800;
+        } else {
+            addr = 0x9C00;
+        }
         /* gets tile number from tile map */
         uint8_t  tile_number = _mmu->read8(addr + offset);
         uint16_t tile_data_addr;
@@ -134,42 +143,18 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
         } else {
             color_val = BLACK;
         }
-
         frame_buff[LY * WIDTH + x] = color_val;
     }
-    // }
-}
-
-void Ppu::win_update_framebuff(uint16_t addr) {
-    uint8_t WY = _mmu->read8(WY_ADDR);
-    uint8_t WX = _mmu->read8(WX_ADDR);
-    return;
 }
 
 void Ppu::enter_mode_3() {
-    _LCDC = _mmu->read8(LCDC_ADDR);
-    // TODO: refactor this here
-    if (_f_flag == bg)
-        /* checks the bg map from _LCDC reg */
-        if (!(_LCDC & FLAG_BG_MAP)) {
-            bg_update_framebuff(0x9800);
-        } else {
-            bg_update_framebuff(0x9C00);
-        }
-    else
-        /* update window component */
-        if (!(_LCDC & FLAG_WIN_MAP)) {
-            win_update_framebuff(0x9800);
-        } else {
-            win_update_framebuff(0x9C00);
-        }
+    update_framebuff();
 }
 
 void Ppu::enter_mode_2() {
     /* Beginning of line -> Mode 2
      * oams its located at 0xFE00 - 0xFE9F
      */
-    return;
 }
 
 void Ppu::switch_mode(int mode) {
@@ -212,6 +197,12 @@ void Ppu::dot_cycle(int t_cycle) {
             if (LY == 144) {
                 _mode      = 1;
                 can_render = true;
+            }
+            if (WY == 144) {
+                // TODO: do something here
+                _mode      = 1;
+                can_render = true;
+
             } else {
                 _mode = 2;
                 switch_mode(2);

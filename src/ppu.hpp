@@ -61,7 +61,8 @@ class Ppu {
     size_t         _mode;      /* updates to current mode */
     uint8_t        _LCDC;      /* lcdc register */
     uint8_t        _win_line;  /* used for window y */
-    uint8_t        LY;         /* LY register for scanlines */
+    uint8_t        LY;         /* LY register for scanlines bg */
+    uint8_t        WY;         /* WY register for scanlines win */
     bgwin_priority _f_flag;    /* updates ppu rendering component */
 
   public:
@@ -125,8 +126,7 @@ class Ppu {
     void enter_mode_2();
     void hblank_handler();
 
-    void bg_update_framebuff(uint16_t addr);
-    void win_update_framebuff(uint16_t addr);
+    void update_framebuff();
 
     void write_reg(uint8_t& data, uint16_t addr);
     void switch_mode(int mode);

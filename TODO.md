@@ -1,7 +1,7 @@
 # Project TODOs
 
 ## PPU / rendering
-- finish the window layer rendering
+- finish the window layer rendering `you are here.`
 - finish sprite rendering
 
 

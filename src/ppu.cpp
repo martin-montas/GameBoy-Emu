@@ -42,50 +42,100 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
     bool    win_used          = false;
 
     for (int x = 0; x < 159; x++) {
-        uint8_t _scy         = _mmu->read8(0xFF42);
-        uint8_t _scx         = _mmu->read8(0xFF43);
-        uint8_t background_x = (x + _scx);
-        uint8_t background_y = (LY + _scy);
-        int     tile_x       = background_x / 8;
-        int     tile_y       = background_y / 8;
+        if (windown_v_trigger && (x >= _wx - 7)) {
+            if (!(LCDC & FLAG_WIN_ENABLE)) {
+                continue;
+            }
+            uint8_t px_x = x - (_wx - 7);
+            uint8_t px_y = LY - _wy;
 
-        /* fetches offset for the tile map */
-        int offset = (tile_y * 32 + tile_x);
+            /* used to get which tile the curent
+             * pixel belongs to
+             */
+            int tile_x = px_x / 8;
+            int tile_y = px_y / 8;
 
-        /* gets tile number from tile map */
-        uint8_t  tile_number = _mmu->read8(addr + offset);
-        uint16_t tile_data_addr;
+            /* get tile map index with offset */
+            int offset = tile_y * 32 + tile_x;
+            int tile_index;
 
-        /* gets tile addressing mode */
-        if ((LCDC & FLAG_BG_AREA) == 0) {
-            tile_data_addr = 0x9000 + (tile_number * 16);
+            /* fetches window tile  map index with offset */
+            tile_index = _mmu->read8(addr + offset);
+
+            uint16_t tile_data_addr;
+
+            if ((LCDC & FLAG_BG_AREA) == 0) {
+                tile_index     = (uint8_t)tile_index;
+                tile_data_addr = _mmu->read8(0x8000 + (tile_index * 16));
+            } else {
+                tile_data_addr = _mmu->read8(0x9000 + (tile_index * 16));
+            }
+            int     pixel_y = px_y % 8;
+            int     pixel_x = px_x % 8;
+            uint8_t byte0   = _mmu->read8(tile_data_addr + (pixel_x * 2));
+            uint8_t byte1   = _mmu->read8(tile_data_addr + (pixel_y * 2) + 1);
+            bool    msb     = ((byte0 >> (7 - px_y)) & 1);
+            bool    lsb     = ((byte1 >> (7 - px_x)) & 1);
+            uint8_t color   = (msb << 1) | lsb;
+
+            uint32_t color_val;
+            if (color == 0) {
+                color_val = WHITE;
+            } else if (color == 1) {
+                color_val = LIGHT_GRAY;
+            } else if (color == 2) {
+                color_val = DARK_GRAY;
+            } else {
+                color_val = BLACK;
+            }
+            frame_buff[LY * WIDTH + x] = color_val;
+
         } else {
-            tile_number    = (int8_t)tile_number;
-            tile_data_addr = 0x8000 + (tile_number * 16);
+            uint8_t _scy         = _mmu->read8(0xFF42);
+            uint8_t _scx         = _mmu->read8(0xFF43);
+            uint8_t background_x = (x + _scx);
+            uint8_t background_y = (LY + _scy);
+            int     tile_x       = background_x / 8;
+            int     tile_y       = background_y / 8;
+
+            /* fetches offset for the tile map */
+            int offset = (tile_y * 32 + tile_x);
+
+            /* gets tile number from tile map */
+            uint8_t  tile_number = _mmu->read8(addr + offset);
+            uint16_t tile_data_addr;
+
+            /* gets tile addressing mode */
+            if ((LCDC & FLAG_BG_AREA) == 0) {
+                tile_data_addr = 0x9000 + (tile_number * 16);
+            } else {
+                tile_number    = (int8_t)tile_number;
+                tile_data_addr = 0x8000 + (tile_number * 16);
+            }
+
+            int pixel_y = background_y % 8;
+            int pixel_x = background_x % 8;
+
+            uint8_t byte0 = _mmu->read8(tile_data_addr + (pixel_y * 2));
+            uint8_t byte1 = _mmu->read8(tile_data_addr + (pixel_y * 2) + 1);
+
+            bool msb = ((byte0 >> (7 - pixel_x)) & 1);
+            bool lsb = ((byte1 >> (7 - pixel_x)) & 1);
+
+            uint8_t  color = (msb << 1) | lsb;
+            uint32_t color_val;
+            if (color == 0) {
+                color_val = WHITE;
+            } else if (color == 1) {
+                color_val = LIGHT_GRAY;
+            } else if (color == 2) {
+                color_val = DARK_GRAY;
+            } else {
+                color_val = BLACK;
+            }
+
+            frame_buff[LY * WIDTH + x] = color_val;
         }
-
-        int pixel_y = background_y % 8;
-        int pixel_x = background_x % 8;
-
-        uint8_t byte0 = _mmu->read8(tile_data_addr + (pixel_y * 2));
-        uint8_t byte1 = _mmu->read8(tile_data_addr + (pixel_y * 2) + 1);
-
-        bool msb = ((byte0 >> (7 - pixel_x)) & 1);
-        bool lsb = ((byte1 >> (7 - pixel_x)) & 1);
-
-        uint8_t  color = (msb << 1) | lsb;
-        uint32_t color_val;
-        if (color == 0) {
-            color_val = WHITE;
-        } else if (color == 1) {
-            color_val = LIGHT_GRAY;
-        } else if (color == 2) {
-            color_val = DARK_GRAY;
-        } else {
-            color_val = BLACK;
-        }
-
-        frame_buff[LY * WIDTH + x] = color_val;
     }
 }
 

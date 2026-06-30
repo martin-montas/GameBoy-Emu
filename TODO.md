@@ -3,6 +3,8 @@
 ## PPU / rendering
 - finish the window layer rendering `you are here.`
 - finish sprite rendering
+- FF45 — LYC: LY compare The Game Boy constantly compares the value of the LYC and LY registers. When both values are identical, the “LYC=LY” 
+flag in the STAT register is set, and (if enabled) a STAT interrupt is requested.
 
 
 ## audio
@@ -10,9 +12,7 @@
 
 ## 
 
-1. blarggs test:
 
-- finish interrupt to pass ./test/gb-test-roms/cpu_instrs/individual/02-interrupts.gb test
 
 ---
 
@@ -21,16 +21,16 @@
 - [X] Finish Halt instruction
 - [X] Test halt instruction
 - [X] Test IME Interrupt with blarrgs
+- [X] Finish Timer 
+- [X] Test interrupt
 - [ ] Blargg's  test
-- [ ] Finish Timer 
-- [ ] Test interrupt
 
 ## Milestones:
 - [X] CPU.
 - [X] Finish MMU.
 - [X] Boot rom rendering.
-- [ ] Finish timer
-- [ ] Finish Interrupt
+- [X] Finish timer
+- [X] Finish Interrupt
 - [ ] Finish PPU.
 - [ ] CPU-PPU-TIMER sync.
 - [ ] Dmg Acid2 test rom.

@@ -81,25 +81,34 @@ void InstructionSet::pre_boot_state() {
     _mmu->write8(0xFFFF, 0x00);
 }
 void InstructionSet::post_boot_state() {
-    // 1. CPU Registers
+    // =========================
+    // CPU state after boot ROM
+    // =========================
     _cpu->PC = 0x0100;
     _cpu->SP = 0xFFFE;
-    _cpu->AF = 0x01B0;
-    _cpu->BC = 0x0013;
-    _cpu->DE = 0x00D8;
-    _cpu->HL = 0x014D;
 
-    _mmu->write8(0xFF01, 0x00); // SB (Serial Link Data Buffer)
-    _mmu->write8(0xFF02, 0x7E); // SC (Serial Link Control - Unused bits read as 1)
+    _cpu->A = 0x01;
+    _cpu->F = 0xB0;
+    _cpu->B = 0x00;
+    _cpu->C = 0x13;
+    _cpu->D = 0x00;
+    _cpu->E = 0xD8;
+    _cpu->H = 0x01;
+    _cpu->L = 0x4D;
 
-    // 2. Timers & System Interrupts
-    _mmu->write8(0xFF04, 0xAB); // DIV (Divider Register)
+    _cpu->_ime = 0;
+
+    _mmu->write8(0xFF0F, 0x00); // IF
+    _mmu->write8(0xFFFF, 0x00); // IE
+
+    _mmu->write8(0xFF04, 0x00); // DIV
     _mmu->write8(0xFF05, 0x00); // TIMA
     _mmu->write8(0xFF06, 0x00); // TMA
     _mmu->write8(0xFF07, 0x00); // TAC
-    _mmu->write8(0xFF0F, 0xE1); // IF (Interrupt Flag - Top 3 bits always 1)
 
-    // 3. Audio Registers (APU)
+    _mmu->write8(0xFF01, 0x00);
+    _mmu->write8(0xFF02, 0x7E);
+
     _mmu->write8(0xFF10, 0x80);
     _mmu->write8(0xFF11, 0xBF);
     _mmu->write8(0xFF12, 0xF3);
@@ -114,27 +123,34 @@ void InstructionSet::post_boot_state() {
     _mmu->write8(0xFF20, 0xFF);
     _mmu->write8(0xFF21, 0x00);
     _mmu->write8(0xFF22, 0x00);
-    _mmu->write8(0xFF23, 0xBF); // Fixed duplicate typo here
+    _mmu->write8(0xFF23, 0xBF);
     _mmu->write8(0xFF24, 0x77);
     _mmu->write8(0xFF25, 0xF3);
-    _mmu->write8(0xFF26, 0xF1);
+    _mmu->write8(0xFF26, 0xF1); // NR52
 
-    // 4. Graphics Registers (PPU) - CRITICAL ADDITIONS
-    _mmu->write8(0xFF40, 0x91); // LCDC (Turns LCD Main Display ON)
-    _mmu->write8(0xFF42, 0x00); // SCY (Scroll Y)
-    _mmu->write8(0xFF43, 0x00); // SCX (Scroll X)
+    _mmu->write8(0xFF40, 0x91); // LCDC
+    _mmu->write8(0xFF41, 0x85); // STAT
+    _mmu->write8(0xFF42, 0x00); // SCY
+    _mmu->write8(0xFF43, 0x00); // SCX
+    _mmu->write8(0xFF44, 0x00); // LY
     _mmu->write8(0xFF45, 0x00); // LYC
-    _mmu->write8(0xFF47, 0xFC); // BGP (Background Palette mapping)
-    _mmu->write8(0xFF48, 0xFF); // OBP0 (Object Palette 0)
-    _mmu->write8(0xFF49, 0xFF); // OBP1 (Object Palette 1)
-    _mmu->write8(0xFF4A, 0x00); // WY (Window Y)
-    _mmu->write8(0xFF4B, 0x00); // WX (Window X)
 
-    // 5. Unmap Boot ROM
-    // _mmu->write8(0xFF50, 0x01); // Unmaps Boot ROM, enabling Cartridge mapping
+    _mmu->write8(0xFF47, 0xFC); // BGP
+    _mmu->write8(0xFF48, 0xFF); // OBP0
+    _mmu->write8(0xFF49, 0xFF); // OBP1
 
-    // 6. Interrupt Enable
-    _mmu->write8(0xFFFF, 0x00); // IE (Disable all interrupts at boot)
+    _mmu->write8(0xFF4A, 0x00); // WY
+    _mmu->write8(0xFF4B, 0x00); // WX
+
+    // =========================
+    // PPU internal state
+    // =========================
+    // ppu.mode        = 2; // OAM scan
+    // ppu.dots        = 0;
+    // ppu.window_line = 0;
+
+    // // optional but useful for determinism
+    // ppu.line_ticks = 0;
 }
 
 void InstructionSet::ldr(uint16_t& reg) {

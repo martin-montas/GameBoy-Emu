@@ -46,6 +46,7 @@ class Interrupt : public IInterrupt {
     }
 
     inline void exec_handler() override {
+        // TODO: interrupt should happen here
         if (!_cpu->_ime) {
             return;
         } else if ((_IF & INTERRUPT_VBLANK) && (_IE & INTERRUPT_VBLANK)) {

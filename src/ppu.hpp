@@ -64,6 +64,7 @@ class Ppu {
     uint8_t        LY;         /* LY register for scanlines bg */
     uint8_t        wl_counter; /* WY register for scanlines win */
     bgwin_priority _f_flag;    /* updates ppu rendering component */
+    bool           win_used;   /* for window rendering */
 
   public:
     inline explicit Ppu(IInterrupt* interrupt) : can_render(false), _mode(2), LY(0) {

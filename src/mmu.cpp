@@ -87,6 +87,8 @@ uint8_t Mmu::read8(uint16_t addr) {
             return _timer->read(addr);
         } else if (addr == 0xFF0F) {
             return _interrupt->read(addr);
+        } else if (addr == 0xFF40) {
+            return IO_REGISTERS[addr - 0xFF00];
         } else if (addr == 0xFF44) {
             return _ppu->read_ly();
         } else {
@@ -150,7 +152,6 @@ void Mmu::write8(uint16_t addr, uint8_t value) {
             _timer->write(addr, value);
             return;
         } else if (addr == 0xFF0F) {
-            printf("interrupt write to %X by 0xFF0F\n", value);
             _interrupt->write(addr, value);
             return;
         } else if (addr == 0xFF44) {
@@ -164,12 +165,10 @@ void Mmu::write8(uint16_t addr, uint8_t value) {
         this->HRAM[addr - 0xFF80] = value;
         return;
     } else if (addr == 0xFFFF) {
-        printf("interrupt write to %X by 0xFFFF\n", value);
         _interrupt->write(addr, value);
         return;
     } else {
         printf("Writable memory access out of bounds: %X\n", addr);
-        // exit(1);
     }
 }
 

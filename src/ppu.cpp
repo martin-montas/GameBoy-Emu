@@ -50,7 +50,7 @@ void Ppu::update_framebuff() {
         //     continue;
         // }
         // uint8_t px_x = x - (_wx - 7);
-        // uint8_t px_y = LY - _wy;
+        // uint8_t px_y =  wl_counter;
 
         // /* used to get which tile the curent
         //  * pixel belongs to
@@ -175,6 +175,7 @@ void Ppu::dot_cycle(int t_cycle) {
     _LCDC = _mmu->read8(LCDC_ADDR);
     if ((_LCDC & FLAG_LCD_ENABLE) == 0) {
         LY         = 0;
+        wl_counter = 0;
         _mode      = 0;
         _dot_clock = 0;
         return;
@@ -195,11 +196,7 @@ void Ppu::dot_cycle(int t_cycle) {
             _dot_clock -= 204;
             LY += 1;
             if (LY == 144) {
-                _mode      = 1;
-                can_render = true;
-            }
-            if (WY == 144) {
-                // TODO: do something here
+                wl_counter = 0;
                 _mode      = 1;
                 can_render = true;
 

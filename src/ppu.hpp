@@ -62,7 +62,7 @@ class Ppu {
     uint8_t        _LCDC;      /* lcdc register */
     uint8_t        _win_line;  /* used for window y */
     uint8_t        LY;         /* LY register for scanlines bg */
-    uint8_t        WY;         /* WY register for scanlines win */
+    uint8_t        wl_counter; /* WY register for scanlines win */
     bgwin_priority _f_flag;    /* updates ppu rendering component */
 
   public:

@@ -56,8 +56,8 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             int tile_y = px_y / 8;
 
             /* get tile map index with offset */
-            int offset = tile_y * 32 + tile_x;
-            int tile_index;
+            int     offset = tile_y * 32 + tile_x;
+            uint8_t tile_index;
 
             /* fetches window tile  map index with offset */
             tile_index = _mmu->read8(addr + offset);
@@ -65,11 +65,12 @@ void Ppu::bg_update_framebuff(uint16_t addr) {
             uint16_t tile_data_addr;
 
             if ((LCDC & FLAG_BG_AREA) == 0) {
-                tile_index     = (uint8_t)tile_index;
-                tile_data_addr = _mmu->read8(0x8000 + (tile_index * 16));
+                tile_data_addr = 0x9000 + (tile_index * 16);
             } else {
-                tile_data_addr = _mmu->read8(0x9000 + (tile_index * 16));
+                tile_index     = (int8_t)tile_index;
+                tile_data_addr = 0x8000 + (tile_index * 16);
             }
+
             int     pixel_y = px_y % 8;
             int     pixel_x = px_x % 8;
             uint8_t byte0   = _mmu->read8(tile_data_addr + (pixel_x * 2));

@@ -76,7 +76,7 @@ void Ppu::update_framebuff() {
             } else {
                 // signed mode
                 int8_t signed_index = (int8_t)tile_number;
-                tile_data_addr      = 0x8800 + (signed_index * 16);
+                tile_data_addr      = 0x9000 + (signed_index * 16);
             }
 
             int     pixel_y = px_y % 8;
@@ -126,7 +126,7 @@ void Ppu::update_framebuff() {
             } else {
                 // signed mode
                 int8_t signed_index = (int8_t)tile_number;
-                tile_data_addr      = 0x8800 + (signed_index * 16);
+                tile_data_addr      = 0x9000 + (signed_index * 16);
             }
             int pixel_y = background_y % 8;
             int pixel_x = background_x % 8;

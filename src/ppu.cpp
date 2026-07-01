@@ -43,7 +43,7 @@ void Ppu::update_framebuff() {
     bool    window_active  = window_enabled && (LY >= _wy);
 
     for (int x = 0; x < 160; x++) {
-        // printf("LCDC win=%d WY=%d WX=%d LY=%d\n", (LCDC & FLAG_WIN_ENABLE) != 0, _wy, _wx, LY);
+        printf("LCDC win=%d WY=%d WX=%d LY=%d\n", (LCDC & FLAG_WIN_ENABLE) != 0, _wy, _wx, LY);
         bool window_fires = window_active && (x >= _wx - 7);
 
         if (window_fires) {

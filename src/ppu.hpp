@@ -14,10 +14,10 @@
 #define WY_ADDR   0xFF4A
 #define WX_ADDR   0xFF4B
 
-#define WHITE      0x9A9E3F
-#define LIGHT_GRAY 0x496B22
-#define DARK_GRAY  0x0E450B
-#define BLACK      0x1B2A09
+#define WHITE      0xCADC9F
+#define LIGHT_GRAY 0xA3B57D
+#define DARK_GRAY  0x586a43
+#define BLACK      0x2c3521
 #define SCALE      4
 
 /*

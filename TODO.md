@@ -11,10 +11,6 @@ flag in the STAT register is set, and (if enabled) a STAT interrupt is requested
 ## audio
 - finish audio
 
-## 
-
-
-
 ---
 
 ## requires immediate action:
@@ -37,3 +33,5 @@ flag in the STAT register is set, and (if enabled) a STAT interrupt is requested
 - [ ] Finish PPU.
 - [ ] CPU-PPU-TIMER sync.
 - [ ] Dmg Acid2 test rom.
+
+---

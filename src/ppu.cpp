@@ -47,7 +47,6 @@ void Ppu::update_framebuff() {
         bool window_fires = window_active && (x >= _wx - 7);
 
         if (window_fires) {
-            printf("it fired!!!");
             win_used     = true;
             uint8_t px_x = x - (_wx - 7);
             uint8_t px_y = wl_counter;
@@ -153,6 +152,8 @@ void Ppu::update_framebuff() {
     }
 }
 
+void Ppu::fetch_sprites() {}
+
 void Ppu::enter_mode_3() {
     update_framebuff();
 }
@@ -161,6 +162,35 @@ void Ppu::enter_mode_2() {
     /* Beginning of line -> Mode 2
      * oams its located at 0xFE00 - 0xFE9F
      */
+
+    /* Byte Offset	Purpose
+     * Byte 0	Sprite Y-Coordinate 👈 This is your Sprite Y
+     * Byte 1	Sprite X-Coordinate
+     * Byte 2	Tile Number
+     * Byte 3	Attributes / Flag
+     */
+
+    uint8_t LCDC = _mmu->read8(0xFF40);
+    if (!(LCDC & FLAG_OBJ_ENABLE)) {
+        return;
+    }
+    bool    obj_size = (LCDC & FLAG_OBJ_SIZE);
+    uint8_t LY       = _mmu->read8(0xFF44);
+    int     offset;
+
+    if (obj_size == 1) {
+        offset = 8;
+    } else {
+        offset = 16;
+    }
+
+    /* pushes addresses of obj/sprites to a vector for mode 3 rendering */
+    for (int i = 0; i < 40; i++) {
+        uint8_t sprite_y = _mmu->read8(0xFE00 + (i * 4));
+        if ((LY + 16 <= sprite_y) && (LY + 16 < sprite_y + offset)) {
+            obj_addr.push_back(0xFE00 + (i * 4));
+        }
+    }
 }
 
 void Ppu::switch_mode(int mode) {
@@ -202,12 +232,15 @@ void Ppu::dot_cycle(int t_cycle) {
         if (_dot_clock >= 204) {
             _dot_clock -= 204;
             LY += 1;
+            uint8_t LYC = _mmu->read8(0xFF45);
+            if (LY == LYC) {
+                _interrupt->request_interrupt(INTERRUPT_LCD);
+            }
             if (LY == 144) {
                 wl_counter = 0;
                 _mode      = 1;
                 can_render = true;
                 LY         = 0;
-
             } else {
                 _mode = 2;
                 switch_mode(2);
@@ -215,8 +248,6 @@ void Ppu::dot_cycle(int t_cycle) {
         }
         break;
     case 1: /* vblank */
-        // printf("LCDC=%02X (win enable=%d)\n", _LCDC, (_LCDC & 0x20) != 0);
-
         if (_dot_clock >= 456) {
             _dot_clock -= 456;
             LY += 1;

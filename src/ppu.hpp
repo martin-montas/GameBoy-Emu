@@ -5,6 +5,8 @@
 #define SRC_PPU_HPP_
 
 #include <stdio.h>
+#include <stdint.h>
+#include <vector>
 #include "mmu.hpp"
 #include "interface-interrupt.hpp"
 #include "sdl-utils.hpp"
@@ -65,6 +67,8 @@ class Ppu {
     uint8_t        wl_counter; /* WY register for scanlines win */
     bgwin_priority _f_flag;    /* updates ppu rendering component */
     bool           win_used;   /* for window rendering */
+
+    std::vector<uint16_t> obj_addr; /* object address for current scan line */
 
   public:
     inline explicit Ppu(IInterrupt* interrupt) : can_render(false), _mode(2), LY(0) {
@@ -132,5 +136,6 @@ class Ppu {
     void write_reg(uint8_t& data, uint16_t addr);
     void switch_mode(int mode);
     void render_frame();
+    void fetch_sprites();
 };
 #endif // SRC_PPU_HPP_

@@ -44,16 +44,15 @@ void Ppu::update_framebuff() {
 
     for (int x = 0; x < 160; x++) {
         bool window_fires = window_active && (x >= _wx - 7);
+
         if (window_fires) {
             win_used     = true;
             uint8_t px_x = x - (_wx - 7);
             uint8_t px_y = wl_counter;
 
-            /* used to get which tile the curent pixel belongs to */
             int tile_x = px_x / 8;
             int tile_y = px_y / 8;
 
-            /* get tile map index with offset */
             int      offset = tile_y * 32 + tile_x;
             uint8_t  tile_index;
             uint16_t addr;
@@ -63,15 +62,12 @@ void Ppu::update_framebuff() {
             } else {
                 addr = 0x9C00;
             }
-            /* fetches window tile  map index with offset */
             uint8_t  tile_number = _mmu->read8(addr + offset);
             uint16_t tile_data_addr;
 
             if (_LCDC & FLAG_BG_AREA) {
-                // unsigned mode
                 tile_data_addr = 0x8000 + (tile_number * 16);
             } else {
-                // signed mode
                 int8_t signed_index = (int8_t)tile_number;
                 tile_data_addr      = 0x9000 + (signed_index * 16);
             }
@@ -104,7 +100,6 @@ void Ppu::update_framebuff() {
             int     tile_x       = background_x / 8;
             int     tile_y       = background_y / 8;
 
-            /* fetches offset for the tile map */
             int      offset = (tile_y * 32 + tile_x);
             uint16_t addr;
 
@@ -113,15 +108,12 @@ void Ppu::update_framebuff() {
             } else {
                 addr = 0x9C00;
             }
-            /* gets tile number from tile map */
             uint8_t  tile_number = _mmu->read8(addr + offset);
             uint16_t tile_data_addr;
 
             if (_LCDC & FLAG_BG_AREA) {
-                // unsigned mode
                 tile_data_addr = 0x8000 + (tile_number * 16);
             } else {
-                // signed mode
                 int8_t signed_index = (int8_t)tile_number;
                 tile_data_addr      = 0x9000 + (signed_index * 16);
             }
@@ -156,17 +148,33 @@ void Ppu::enter_mode_3() {
     update_framebuff();
 }
 
-void Ppu::enter_mode_2() {
-    /* Beginning of line -> Mode 2
-     * oams its located at 0xFE00 - 0xFE9F
-     */
-
-    /* Byte Offset	Purpose
-     * Byte 0	Sprite Y-Coordinate 👈 This is your Sprite Y
-     * Byte 1	Sprite X-Coordinate
-     * Byte 2	Tile Number
-     * Byte 3	Attributes / Flag
-     */
+size_t max_obj_scanline = 0;
+void   Ppu::enter_mode_2() {
+    //                   +-----------------------+
+    //                   |  Get BG Pixel Index   |
+    //                   +-----------+-----------+
+    //                               |
+    //                               v
+    //                   +-----------------------+
+    //                   | Get Sprite Pixel Index|
+    //                   +-----------+-----------+
+    //                               |
+    //                               v
+    //                Is Sprite Pixel Index == 0? (Transparent)
+    //                              / \
+    //                             /   \
+    //                     YES    /     \   NO
+    //                           v       v
+    //                +------------+   Is BG Priority Set in OAM?
+    //                | Show BG    |   OR is BG Index != 0?
+    //                | Pixel Color|           / \
+    //                +------------+          /   \
+    //                                YES    /     \   NO
+    //                                      v       v
+    //                           +------------+   +--------------+
+    //                           | Show BG    |   | Show Sprite  |
+    //                           | Pixel Color|   | Pixel Color  |
+    //                           +------------+   +--------------+
 
     uint8_t LCDC = _mmu->read8(0xFF40);
     if (!(LCDC & FLAG_OBJ_ENABLE)) {
@@ -182,12 +190,19 @@ void Ppu::enter_mode_2() {
         offset = 16;
     }
 
-    /* pushes addresses of obj/sprites to a vector for mode 3 rendering */
     for (int i = 0; i < 40; i++) {
         uint8_t sprite_y = _mmu->read8(0xFE00 + (i * 4));
+
         if ((LY + 16 <= sprite_y) && (LY + 16 < sprite_y + offset)) {
-            obj_addr.push_back(0xFE00 + (i * 4));
+            uint8_t sprite_x   = _mmu->read8(0xFE00 + (i * 4) + 1);
+            uint8_t tile_index = _mmu->read8(0xFE00 + (i * 4) + 2);
+            int     row        = LY - sprite_y;
+
+            // _mmu->read8(0x8000 + (tile_index * 16));
+
+            max_obj_scanline += 1;
         }
+        max_obj_scanline = 0;
     }
 }
 
@@ -205,7 +220,6 @@ bool Ppu::frame_ready() const {
 }
 
 void Ppu::dot_cycle(int t_cycle) {
-    /* returns of _LCDC flag is set to 0 */
     _LCDC = _mmu->read8(LCDC_ADDR);
     if ((_LCDC & FLAG_LCD_ENABLE) == 0) {
         LY         = 0;

@@ -1,6 +1,6 @@
-//  Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
-//  All components of this software are licensed under the GNU License.
-//  Author: Martin Montas, martinmontas1@gmail.com
+// Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
+// All components of this software are licensed under the GNU License.
+// Author: Martin Montas, martinmontas1@gmail.com
 #ifndef SRC_PPU_HPP_
 #define SRC_PPU_HPP_
 
@@ -11,10 +11,11 @@
 #include "interface-interrupt.hpp"
 #include "sdl-utils.hpp"
 
-#define BGP_ADDR  0xFF47
-#define LCDC_ADDR 0xFF40
-#define WY_ADDR   0xFF4A
-#define WX_ADDR   0xFF4B
+#define BGP_ADDR 0xFF47
+#de
+ine LCDC_ADDR 0xFF40
+#define WY_ADDR 0xFF4A
+#define WX_ADDR 0xFF4B
 
 #define WHITE      0xCADC9F
 #define LIGHT_GRAY 0xA3B57D
@@ -22,21 +23,21 @@
 #define BLACK      0x2c3521
 #define SCALE      4
 
-/*
- * @brief: helper fot the lcdc flag.
- * Can get/set bits for the
- * lcd register.
- */
-enum LCDFlag {
-    FLAG_LCD_ENABLE = (1 << 7), /* checks if lcd should be on */
-    FLAG_WIN_MAP    = (1 << 6), /* says which map should window use*/
-    FLAG_WIN_ENABLE = (1 << 5), /* checks window memember off/on */
-    FLAG_BG_AREA    = (1 << 4),
-    FLAG_BG_MAP     = (1 << 3), /* says which map should bg use */
-    FLAG_OBJ_SIZE   = (1 << 2), /* checks sprites (oam) size */
-    FLAG_OBJ_ENABLE = (1 << 1), /* whether the sprites are enabled */
-    FLAG_BG_ENABLE  = (1 << 0)  /* checks whether background is enabled */
-};
+    /*
+     * @brief: helper fot the lcdc flag.
+     * Can get/set bits for the
+     * lcd register.
+     */
+    enum LCDFlag {
+        FLAG_LCD_ENABLE = (1 << 7), /* checks if lcd should be on */
+        FLAG_WIN_MAP    = (1 << 6), /* says which map should window use*/
+        FLAG_WIN_ENABLE = (1 << 5), /* checks window memember off/on */
+        FLAG_BG_AREA    = (1 << 4),
+        FLAG_BG_MAP     = (1 << 3), /* says which map should bg use */
+        FLAG_OBJ_SIZE   = (1 << 2), /* checks sprites (oam) size */
+        FLAG_OBJ_ENABLE = (1 << 1), /* whether the sprites are enabled */
+        FLAG_BG_ENABLE  = (1 << 0)  /* checks whether background is enabled */
+    };
 
 /*
  * @brief: use to know current type of
@@ -67,8 +68,6 @@ class Ppu {
     uint8_t        wl_counter; /* WY register for scanlines win */
     bgwin_priority _f_flag;    /* updates ppu rendering component */
     bool           win_used;   /* for window rendering */
-
-    std::vector<uint16_t> obj_addr; /* object address for current scan line */
 
   public:
     inline explicit Ppu(IInterrupt* interrupt) : can_render(false), _mode(2), LY(0) {

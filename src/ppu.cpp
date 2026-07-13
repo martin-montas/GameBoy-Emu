@@ -26,6 +26,42 @@ void Ppu::hblank_handler() {
     }
 }
 
+size_t max_obj_scanline = 0;
+void   Ppu::enter_mode_2() {
+    uint8_t LCDC = _mmu->read8(0xFF40);
+    if (!(LCDC & FLAG_OBJ_ENABLE)) {
+        return;
+    }
+    bool    obj_size = (LCDC & FLAG_OBJ_SIZE);
+    uint8_t LY       = _mmu->read8(0xFF44);
+    int     offset;
+
+    if (obj_size == 1) {
+        offset = 8;
+    } else {
+        offset = 16;
+    }
+
+    for (int i = 0; i < 40; i++) {
+        uint8_t sprite_y = _mmu->read8(0xFE00 + (i * 4));
+
+        // if this is true the object should be displayed
+        if ((LY + 16 <= sprite_y) && (LY + 16 < sprite_y + offset)) {
+            uint8_t sprite_x   = _mmu->read8(0xFE00 + (i * 4) + 1);
+            uint8_t tile_index = _mmu->read8(0xFE00 + (i * 4) + 2);
+            int     row        = LY - sprite_y;
+            // TODO you are here!
+            uint8_t tile_addr = _mmu->read8(0x8000 + (tile_index * 16));
+
+            max_obj_scanline += 1;
+            if (max_obj_scanline == 10) {
+                break;
+            }
+        }
+        max_obj_scanline = 0;
+    }
+}
+
 /*
  * @brief: Fetches pixels from tile data
  * and current tile map. and updates
@@ -146,64 +182,6 @@ void Ppu::fetch_sprites() {}
 
 void Ppu::enter_mode_3() {
     update_framebuff();
-}
-
-size_t max_obj_scanline = 0;
-void   Ppu::enter_mode_2() {
-    //                   +-----------------------+
-    //                   |  Get BG Pixel Index   |
-    //                   +-----------+-----------+
-    //                               |
-    //                               v
-    //                   +-----------------------+
-    //                   | Get Sprite Pixel Index|
-    //                   +-----------+-----------+
-    //                               |
-    //                               v
-    //                Is Sprite Pixel Index == 0? (Transparent)
-    //                              / \
-    //                             /   \
-    //                     YES    /     \   NO
-    //                           v       v
-    //                +------------+   Is BG Priority Set in OAM?
-    //                | Show BG    |   OR is BG Index != 0?
-    //                | Pixel Color|           / \
-    //                +------------+          /   \
-    //                                YES    /     \   NO
-    //                                      v       v
-    //                           +------------+   +--------------+
-    //                           | Show BG    |   | Show Sprite  |
-    //                           | Pixel Color|   | Pixel Color  |
-    //                           +------------+   +--------------+
-
-    uint8_t LCDC = _mmu->read8(0xFF40);
-    if (!(LCDC & FLAG_OBJ_ENABLE)) {
-        return;
-    }
-    bool    obj_size = (LCDC & FLAG_OBJ_SIZE);
-    uint8_t LY       = _mmu->read8(0xFF44);
-    int     offset;
-
-    if (obj_size == 1) {
-        offset = 8;
-    } else {
-        offset = 16;
-    }
-
-    for (int i = 0; i < 40; i++) {
-        uint8_t sprite_y = _mmu->read8(0xFE00 + (i * 4));
-
-        if ((LY + 16 <= sprite_y) && (LY + 16 < sprite_y + offset)) {
-            uint8_t sprite_x   = _mmu->read8(0xFE00 + (i * 4) + 1);
-            uint8_t tile_index = _mmu->read8(0xFE00 + (i * 4) + 2);
-            int     row        = LY - sprite_y;
-
-            // _mmu->read8(0x8000 + (tile_index * 16));
-
-            max_obj_scanline += 1;
-        }
-        max_obj_scanline = 0;
-    }
 }
 
 void Ppu::switch_mode(int mode) {

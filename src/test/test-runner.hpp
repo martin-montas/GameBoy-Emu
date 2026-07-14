@@ -6,7 +6,7 @@
 
 #include <nlohmann/json.hpp>
 #include "../cpu.hpp"
-#include "../mmu.hpp"
+#include "../bus.hpp"
 #include "../sdl-utils.hpp"
 #include "../timer.hpp"
 #include "../sst-bus.hpp"
@@ -14,13 +14,13 @@
 #include "../interface-interrupt.hpp"
 
 class SystemBus;
-class Mmu;
+class Bus;
 using j = nlohmann::json;
 class TestRunner {
     Ppu*        ppu;
     Cpu*        cpu;
     Timer*      timer;
-    SST*        mmu;
+    SST*        bus;
     SDL*        sdl;
     IInterrupt* interrupt;
 

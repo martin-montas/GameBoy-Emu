@@ -2,8 +2,8 @@
 // All components of this software are licensed under the GNU License.
 // Author: Martin Montas, martinmontas1@gmail.com
 //
-#ifndef SRC_MMU_HPP_
-#define SRC_MMU_HPP_
+#ifndef SRC_BUS_HPP_
+#define SRC_BUS_HPP_
 
 // #include "IO.hpp"
 #include "MBC.hpp"
@@ -31,7 +31,7 @@
 class Ppu;
 class Timer;
 class IInterrupt;
-class Mmu : public SystemBus {
+class Bus : public SystemBus {
     Serial      serial;     /* serial buffer object */
     Ppu*        _ppu;       /* pointer to pixel object */
     Timer*      _timer;     /* pointer to timer object */
@@ -61,7 +61,7 @@ class Mmu : public SystemBus {
     uint8_t INTERRUPT[1]          = {};
 
   public:
-    explicit Mmu(const std::string file, Timer* timer, IInterrupt* interrupt)
+    explicit Bus(const std::string file, Timer* timer, IInterrupt* interrupt)
         : _timer(timer), _interrupt(interrupt) {
         load_rom(file);
         // check_rom_type();
@@ -115,4 +115,4 @@ class Mmu : public SystemBus {
     void load_rom(const std::string& filename);
 };
 
-#endif // SRC_MMU_HPP_
+#endif // SRC_BUS_HPP_

@@ -9,7 +9,7 @@
 #include "cpu.hpp"
 #include "sdl-utils.hpp"
 #include "instructions.hpp"
-#include "mmu.hpp"
+#include "bus.hpp"
 #include "serial.hpp"
 #include "timer.hpp"
 #include "interrupt.hpp"
@@ -24,7 +24,7 @@ class GameBoy {
     Cpu*       _cpu;             /* pointer to cpu object */
     Serial*    _serial;          /* pointer to serial object */
     Timer*     _timer;           /* pointer to timer object */
-    Mmu*       _mmu;             /* pointer to mmu object */
+    Bus*       _bus;             /* pointer to bus object */
     Ppu*       _ppu;             /* pointer to ppu object */
     Interrupt* _interrupt;       /* pointer to interrupt object */
     SDL*       _sdl;             /* pointer to SDL2 object */
@@ -40,12 +40,12 @@ class GameBoy {
         _interrupt = new Interrupt();
         _timer     = new Timer(_interrupt);
         _ppu       = new Ppu(_interrupt);
-        _mmu       = new Mmu(file, _timer, _interrupt);
-        _mmu->attach(_ppu);
+        _bus       = new Bus(file, _timer, _interrupt);
+        _bus->attach(_ppu);
         _sdl = new SDL();
-        _cpu = new Cpu(_mmu, _interrupt);
+        _cpu = new Cpu(_bus, _interrupt);
         _interrupt->attach(_cpu);
-        _ppu->attach(_mmu);
+        _ppu->attach(_bus);
         emulationRunning = true;
         // _instructions->post_boot_state();
     }

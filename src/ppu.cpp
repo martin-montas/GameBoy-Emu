@@ -26,39 +26,78 @@ void Ppu::hblank_handler() {
     }
 }
 
-size_t max_obj_scanline = 0;
-void   Ppu::enter_mode_2() {
-    uint8_t LCDC = _mmu->read8(0xFF40);
+void Ppu::enter_mode_2() {
+    return;
+}
+
+// TODO: read this
+// private renderSpriteScanline(): void {
+//     const lcdControl = this.memory.read8(PPU.LCD_CONTROL);
+//     const spriteHeight = (lcdControl & 0x04) ? 16 : 8; // 8x8 or 8x16 sprites
+//
+//     // Game Boy can display up to 10 sprites per scanline, but we need to check all 40
+//     const spritesOnLine: Array<{x: number, y: number, tileIndex: number, attributes: number,
+//     oamIndex: number}> = [];
+//
+//     // Check all 40 sprites in OAM (0xFE00-0xFE9F)
+//     for (let spriteIndex = 0; spriteIndex < 40; spriteIndex++) {
+//       const oamAddress = 0xFE00 + (spriteIndex * 4);
+//
+//       const spriteY = this.memory.read8(oamAddress);     // Y position
+//       const spriteX = this.memory.read8(oamAddress + 1); // X position
+//       const tileIndex = this.memory.read8(oamAddress + 2); // Tile index
+//       const attributes = this.memory.read8(oamAddress + 3); // Attributes
+//
+//       // Convert coordinates (Game Boy uses offset coordinates)
+//       const actualY = spriteY - 16;
+//       const actualX = spriteX - 8;
+//
+//       // Check if sprite is on current scanline
+//       if (this._currentLine >= actualY && this._currentLine < actualY + spriteHeight) {
+//         spritesOnLine.push({
+//           x: actualX,
+//           y: actualY,
+//           tileIndex: tileIndex,
+//           attributes: attributes,
+//           oamIndex: spriteIndex
+//         });
+//       }
+//
+//       // Game Boy hardware limit: max 10 sprites per scanline
+//       if (spritesOnLine.length >= 10) {
+//         break;
+//       }
+//     }
+//      // Sort sprites by X position (leftmost first, then by OAM index for priority)
+//     spritesOnLine.sort((a, b) => {
+//       if (a.x === b.x) {
+//         return a.oamIndex - b.oamIndex; // Lower OAM index = higher priority
+//       }
+//       return a.x - b.x;
+//     });
+//
+//     // Render sprites from lowest priority to highest (reverse order for proper layering)
+//     for (let i = spritesOnLine.length - 1; i >= 0; i--) {
+//       this.renderSprite(spritesOnLine[i], spriteHeight);
+//     }
+//   }
+
+void OAM::scan_oam(int row, uint8_t lcdc) {
     if (!(LCDC & FLAG_OBJ_ENABLE)) {
         return;
     }
-    bool    obj_size = (LCDC & FLAG_OBJ_SIZE);
-    uint8_t LY       = _mmu->read8(0xFF44);
     int     offset;
+    uint8_t LY   = _bus->read8(0xFF44);
+    int     high = (LCDC & FLAG_OBJ_SIZE) ? 16 : 8;
 
-    if (obj_size == 1) {
-        offset = 8;
-    } else {
-        offset = 16;
+    for (obj = 0; obj < 10; obj++) {
+        objs[obj].X = 0xff;
     }
 
+    if ((lcdc & FLAG_OBJ_ENABLE) == 0) {
+        return;
+    }
     for (int i = 0; i < 40; i++) {
-        uint8_t sprite_y = _mmu->read8(0xFE00 + (i * 4));
-
-        // if this is true the object should be displayed
-        if ((LY + 16 <= sprite_y) && (LY + 16 < sprite_y + offset)) {
-            uint8_t sprite_x   = _mmu->read8(0xFE00 + (i * 4) + 1);
-            uint8_t tile_index = _mmu->read8(0xFE00 + (i * 4) + 2);
-            int     row        = LY - sprite_y;
-            // TODO you are here!
-            uint8_t tile_addr = _mmu->read8(0x8000 + (tile_index * 16));
-
-            max_obj_scanline += 1;
-            if (max_obj_scanline == 10) {
-                break;
-            }
-        }
-        max_obj_scanline = 0;
     }
 }
 
@@ -72,9 +111,9 @@ void   Ppu::enter_mode_2() {
 void Ppu::update_framebuff() {
     bool    window         = false;
     int     rendered_px    = 0;
-    uint8_t _wy            = _mmu->read8(0xFF4A);
-    uint8_t _wx            = _mmu->read8(0xFF4B);
-    uint8_t LCDC           = _mmu->read8(0xFF40);
+    uint8_t _wy            = _bus->read8(0xFF4A);
+    uint8_t _wx            = _bus->read8(0xFF4B);
+    uint8_t LCDC           = _bus->read8(0xFF40);
     bool    window_enabled = LCDC & FLAG_WIN_ENABLE;
     bool    window_active  = window_enabled && (LY >= _wy);
 
@@ -98,7 +137,7 @@ void Ppu::update_framebuff() {
             } else {
                 addr = 0x9C00;
             }
-            uint8_t  tile_number = _mmu->read8(addr + offset);
+            uint8_t  tile_number = _bus->read8(addr + offset);
             uint16_t tile_data_addr;
 
             if (_LCDC & FLAG_BG_AREA) {
@@ -110,8 +149,8 @@ void Ppu::update_framebuff() {
 
             int     pixel_y = px_y % 8;
             int     pixel_x = px_x % 8;
-            uint8_t byte0   = _mmu->read8(tile_data_addr + (pixel_x * 2));
-            uint8_t byte1   = _mmu->read8(tile_data_addr + (pixel_y * 2) + 1);
+            uint8_t byte0   = _bus->read8(tile_data_addr + (pixel_x * 2));
+            uint8_t byte1   = _bus->read8(tile_data_addr + (pixel_y * 2) + 1);
             bool    msb     = ((byte0 >> (7 - px_y)) & 1);
             bool    lsb     = ((byte1 >> (7 - px_x)) & 1);
             uint8_t color   = (msb << 1) | lsb;
@@ -129,8 +168,8 @@ void Ppu::update_framebuff() {
             frame_buff[LY * WIDTH + x] = color_val;
             wl_counter += 1;
         } else {
-            uint8_t _scy         = _mmu->read8(0xFF42);
-            uint8_t _scx         = _mmu->read8(0xFF43);
+            uint8_t _scy         = _bus->read8(0xFF42);
+            uint8_t _scx         = _bus->read8(0xFF43);
             uint8_t background_x = (x + _scx);
             uint8_t background_y = (LY + _scy);
             int     tile_x       = background_x / 8;
@@ -144,7 +183,7 @@ void Ppu::update_framebuff() {
             } else {
                 addr = 0x9C00;
             }
-            uint8_t  tile_number = _mmu->read8(addr + offset);
+            uint8_t  tile_number = _bus->read8(addr + offset);
             uint16_t tile_data_addr;
 
             if (_LCDC & FLAG_BG_AREA) {
@@ -156,8 +195,8 @@ void Ppu::update_framebuff() {
             int pixel_y = background_y % 8;
             int pixel_x = background_x % 8;
 
-            uint8_t byte0 = _mmu->read8(tile_data_addr + (pixel_y * 2));
-            uint8_t byte1 = _mmu->read8(tile_data_addr + (pixel_y * 2) + 1);
+            uint8_t byte0 = _bus->read8(tile_data_addr + (pixel_y * 2));
+            uint8_t byte1 = _bus->read8(tile_data_addr + (pixel_y * 2) + 1);
 
             bool msb = ((byte0 >> (7 - pixel_x)) & 1);
             bool lsb = ((byte1 >> (7 - pixel_x)) & 1);
@@ -198,7 +237,7 @@ bool Ppu::frame_ready() const {
 }
 
 void Ppu::dot_cycle(int t_cycle) {
-    _LCDC = _mmu->read8(LCDC_ADDR);
+    _LCDC = _bus->read8(LCDC_ADDR);
     if ((_LCDC & FLAG_LCD_ENABLE) == 0) {
         LY         = 0;
         wl_counter = 0;
@@ -222,7 +261,7 @@ void Ppu::dot_cycle(int t_cycle) {
         if (_dot_clock >= 204) {
             _dot_clock -= 204;
             LY += 1;
-            uint8_t LYC = _mmu->read8(0xFF45);
+            uint8_t LYC = _bus->read8(0xFF45);
             if (LY == LYC) {
                 _interrupt->request_interrupt(INTERRUPT_LCD);
             }

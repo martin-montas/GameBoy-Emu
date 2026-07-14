@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-// void MMU::check_rom_type() {
+// void Bus::check_rom_type() {
 //   uint8_t type = romData[0x0147];
 //   switch (type) {
 //   case 0x00:

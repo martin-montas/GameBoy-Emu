@@ -5,7 +5,7 @@ CXXFLAGS := -g -std=c++20
 LDFLAGS := -lSDL2
 
 COMMON_OBJS := main.o gameboy.o cpu.o instructions.o \
-               extended-instructions.o mmu.o MBC.o \
+               extended-instructions.o bus.o MBC.o \
                MBC0.o timer.o serial.o ppu.o  sdl-utils.o \
 			   # test-runner.o 
 
@@ -30,7 +30,7 @@ instructions.o: src/instructions.cpp src/instructions.hpp
 extended-instructions.o: src/extended-instructions.cpp src/instructions.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
-mmu.o: src/mmu.cpp src/mmu.hpp
+bus.o: src/bus.cpp src/bus.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
 MBC.o: src/MBC.cpp src/MBC.hpp

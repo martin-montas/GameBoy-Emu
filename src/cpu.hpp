@@ -33,11 +33,11 @@ class IInterrupt;
 class SystemBus;
 class InstructionSet;
 class Cpu {
-    SystemBus* _mmu = nullptr; /* pointer to mmu object */
+    SystemBus* _bus = nullptr; /* pointer to bus object */
     uint32_t   _cycle;         /* current cycle */
 
   public:
-    Cpu(SystemBus* mmu, IInterrupt* interrupt);
+    Cpu(SystemBus* bus, IInterrupt* interrupt);
     InstructionSet* _instruction;        /* pointer to instruction */
     IInterrupt*     _interrupt;          /* pointer to instruction */
     uint8_t         _ime;                /* interrupt master enable */

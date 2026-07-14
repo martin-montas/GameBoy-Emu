@@ -7,37 +7,69 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <vector>
-#include "mmu.hpp"
+#include "bus.hpp"
 #include "interface-interrupt.hpp"
 #include "sdl-utils.hpp"
 
-#define BGP_ADDR 0xFF47
-#de
-ine LCDC_ADDR 0xFF40
-#define WY_ADDR 0xFF4A
-#define WX_ADDR 0xFF4B
+#define BGP_ADDR  0xFF47
+#define LCDC_ADDR 0xFF40
+#define WY_ADDR   0xFF4A
+#define WX_ADDR   0xFF4B
+
+#define TY 0
+#define TX 1
+#define TT 2
+#define TF 3
 
 #define WHITE      0xCADC9F
 #define LIGHT_GRAY 0xA3B57D
 #define DARK_GRAY  0x586a43
 #define BLACK      0x2c3521
-#define SCALE      4
 
-    /*
-     * @brief: helper fot the lcdc flag.
-     * Can get/set bits for the
-     * lcd register.
-     */
-    enum LCDFlag {
-        FLAG_LCD_ENABLE = (1 << 7), /* checks if lcd should be on */
-        FLAG_WIN_MAP    = (1 << 6), /* says which map should window use*/
-        FLAG_WIN_ENABLE = (1 << 5), /* checks window memember off/on */
-        FLAG_BG_AREA    = (1 << 4),
-        FLAG_BG_MAP     = (1 << 3), /* says which map should bg use */
-        FLAG_OBJ_SIZE   = (1 << 2), /* checks sprites (oam) size */
-        FLAG_OBJ_ENABLE = (1 << 1), /* whether the sprites are enabled */
-        FLAG_BG_ENABLE  = (1 << 0)  /* checks whether background is enabled */
-    };
+struct OBJ {
+    uint8_t X;     /* X location */
+    uint8_t Y;     /* Y location */
+    uint8_t flags; /* Cached flags */
+    uint8_t tile;  /* Cached tile */
+    int     num;   /* Original Object number */
+};
+
+class OAM {
+    uint8_t _data[256]; /* OAM data */
+  public:
+    struct OBJ objs[10];
+
+    inline OAM() {
+        for (int i = 0; i < 256; i++) {
+            _data[i] = 0;
+        }
+        /* Initialize objects to invalid */
+        for (int obj = 0; obj < 10; obj++) {
+            objs[obj].X     = 0xff;
+            objs[obj].Y     = 0xff;
+            objs[obj].flags = 0;
+            objs[obj].tile  = 0;
+        }
+    }
+
+    void scan_oam(int row, uint8_t lcdc);
+};
+
+/*
+ * @brief: helper fot the lcdc flag.
+ * Can get/set bits for the
+ * lcd register.
+ */
+enum LCDFlag {
+    FLAG_LCD_ENABLE = (1 << 7), /* checks if lcd should be on */
+    FLAG_WIN_MAP    = (1 << 6), /* says which map should window use*/
+    FLAG_WIN_ENABLE = (1 << 5), /* checks window memember off/on */
+    FLAG_BG_AREA    = (1 << 4),
+    FLAG_BG_MAP     = (1 << 3), /* says which map should bg use */
+    FLAG_OBJ_SIZE   = (1 << 2), /* checks sprites (oam) size */
+    FLAG_OBJ_ENABLE = (1 << 1), /* whether the sprites are enabled */
+    FLAG_BG_ENABLE  = (1 << 0)  /* checks whether background is enabled */
+};
 
 /*
  * @brief: use to know current type of
@@ -51,14 +83,14 @@ enum bgwin_priority {
 };
 
 class IInterrupt;
-class Mmu;
+class Bus;
 class SystemBus;
 /*
  * @brief: deals with pixels rendering and lcd related
  * registers from  the game boy.
  */
 class Ppu {
-    SystemBus*     _mmu;       /* pointer to memory object */
+    SystemBus*     _bus;       /* pointer to memory object */
     IInterrupt*    _interrupt; /* pointer to interrupt */
     size_t         _dot_clock; /* updates the t cycles */
     size_t         _mode;      /* updates to current mode */
@@ -68,6 +100,7 @@ class Ppu {
     uint8_t        wl_counter; /* WY register for scanlines win */
     bgwin_priority _f_flag;    /* updates ppu rendering component */
     bool           win_used;   /* for window rendering */
+    OAM            _oam;       /* oam class */
 
   public:
     inline explicit Ppu(IInterrupt* interrupt) : can_render(false), _mode(2), LY(0) {
@@ -80,11 +113,11 @@ class Ppu {
     }
     /*
      * @brief: gets interrupt object for later use.
-     * @param[in]: mmu object pointer.
+     * @param[in]: bus object pointer.
      * @param[in] interrupt object pointer.
      */
-    inline void attach(SystemBus* mmu) {
-        _mmu = mmu;
+    inline void attach(SystemBus* bus) {
+        _bus = bus;
     }
     /*
      * @brief: Used by memory subsystem

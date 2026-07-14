@@ -14,7 +14,7 @@
 #include <sys/types.h>
 
 #include "cpu.hpp"
-#include "mmu.hpp"
+#include "bus.hpp"
 
 void InstructionSet::pre_boot_state() {
     _cpu->PC = 0x0000;
@@ -31,54 +31,54 @@ void InstructionSet::pre_boot_state() {
 
     _cpu->_ime = 0;
 
-    _mmu->write8(0xFF01, 0x00); // SB (Serial Link Data Buffer)
-    _mmu->write8(0xFF02, 0x7E); // SC (Serial Link Control - Unused bits read as 1)
+    _bus->write8(0xFF01, 0x00); // SB (Serial Link Data Buffer)
+    _bus->write8(0xFF02, 0x7E); // SC (Serial Link Control - Unused bits read as 1)
 
     // 2. Timers & System Interrupts
-    _mmu->write8(0xFF04, 0x00); // DIV (Divider Register)
-    _mmu->write8(0xFF05, 0x00); // TIMA
-    _mmu->write8(0xFF06, 0x00); // TMA
-    _mmu->write8(0xFF07, 0x00); // TAC
+    _bus->write8(0xFF04, 0x00); // DIV (Divider Register)
+    _bus->write8(0xFF05, 0x00); // TIMA
+    _bus->write8(0xFF06, 0x00); // TMA
+    _bus->write8(0xFF07, 0x00); // TAC
 
     // 3. Audio Registers (APU)
-    _mmu->write8(0xFF10, 0x00);
-    _mmu->write8(0xFF11, 0x00);
-    _mmu->write8(0xFF12, 0x00);
-    _mmu->write8(0xFF14, 0x00);
-    _mmu->write8(0xFF16, 0x00);
-    _mmu->write8(0xFF17, 0x00);
-    _mmu->write8(0xFF19, 0x00);
-    _mmu->write8(0xFF1A, 0x00);
-    _mmu->write8(0xFF1B, 0x00);
-    _mmu->write8(0xFF1C, 0x00);
-    _mmu->write8(0xFF1E, 0x00);
-    _mmu->write8(0xFF20, 0x00);
-    _mmu->write8(0xFF21, 0x00);
-    _mmu->write8(0xFF22, 0x00);
-    _mmu->write8(0xFF23, 0x00); // Fixed duplicate typo here
-    _mmu->write8(0xFF24, 0x00);
-    _mmu->write8(0xFF25, 0x00);
-    _mmu->write8(0xFF26, 0x00);
+    _bus->write8(0xFF10, 0x00);
+    _bus->write8(0xFF11, 0x00);
+    _bus->write8(0xFF12, 0x00);
+    _bus->write8(0xFF14, 0x00);
+    _bus->write8(0xFF16, 0x00);
+    _bus->write8(0xFF17, 0x00);
+    _bus->write8(0xFF19, 0x00);
+    _bus->write8(0xFF1A, 0x00);
+    _bus->write8(0xFF1B, 0x00);
+    _bus->write8(0xFF1C, 0x00);
+    _bus->write8(0xFF1E, 0x00);
+    _bus->write8(0xFF20, 0x00);
+    _bus->write8(0xFF21, 0x00);
+    _bus->write8(0xFF22, 0x00);
+    _bus->write8(0xFF23, 0x00); // Fixed duplicate typo here
+    _bus->write8(0xFF24, 0x00);
+    _bus->write8(0xFF25, 0x00);
+    _bus->write8(0xFF26, 0x00);
 
     // 4. Graphics Registers (PPU) - CRITICAL ADDITIONS
-    _mmu->write8(0xFF40, 0x91); // LCDC
-    _mmu->write8(0xFF41, 0x85); // STAT
-    _mmu->write8(0xFF42, 0x00); // SCY
-    _mmu->write8(0xFF43, 0x00); // SCX
-    _mmu->write8(0xFF44, 0x00); // LY
-    _mmu->write8(0xFF45, 0x00); // LYC
-    _mmu->write8(0xFF47, 0xFC); // BGP
-    _mmu->write8(0xFF48, 0xFF); // OBP0
-    _mmu->write8(0xFF49, 0xFF); // OBP1
-    _mmu->write8(0xFF4A, 0x00); // WY
-    _mmu->write8(0xFF4B, 0x00); // WX
+    _bus->write8(0xFF40, 0x91); // LCDC
+    _bus->write8(0xFF41, 0x85); // STAT
+    _bus->write8(0xFF42, 0x00); // SCY
+    _bus->write8(0xFF43, 0x00); // SCX
+    _bus->write8(0xFF44, 0x00); // LY
+    _bus->write8(0xFF45, 0x00); // LYC
+    _bus->write8(0xFF47, 0xFC); // BGP
+    _bus->write8(0xFF48, 0xFF); // OBP0
+    _bus->write8(0xFF49, 0xFF); // OBP1
+    _bus->write8(0xFF4A, 0x00); // WY
+    _bus->write8(0xFF4B, 0x00); // WX
 
     // 5. Unmap Boot ROM
-    // _mmu->write8(0xFF50, 0x01); // Unmaps Boot ROM, enabling Cartridge mapping
+    // _bus->write8(0xFF50, 0x01); // Unmaps Boot ROM, enabling Cartridge mapping
 
     // 6. Interrupt Enable
-    _mmu->write8(0xFF0F, 0xE1);
-    _mmu->write8(0xFFFF, 0x00);
+    _bus->write8(0xFF0F, 0xE1);
+    _bus->write8(0xFFFF, 0x00);
 }
 void InstructionSet::post_boot_state() {
     // =========================
@@ -98,49 +98,49 @@ void InstructionSet::post_boot_state() {
 
     _cpu->_ime = 0;
 
-    _mmu->write8(0xFF0F, 0x00); // IF
-    _mmu->write8(0xFFFF, 0x00); // IE
+    _bus->write8(0xFF0F, 0x00); // IF
+    _bus->write8(0xFFFF, 0x00); // IE
 
-    _mmu->write8(0xFF04, 0x00); // DIV
-    _mmu->write8(0xFF05, 0x00); // TIMA
-    _mmu->write8(0xFF06, 0x00); // TMA
-    _mmu->write8(0xFF07, 0x00); // TAC
+    _bus->write8(0xFF04, 0x00); // DIV
+    _bus->write8(0xFF05, 0x00); // TIMA
+    _bus->write8(0xFF06, 0x00); // TMA
+    _bus->write8(0xFF07, 0x00); // TAC
 
-    _mmu->write8(0xFF01, 0x00);
-    _mmu->write8(0xFF02, 0x7E);
+    _bus->write8(0xFF01, 0x00);
+    _bus->write8(0xFF02, 0x7E);
 
-    _mmu->write8(0xFF10, 0x80);
-    _mmu->write8(0xFF11, 0xBF);
-    _mmu->write8(0xFF12, 0xF3);
-    _mmu->write8(0xFF14, 0xBF);
-    _mmu->write8(0xFF16, 0x3F);
-    _mmu->write8(0xFF17, 0x00);
-    _mmu->write8(0xFF19, 0xBF);
-    _mmu->write8(0xFF1A, 0x7F);
-    _mmu->write8(0xFF1B, 0xFF);
-    _mmu->write8(0xFF1C, 0x9F);
-    _mmu->write8(0xFF1E, 0xBF);
-    _mmu->write8(0xFF20, 0xFF);
-    _mmu->write8(0xFF21, 0x00);
-    _mmu->write8(0xFF22, 0x00);
-    _mmu->write8(0xFF23, 0xBF);
-    _mmu->write8(0xFF24, 0x77);
-    _mmu->write8(0xFF25, 0xF3);
-    _mmu->write8(0xFF26, 0xF1); // NR52
+    _bus->write8(0xFF10, 0x80);
+    _bus->write8(0xFF11, 0xBF);
+    _bus->write8(0xFF12, 0xF3);
+    _bus->write8(0xFF14, 0xBF);
+    _bus->write8(0xFF16, 0x3F);
+    _bus->write8(0xFF17, 0x00);
+    _bus->write8(0xFF19, 0xBF);
+    _bus->write8(0xFF1A, 0x7F);
+    _bus->write8(0xFF1B, 0xFF);
+    _bus->write8(0xFF1C, 0x9F);
+    _bus->write8(0xFF1E, 0xBF);
+    _bus->write8(0xFF20, 0xFF);
+    _bus->write8(0xFF21, 0x00);
+    _bus->write8(0xFF22, 0x00);
+    _bus->write8(0xFF23, 0xBF);
+    _bus->write8(0xFF24, 0x77);
+    _bus->write8(0xFF25, 0xF3);
+    _bus->write8(0xFF26, 0xF1); // NR52
 
-    _mmu->write8(0xFF40, 0x91); // LCDC
-    _mmu->write8(0xFF41, 0x85); // STAT
-    _mmu->write8(0xFF42, 0x00); // SCY
-    _mmu->write8(0xFF43, 0x00); // SCX
-    _mmu->write8(0xFF44, 0x00); // LY
-    _mmu->write8(0xFF45, 0x00); // LYC
+    _bus->write8(0xFF40, 0x91); // LCDC
+    _bus->write8(0xFF41, 0x85); // STAT
+    _bus->write8(0xFF42, 0x00); // SCY
+    _bus->write8(0xFF43, 0x00); // SCX
+    _bus->write8(0xFF44, 0x00); // LY
+    _bus->write8(0xFF45, 0x00); // LYC
 
-    _mmu->write8(0xFF47, 0xFC); // BGP
-    _mmu->write8(0xFF48, 0xFF); // OBP0
-    _mmu->write8(0xFF49, 0xFF); // OBP1
+    _bus->write8(0xFF47, 0xFC); // BGP
+    _bus->write8(0xFF48, 0xFF); // OBP0
+    _bus->write8(0xFF49, 0xFF); // OBP1
 
-    _mmu->write8(0xFF4A, 0x00); // WY
-    _mmu->write8(0xFF4B, 0x00); // WX
+    _bus->write8(0xFF4A, 0x00); // WY
+    _bus->write8(0xFF4B, 0x00); // WX
 
     // =========================
     // PPU internal state
@@ -155,20 +155,20 @@ void InstructionSet::post_boot_state() {
 
 void InstructionSet::ldr(uint16_t& reg) {
     // DONE
-    uint8_t  tmp_1 = this->_mmu->read8(_cpu->PC + 1);
-    uint8_t  tmp_2 = this->_mmu->read8(_cpu->PC + 2);
+    uint8_t  tmp_1 = this->_bus->read8(_cpu->PC + 1);
+    uint8_t  tmp_2 = this->_bus->read8(_cpu->PC + 2);
     uint16_t tmp   = (tmp_2 << 8) | tmp_1;
     reg            = tmp;
 }
 
 void InstructionSet::ldr(uint8_t& reg) {
-    uint8_t tmp = this->_mmu->read8(this->_cpu->PC + 1);
+    uint8_t tmp = this->_bus->read8(this->_cpu->PC + 1);
     reg         = tmp;
 }
 
 // DONE:
 void InstructionSet::ld_mem(uint8_t& reg, uint16_t addr) {
-    _mmu->write8(addr, reg);
+    _bus->write8(addr, reg);
 }
 
 void InstructionSet::jump(bool condition, int8_t offset) {
@@ -202,8 +202,8 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x01: {
-        uint8_t  l   = _mmu->read8(_cpu->PC + 1);
-        uint8_t  h   = _mmu->read8(_cpu->PC + 2);
+        uint8_t  l   = _bus->read8(_cpu->PC + 1);
+        uint8_t  h   = _bus->read8(_cpu->PC + 2);
         uint16_t val = (h << 8) | l;
         // printf("LD BC, d16 0x01 -- %X --\n", val);
         _cpu->BC = val;
@@ -211,7 +211,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x02: {
-        _mmu->write8(_cpu->BC, _cpu->A);
+        _bus->write8(_cpu->BC, _cpu->A);
         // printf("LD (BC), A 0x02 -- %X --\n", _cpu->BC);
         _cpu->PC = _cpu->PC + 1;
         break;
@@ -236,7 +236,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x06: {
         // printf("LD B, d8 0x06 --- before %X --\n", _cpu->B);
-        _cpu->B  = _mmu->read8(_cpu->PC + 1);
+        _cpu->B  = _bus->read8(_cpu->PC + 1);
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -255,16 +255,16 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x08: {
-        uint8_t  l    = _mmu->read8(_cpu->PC + 1);
-        uint8_t  h    = _mmu->read8(_cpu->PC + 2);
+        uint8_t  l    = _bus->read8(_cpu->PC + 1);
+        uint8_t  h    = _bus->read8(_cpu->PC + 2);
         uint16_t addr = (h << 8) | l;
 
         // printf("LD (a16), SP -- %04X --\n", addr);
 
         uint16_t sp = _cpu->SP;
 
-        _mmu->write8(addr, sp & 0xFF);
-        _mmu->write8(addr + 1, (sp >> 8) & 0xFF);
+        _bus->write8(addr, sp & 0xFF);
+        _bus->write8(addr + 1, (sp >> 8) & 0xFF);
 
         _cpu->PC += 3;
         break;
@@ -280,7 +280,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x0A: {
         // printf("LD A, (BC)\n");
-        _cpu->A  = _mmu->read8(_cpu->BC);
+        _cpu->A  = _bus->read8(_cpu->BC);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -303,7 +303,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x0E: {
-        _cpu->C = _mmu->read8(_cpu->PC + 1);
+        _cpu->C = _bus->read8(_cpu->PC + 1);
         // printf("LD C, d8 -- %X --\n", _cpu->C);
         _cpu->PC = _cpu->PC + 2;
         break;
@@ -328,7 +328,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x12: {
         // printf("LD (DE), A -- %X --\n", _cpu->DE);
-        _mmu->write8(_cpu->DE, _cpu->A);
+        _bus->write8(_cpu->DE, _cpu->A);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -351,7 +351,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x16: {
-        _cpu->D = _mmu->read8(_cpu->PC + 1);
+        _cpu->D = _bus->read8(_cpu->PC + 1);
         // printf("LD D, d8 -- %X --\n", _cpu->D);
         _cpu->PC = _cpu->PC + 2;
         break;
@@ -376,7 +376,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x18: {
         int8_t offset;
-        offset = (int8_t)_mmu->read8(_cpu->PC + 1);
+        offset = (int8_t)_bus->read8(_cpu->PC + 1);
         _cpu->PC += 2;
         _cpu->PC += offset;
         // printf("JR r8 -- %X --\n", offset);
@@ -389,7 +389,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x1A: {
-        _cpu->A = _mmu->read8(_cpu->DE);
+        _cpu->A = _bus->read8(_cpu->DE);
         // printf("LD A, (DE) -- %X --\n", _cpu->A);
         _cpu->PC = _cpu->PC + 1;
         break;
@@ -414,7 +414,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x1E: {
         // printf("LD E, d8");
-        _cpu->E  = _mmu->read8(_cpu->PC + 1);
+        _cpu->E  = _bus->read8(_cpu->PC + 1);
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -426,7 +426,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x20: {
         // printf("JR NZ, s8\n");
-        int8_t offset = (int8_t)(_mmu->read8(_cpu->PC + 1));
+        int8_t offset = (int8_t)(_bus->read8(_cpu->PC + 1));
         if (!(_cpu->F & FLAG_ZERO))
             _cpu->PC += 2 + offset;
         else
@@ -434,8 +434,8 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x21: {
-        uint8_t l = _mmu->read8(_cpu->PC + 1);
-        uint8_t h = _mmu->read8(_cpu->PC + 2);
+        uint8_t l = _bus->read8(_cpu->PC + 1);
+        uint8_t h = _bus->read8(_cpu->PC + 2);
 
         uint16_t v = (h << 8) | l;
         ld(_cpu->HL, v);
@@ -445,7 +445,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x22: {
         // printf("LD (HL+), A");
-        _mmu->write8(_cpu->HL, _cpu->A);
+        _bus->write8(_cpu->HL, _cpu->A);
         _cpu->HL += 1;
         _cpu->PC += 1;
         break;
@@ -470,7 +470,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x26: {
         // printf("LD H, d8");
-        ld(_cpu->H, _mmu->read8(_cpu->PC + 1));
+        ld(_cpu->H, _bus->read8(_cpu->PC + 1));
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -502,7 +502,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x28: {
         // printf("JR Z, r8 0x28");
-        int8_t offset = (int8_t)_mmu->read8(_cpu->PC + 1);
+        int8_t offset = (int8_t)_bus->read8(_cpu->PC + 1);
 
         if (_cpu->F & FLAG_ZERO)
             _cpu->PC += 2 + offset;
@@ -519,7 +519,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x2A: {
         // printf("LD A, (HL+)\n");
-        uint8_t n8 = _mmu->read8(_cpu->HL);
+        uint8_t n8 = _bus->read8(_cpu->HL);
         _cpu->A    = n8;
         _cpu->HL += 1;
         _cpu->PC += 1;
@@ -545,7 +545,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x2E: {
         // printf("LD L, d8\n");
-        _cpu->L  = _mmu->read8(_cpu->PC + 1);
+        _cpu->L  = _bus->read8(_cpu->PC + 1);
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -557,13 +557,13 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x30: {
         // printf("JR NC,r8 -- --\n");
-        jump(!(_cpu->F & FLAG_CARRY), _mmu->read8(_cpu->PC + 1));
+        jump(!(_cpu->F & FLAG_CARRY), _bus->read8(_cpu->PC + 1));
         _cpu->PC += 2;
         break;
     }
     case 0x31: {
-        uint16_t l = _mmu->read8(_cpu->PC + 1);
-        uint16_t h = _mmu->read8(_cpu->PC + 2);
+        uint16_t l = _bus->read8(_cpu->PC + 1);
+        uint16_t h = _bus->read8(_cpu->PC + 2);
         _cpu->SP   = (h << 8) | l;
 
         _cpu->PC = _cpu->PC + 3;
@@ -571,7 +571,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x32: {
         // printf("LD (HL-), A\n");
-        _mmu->write8(_cpu->HL, _cpu->A);
+        _bus->write8(_cpu->HL, _cpu->A);
         _cpu->HL -= 1;
         _cpu->PC = _cpu->PC + 1;
         break;
@@ -593,14 +593,14 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0x35: {
 
         dec_mem(_cpu->HL);
-        // printf("DEC (HL) 0x35 0x%X \n", _mmu->read8(_cpu->HL));
+        // printf("DEC (HL) 0x35 0x%X \n", _bus->read8(_cpu->HL));
         _cpu->PC = _cpu->PC + 1;
         break;
     }
     case 0x36: {
 
         // printf("LD (HL), d8\n");
-        _mmu->write8(_cpu->HL, _mmu->read8(_cpu->PC + 1));
+        _bus->write8(_cpu->HL, _bus->read8(_cpu->PC + 1));
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -614,7 +614,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0x38: {
-        int8_t offset = static_cast<int8_t>(_mmu->read8(_cpu->PC + 1));
+        int8_t offset = static_cast<int8_t>(_bus->read8(_cpu->PC + 1));
 
         if (_cpu->F & FLAG_CARRY) {
             _cpu->PC += 2 + offset;
@@ -632,7 +632,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x3A: {
         // printf("LD A, (HL-)\n");
-        _cpu->A  = _mmu->read8(_cpu->HL);
+        _cpu->A  = _bus->read8(_cpu->HL);
         _cpu->HL = _cpu->HL - 1;
         _cpu->PC = _cpu->PC + 1;
         break;
@@ -656,7 +656,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x3E: {
 
-        _cpu->A = _mmu->read8(_cpu->PC + 1);
+        _cpu->A = _bus->read8(_cpu->PC + 1);
         // printf("LD A, d8: 0x3E A: -- %X -- \n", _cpu->A);
         _cpu->PC = _cpu->PC + 2;
         break;
@@ -710,7 +710,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x46: {
         // printf("LD B, (HL)");
-        _cpu->B  = _mmu->read16(_cpu->HL);
+        _cpu->B  = _bus->read16(_cpu->HL);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -757,7 +757,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x4E: {
         // printf("LD C, (HL)\n");
-        _cpu->C  = _mmu->read8(_cpu->HL);
+        _cpu->C  = _bus->read8(_cpu->HL);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -805,7 +805,7 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0x56: {
         // printf("LD D, (HL)\n");
 
-        _cpu->D  = _mmu->read8(_cpu->HL);
+        _cpu->D  = _bus->read8(_cpu->HL);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -852,7 +852,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x5E: {
         // printf("LD E, L\n");
-        _cpu->E  = _mmu->read8(_cpu->HL);
+        _cpu->E  = _bus->read8(_cpu->HL);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -899,7 +899,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x66: {
         // printf("LD H, (HL)\n");
-        _cpu->H  = _mmu->read8(_cpu->HL);
+        _cpu->H  = _bus->read8(_cpu->HL);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -946,7 +946,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x6E: {
         // printf("LD L, (LH)\n");
-        _cpu->L  = _mmu->read8(_cpu->HL);
+        _cpu->L  = _bus->read8(_cpu->HL);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -958,37 +958,37 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x70: {
         // printf("LD (HL), B\n");
-        _mmu->write8(_cpu->HL, _cpu->B);
+        _bus->write8(_cpu->HL, _cpu->B);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
     case 0x71: {
         // printf("LD (HL), C\n");
-        _mmu->write8(_cpu->HL, _cpu->C);
+        _bus->write8(_cpu->HL, _cpu->C);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
     case 0x72: {
         // printf("LD (HL), D\n");
-        _mmu->write8(_cpu->HL, _cpu->D);
+        _bus->write8(_cpu->HL, _cpu->D);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
     case 0x73: {
         // printf("LD (HL), E\n");
-        _mmu->write8(_cpu->HL, _cpu->E);
+        _bus->write8(_cpu->HL, _cpu->E);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
     case 0x74: {
         // printf("LD (HL), H\n");
-        _mmu->write8(_cpu->HL, _cpu->H);
+        _bus->write8(_cpu->HL, _cpu->H);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
     case 0x75: {
         // printf("LD (HL), L\n");
-        _mmu->write8(_cpu->HL, _cpu->L);
+        _bus->write8(_cpu->HL, _cpu->L);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -999,7 +999,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x77: {
         // printf("LD (HL), A\n");
-        _mmu->write8(_cpu->HL, _cpu->A);
+        _bus->write8(_cpu->HL, _cpu->A);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -1041,7 +1041,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x7E: {
         // printf("LD A, (HL)\n");
-        _cpu->A  = _mmu->read8(_cpu->HL);
+        _cpu->A  = _bus->read8(_cpu->HL);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -1088,7 +1088,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x86: {
         // printf("ADD A, (HL)\n");
-        uint8_t value = _mmu->read8(_cpu->HL);
+        uint8_t value = _bus->read8(_cpu->HL);
         add8_mem(_cpu->A, value);
         _cpu->PC += 1;
         break;
@@ -1137,7 +1137,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x8E: {
         // printf("ADC A, (HL)\n");
-        adc(_cpu->A, _mmu->read8(_cpu->HL));
+        adc(_cpu->A, _bus->read8(_cpu->HL));
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -1185,7 +1185,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x96: {
         // printf("SUB (HL)\n");
-        sub(_cpu->A, _mmu->read8(_cpu->HL));
+        sub(_cpu->A, _bus->read8(_cpu->HL));
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -1233,7 +1233,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0x9E: {
         // printf("SBC A, L\n");
-        sbc(_cpu->A, _mmu->read8(_cpu->HL));
+        sbc(_cpu->A, _bus->read8(_cpu->HL));
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -1281,7 +1281,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xA6: {
         // printf("AND A, (HL)\n");
-        and_(_cpu->A, _mmu->read8(_cpu->HL));
+        and_(_cpu->A, _bus->read8(_cpu->HL));
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -1330,7 +1330,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xAE: {
         // printf("XOR A, (HL)\n");
-        xor_(_cpu->A, _mmu->read8(_cpu->HL));
+        xor_(_cpu->A, _bus->read8(_cpu->HL));
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -1378,7 +1378,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xB6: {
         // printf("OR A, (HL)\n");
-        or_(_cpu->A, _mmu->read8(_cpu->HL));
+        or_(_cpu->A, _bus->read8(_cpu->HL));
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -1426,7 +1426,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xBE: {
         // printf("CP (HL)\n");
-        cp_(_cpu->A, _mmu->read8(_cpu->HL));
+        cp_(_cpu->A, _bus->read8(_cpu->HL));
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -1447,9 +1447,9 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xC1: {
         // printf("POP BC\n");
-        uint8_t l = _mmu->read8(_cpu->SP);
+        uint8_t l = _bus->read8(_cpu->SP);
         _cpu->SP += 1;
-        uint8_t h = _mmu->read8(_cpu->SP);
+        uint8_t h = _bus->read8(_cpu->SP);
         _cpu->SP += 1;
 
         _cpu->BC = (h << 8) | l;
@@ -1459,8 +1459,8 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xC2: {
         // printf("JP NZ, nn\n");
         if (!(_cpu->F & FLAG_ZERO)) {
-            uint8_t l = _mmu->read8(_cpu->PC + 1);
-            uint8_t h = _mmu->read8(_cpu->PC + 2);
+            uint8_t l = _bus->read8(_cpu->PC + 1);
+            uint8_t h = _bus->read8(_cpu->PC + 2);
             _cpu->PC  = (h << 8) | l;
         } else {
             _cpu->PC += 3;
@@ -1468,8 +1468,8 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xC3: {
-        uint8_t l = _mmu->read8(_cpu->PC + 1);
-        uint8_t h = _mmu->read8(_cpu->PC + 2);
+        uint8_t l = _bus->read8(_cpu->PC + 1);
+        uint8_t h = _bus->read8(_cpu->PC + 2);
         _cpu->PC  = (h << 8) | l;
         // printf("JP a16 -- %X --\n", _cpu->PC);
         break;
@@ -1487,7 +1487,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xC6: {
         // printf("ADD A, d8\n");
-        add8(_cpu->A, _mmu->read8(_cpu->PC + 1));
+        add8(_cpu->A, _bus->read8(_cpu->PC + 1));
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -1495,9 +1495,9 @@ void InstructionSet::execute(uint8_t opcode) {
         // printf("RST 0\n");
         uint16_t ret = _cpu->PC + 1;
         _cpu->SP -= 1;
-        _mmu->write8(_cpu->SP, (ret >> 8) & 0xFF);
+        _bus->write8(_cpu->SP, (ret >> 8) & 0xFF);
         _cpu->SP -= 1;
-        _mmu->write8(_cpu->SP, ret & 0xFF);
+        _bus->write8(_cpu->SP, ret & 0xFF);
         _cpu->PC = _cpu->PC + 1;
         _cpu->PC = 0x0000;
         break;
@@ -1519,8 +1519,8 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xCA: {
         // printf("JP Z, nn 0xCA\n");
         if (_cpu->F & FLAG_ZERO) {
-            u_int8_t l = _mmu->read8(_cpu->PC + 1);
-            u_int8_t h = _mmu->read8(_cpu->PC + 2);
+            u_int8_t l = _bus->read8(_cpu->PC + 1);
+            u_int8_t h = _bus->read8(_cpu->PC + 2);
             _cpu->PC   = (h << 8) | l;
         } else {
             _cpu->PC += 3;
@@ -1528,7 +1528,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xCB: {
-        uint8_t cb_op = _mmu->read8(_cpu->PC + 1);
+        uint8_t cb_op = _bus->read8(_cpu->PC + 1);
         switch (cb_op) {
         case 0x00: {
             // printf("RLC B\n");
@@ -1567,9 +1567,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x06: {
             // printf("RLC (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             rlc_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -1617,9 +1617,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x0E: {
             // printf("RRC (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             rrc_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -1666,9 +1666,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x16: {
             // printf("RL (HL)");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             rl_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -1716,9 +1716,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x1E: {
             // printf("RR L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             rr_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -1766,9 +1766,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x26: {
             // printf("SLA (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             sla_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -1816,9 +1816,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x2E: {
             // printf("SRA (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             sra_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -1866,9 +1866,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x36: {
             // printf("SWAP (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             swap_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -1916,9 +1916,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x3E: {
             // printf("SRL (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             srl_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -1966,9 +1966,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x46: {
             // printf("BIT0 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             bit0_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2015,10 +2015,10 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x4E: {
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             // printf("BIT1 (HL)\n");
             bit1_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
             break;
         }
         case 0x4F: {
@@ -2065,9 +2065,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x56: {
             // printf("BIT2, L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             bit2_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2115,9 +2115,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x5E: {
             // printf("BIT3 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             bit3_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2164,9 +2164,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x66: {
             // printf("BIT4 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             bit4_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2212,9 +2212,9 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         case 0x6E: {
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             bit5_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
             break;
         }
         case 0x6F: {
@@ -2258,9 +2258,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x76: {
             // printf("BIT6 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             bit6_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2308,9 +2308,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x7E: {
             // printf("BIT7 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             bit7_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
             break;
         }
         case 0x7F: {
@@ -2357,9 +2357,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x86: {
             // printf("RES0 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             res0_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2407,9 +2407,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x8E: {
             // printf("RES1 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             res1_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2458,9 +2458,9 @@ void InstructionSet::execute(uint8_t opcode) {
 
         case 0x96: {
             // printf("RES2 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             res2_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2508,9 +2508,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0x9E: {
             // printf("RES3 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             res3_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2557,9 +2557,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xA6: {
             // printf("RES4 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             res4_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2607,9 +2607,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xAE: {
             // printf("RES5 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             res5_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2657,9 +2657,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xB6: {
             // printf("RES6 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             res6_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2707,9 +2707,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xBE: {
             // printf("RES7 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             res7_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2757,9 +2757,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xC6: {
             // printf("SET0 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             set0_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2807,9 +2807,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xCE: {
             // printf("SET1 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             set1_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2856,9 +2856,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xD6: {
             // printf("SET2 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             set2_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2906,9 +2906,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xDE: {
             // printf("SET3 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             set3_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -2956,9 +2956,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xE6: {
             // printf("SET4 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             set4_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -3006,9 +3006,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xEE: {
             // printf("SET5 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             set5_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -3056,9 +3056,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xF6: {
             // printf("SET6 (HL)\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             set6_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -3106,9 +3106,9 @@ void InstructionSet::execute(uint8_t opcode) {
         }
         case 0xFE: {
             // printf("SET7 L\n");
-            uint8_t v = _mmu->read8(_cpu->HL);
+            uint8_t v = _bus->read8(_cpu->HL);
             set7_extended(v);
-            _mmu->write8(_cpu->HL, v);
+            _bus->write8(_cpu->HL, v);
 
             break;
         }
@@ -3119,7 +3119,7 @@ void InstructionSet::execute(uint8_t opcode) {
             break;
         }
         default: {
-            printf("-- not CB prefix with that value %02X --\n", _mmu->read8(_cpu->PC + 1));
+            printf("-- not CB prefix with that value %02X --\n", _bus->read8(_cpu->PC + 1));
             exit(1);
             break;
         }
@@ -3138,17 +3138,17 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xCD: {
         // printf("CALL a16\n");
-        uint16_t address        = _mmu->read16(_cpu->PC + 1);
+        uint16_t address        = _bus->read16(_cpu->PC + 1);
         uint16_t return_address = _cpu->PC + 3;
 
         _cpu->SP -= 2;
-        _mmu->write16(_cpu->SP, return_address);
+        _bus->write16(_cpu->SP, return_address);
 
         _cpu->PC = address;
         break;
     }
     case 0xCE: {
-        adc(_cpu->A, _mmu->read8(_cpu->PC + 1));
+        adc(_cpu->A, _bus->read8(_cpu->PC + 1));
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -3156,7 +3156,7 @@ void InstructionSet::execute(uint8_t opcode) {
         // printf("RST 1\n");
         uint16_t return_addr = _cpu->PC + 1;
         _cpu->SP -= 2;
-        _mmu->write16(_cpu->SP, return_addr);
+        _bus->write16(_cpu->SP, return_addr);
         _cpu->PC = 0x0008;
         break;
     }
@@ -3177,8 +3177,8 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xD2: {
         if (!(_cpu->F & FLAG_CARRY)) {
-            uint8_t l = _mmu->read8(_cpu->PC + 1);
-            uint8_t h = _mmu->read8(_cpu->PC + 2);
+            uint8_t l = _bus->read8(_cpu->PC + 1);
+            uint8_t h = _bus->read8(_cpu->PC + 2);
             _cpu->PC  = (h << 8) | l;
         } else {
             _cpu->PC += 3;
@@ -3202,7 +3202,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xD6: {
-        sub(_cpu->A, _mmu->read8(_cpu->PC + 1));
+        sub(_cpu->A, _bus->read8(_cpu->PC + 1));
         // printf("SUB d8. result of A -- %X -- 0xD6\n", _cpu->A);
         _cpu->PC = _cpu->PC + 2;
         break;
@@ -3211,9 +3211,9 @@ void InstructionSet::execute(uint8_t opcode) {
         // printf("RST 10H\n");
         uint16_t ret = _cpu->PC + 1;
         _cpu->SP--;
-        _mmu->write8(_cpu->SP, (ret >> 8) & 0xFF);
+        _bus->write8(_cpu->SP, (ret >> 8) & 0xFF);
         _cpu->SP--;
-        _mmu->write8(_cpu->SP, ret & 0xFF);
+        _bus->write8(_cpu->SP, ret & 0xFF);
         _cpu->PC = 0x0010;
         break;
     }
@@ -3235,8 +3235,8 @@ void InstructionSet::execute(uint8_t opcode) {
     case 0xDA: {
         // printf("JP C, nn\n");
         if (_cpu->F & FLAG_CARRY) {
-            uint8_t l = _mmu->read8(_cpu->PC + 1);
-            uint8_t h = _mmu->read8(_cpu->PC + 2);
+            uint8_t l = _bus->read8(_cpu->PC + 1);
+            uint8_t h = _bus->read8(_cpu->PC + 2);
             _cpu->PC  = (h << 8) | l;
         } else {
             _cpu->PC = _cpu->PC + 3;
@@ -3265,7 +3265,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xDE: {
         // printf("SBC A, d8\n");
-        sbc(_cpu->A, _mmu->read8(_cpu->PC + 1));
+        sbc(_cpu->A, _bus->read8(_cpu->PC + 1));
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -3274,18 +3274,18 @@ void InstructionSet::execute(uint8_t opcode) {
         uint16_t return_addr = _cpu->PC + 1;
 
         _cpu->SP -= 1;
-        _mmu->write8(_cpu->SP, (return_addr >> 8) & 0xFF);
+        _bus->write8(_cpu->SP, (return_addr >> 8) & 0xFF);
 
         _cpu->SP -= 1;
-        _mmu->write8(_cpu->SP, return_addr & 0xFF);
+        _bus->write8(_cpu->SP, return_addr & 0xFF);
 
         _cpu->PC = 0x0018;
         break;
     }
     case 0xE0: {
-        uint8_t a8 = _mmu->read8(_cpu->PC + 1);
+        uint8_t a8 = _bus->read8(_cpu->PC + 1);
 
-        _mmu->write8(0xFF00 + a8, _cpu->A);
+        _bus->write8(0xFF00 + a8, _cpu->A);
 
         _cpu->PC += 2;
         break;
@@ -3297,8 +3297,8 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xE2: {
-        // uint8_t a8 = _mmu->read8(_cpu->PC + 1);
-        _mmu->write8(0xff00 + _cpu->C, _cpu->A);
+        // uint8_t a8 = _bus->read8(_cpu->PC + 1);
+        _bus->write8(0xff00 + _cpu->C, _cpu->A);
         _cpu->PC += 1;
         break;
     }
@@ -3318,7 +3318,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xE6: {
         // printf(" AND d8\n");
-        and_(_cpu->A, _mmu->read8(_cpu->PC + 1));
+        and_(_cpu->A, _bus->read8(_cpu->PC + 1));
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -3331,7 +3331,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xE8: {
         // printf("ADD SP, r8\n");
-        int8_t s8 = (int8_t)_mmu->read8(_cpu->PC + 1);
+        int8_t s8 = (int8_t)_bus->read8(_cpu->PC + 1);
         _cpu->clear_flag(FLAG_ZERO);
         _cpu->clear_flag(FLAG_SUBTRACT);
         uint16_t old_sp = _cpu->SP;
@@ -3349,11 +3349,11 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xEA: {
-        uint8_t  l  = _mmu->read8(_cpu->PC + 1);
-        uint8_t  h  = _mmu->read8(_cpu->PC + 2);
+        uint8_t  l  = _bus->read8(_cpu->PC + 1);
+        uint8_t  h  = _bus->read8(_cpu->PC + 2);
         uint16_t nn = (h << 8) | l;
         // printf("LD(nn), A 0xEA nn: -- %X --\n", nn);
-        _mmu->write8(nn, _cpu->A);
+        _bus->write8(nn, _cpu->A);
         _cpu->PC = _cpu->PC + 3;
         break;
     }
@@ -3374,7 +3374,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xEE: {
         // printf(" XOR d8\n");
-        xor_(_cpu->A, _mmu->read8(_cpu->PC + 1));
+        xor_(_cpu->A, _bus->read8(_cpu->PC + 1));
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -3387,9 +3387,9 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xF0: {
         // printf("LD A, (a8)\n");
-        uint8_t  a8   = _mmu->read8(_cpu->PC + 1);
+        uint8_t  a8   = _bus->read8(_cpu->PC + 1);
         uint16_t addr = 0xFF00 | a8;
-        _cpu->A       = _mmu->read8(addr);
+        _cpu->A       = _bus->read8(addr);
 
         _cpu->PC += 2;
         break;
@@ -3403,7 +3403,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xF2: {
         // printf("LDA, (C)\n");
-        _cpu->A  = _mmu->read8(0xFF00 + _cpu->C);
+        _cpu->A  = _bus->read8(0xFF00 + _cpu->C);
         _cpu->PC = _cpu->PC + 1;
         break;
     }
@@ -3427,7 +3427,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xF6: {
         // printf(" OR nn\n");
-        or_(_cpu->A, _mmu->read8(_cpu->PC + 1));
+        or_(_cpu->A, _bus->read8(_cpu->PC + 1));
         _cpu->PC = _cpu->PC + 2;
         break;
     }
@@ -3440,7 +3440,7 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xF8: {
         // printf("LD HL, SP+s8\n");
-        int8_t   s8 = _mmu->read8(_cpu->PC + 1);
+        int8_t   s8 = _bus->read8(_cpu->PC + 1);
         uint32_t r  = _cpu->SP + s8;
         _cpu->PC    = _cpu->PC + 2;
         _cpu->HL    = r;
@@ -3458,10 +3458,10 @@ void InstructionSet::execute(uint8_t opcode) {
     }
     case 0xFA: {
         // printf("LD A, (a16)\n");
-        uint8_t  l = _mmu->read8(_cpu->PC + 1);
-        uint8_t  h = _mmu->read8(_cpu->PC + 2);
+        uint8_t  l = _bus->read8(_cpu->PC + 1);
+        uint8_t  h = _bus->read8(_cpu->PC + 2);
         uint16_t a = (h << 8) | l;
-        _cpu->A    = _mmu->read8(a);
+        _cpu->A    = _bus->read8(a);
         _cpu->PC   = _cpu->PC + 3;
         break;
     }
@@ -3482,7 +3482,7 @@ void InstructionSet::execute(uint8_t opcode) {
         break;
     }
     case 0xFE: {
-        uint8_t n = _mmu->read8(_cpu->PC + 1);
+        uint8_t n = _bus->read8(_cpu->PC + 1);
         // printf("CP A,n8  -- %X --\n", n);
         _cpu->set_flag(FLAG_ZERO, n == _cpu->A);
         _cpu->set_flag(FLAG_SUBTRACT, 1);
@@ -3507,9 +3507,9 @@ void InstructionSet::execute(uint8_t opcode) {
 
 void InstructionSet::pop_(bool condition, uint16_t& reg) {
     if (condition) {
-        uint8_t l = _mmu->read8(_cpu->SP);
+        uint8_t l = _bus->read8(_cpu->SP);
         _cpu->SP += 1;
-        uint8_t h = _mmu->read8(_cpu->SP);
+        uint8_t h = _bus->read8(_cpu->SP);
         _cpu->SP += 1;
         reg = (h << 8) | l;
     }
@@ -3517,9 +3517,9 @@ void InstructionSet::pop_(bool condition, uint16_t& reg) {
 
 void InstructionSet::ret(bool condition) {
     if (condition) {
-        uint8_t l = _mmu->read8(_cpu->SP);
+        uint8_t l = _bus->read8(_cpu->SP);
         _cpu->SP += 1;
-        uint8_t h = _mmu->read8(_cpu->SP);
+        uint8_t h = _bus->read8(_cpu->SP);
         _cpu->SP += 1;
         _cpu->PC = (h << 8) | l;
     }
@@ -3543,15 +3543,15 @@ void InstructionSet::cp_(uint8_t reg_1, uint8_t reg_2) {
 
 void InstructionSet::call(bool condition) {
     if (condition) {
-        uint8_t  l   = _mmu->read8(_cpu->PC + 1);
-        uint8_t  h   = _mmu->read8(_cpu->PC + 2);
+        uint8_t  l   = _bus->read8(_cpu->PC + 1);
+        uint8_t  h   = _bus->read8(_cpu->PC + 2);
         uint16_t t   = (h << 8) | l;
         uint16_t ret = _cpu->PC += 3;
 
         _cpu->SP -= 1;
-        _mmu->write8(_cpu->SP, ret >> 8);
+        _bus->write8(_cpu->SP, ret >> 8);
         _cpu->SP -= 1;
-        _mmu->write8(_cpu->SP, ret & 0xFF);
+        _bus->write8(_cpu->SP, ret & 0xFF);
         _cpu->PC = t;
     } else {
         _cpu->PC += 3;
@@ -3581,16 +3581,16 @@ void InstructionSet::sbc(uint8_t& reg_1, uint8_t reg_2) {
 }
 void InstructionSet::execute_call() {
     // address being called
-    uint8_t l = _mmu->read8(_cpu->PC + 1);
-    uint8_t h = _mmu->read8(_cpu->PC + 2);
+    uint8_t l = _bus->read8(_cpu->PC + 1);
+    uint8_t h = _bus->read8(_cpu->PC + 2);
 
     // next instruction after call
     uint16_t ret_addr = _cpu->PC + 3;
 
     _cpu->SP -= 1;
-    _mmu->write8(_cpu->SP, (ret_addr >> 8) & 0xFF);
+    _bus->write8(_cpu->SP, (ret_addr >> 8) & 0xFF);
     _cpu->SP -= 1;
-    _mmu->write8(_cpu->SP, ret_addr & 0xFF);
+    _bus->write8(_cpu->SP, ret_addr & 0xFF);
     _cpu->PC = (h << 8) | l;
 }
 
@@ -3606,10 +3606,10 @@ void InstructionSet::xor_(uint8_t& reg_1, uint8_t reg_2) {
 void InstructionSet::push_(uint16_t reg) {
     _cpu->SP -= 1;
     uint8_t h = reg >> 8;
-    _mmu->write8(_cpu->SP, h);
+    _bus->write8(_cpu->SP, h);
     _cpu->SP -= 1;
     uint8_t l = reg & 0xFF;
-    _mmu->write8(_cpu->SP, l);
+    _bus->write8(_cpu->SP, l);
 }
 
 // void InstructionSet::cpl(uint8_t &reg) {
@@ -3659,11 +3659,11 @@ void InstructionSet::rrca(uint8_t& reg) {
 
 void InstructionSet::dec_mem(uint16_t& reg) {
     // To be DONE
-    uint8_t tmp          = _mmu->read8(reg);
+    uint8_t tmp          = _bus->read8(reg);
     uint8_t nibble_carry = tmp & 0x0F;
     _cpu->set_flag(FLAG_HALF_CARRY, (tmp & 0x0F) == 0);
     tmp = tmp - 1;
-    _mmu->write8(reg, tmp);
+    _bus->write8(reg, tmp);
     _cpu->set_flag(FLAG_ZERO, tmp == 0);
     _cpu->set_flag(FLAG_SUBTRACT, 1);
 }
@@ -3709,7 +3709,7 @@ void InstructionSet::rla() {
     _cpu->clear_flag(FLAG_HALF_CARRY);
 }
 void InstructionSet::add8_mem(uint8_t& destination, uint8_t value) {
-    // _mmu->write8(destination, destination + value);
+    // _bus->write8(destination, destination + value);
     uint16_t v = destination + value;
     _cpu->set_flag(FLAG_ZERO, (v & 0xFF) == 0);
     _cpu->set_flag(FLAG_SUBTRACT, false);
@@ -3775,10 +3775,10 @@ void InstructionSet::inc_mem(uint16_t& reg) {
     // the value at the [reg],
     // and updates the F flag register
     // accordinly.
-    uint8_t tmp          = _mmu->read8(reg);
+    uint8_t tmp          = _bus->read8(reg);
     uint8_t nibble_carry = tmp & 0x0F;
     tmp                  = tmp + 1;
-    _mmu->write8(reg, tmp);
+    _bus->write8(reg, tmp);
 
     _cpu->set_flag(FLAG_HALF_CARRY, (nibble_carry == 0x0F));
     _cpu->set_flag(FLAG_ZERO, (tmp == 0));
@@ -3800,7 +3800,7 @@ void InstructionSet::step() {
         _cpu->ime_pending = false;
         _cpu->_ime        = 1;
     }
-    _opcode = _mmu->read8(_cpu->PC);
+    _opcode = _bus->read8(_cpu->PC);
     execute(_opcode);
     int current_cycle = _cpu->opcode_cycles[_opcode];
     _cpu->cycle_count += current_cycle;
@@ -3810,9 +3810,9 @@ void InstructionSet::interrupt_handler(uint16_t vector) {
     _cpu->_ime  = 0;
     uint16_t pc = _cpu->PC;
     _cpu->SP -= 1;
-    _mmu->write8(_cpu->SP, (pc >> 8) & 0xFF);
+    _bus->write8(_cpu->SP, (pc >> 8) & 0xFF);
     _cpu->SP -= 1;
-    _mmu->write8(_cpu->SP, pc & 0xFF);
+    _bus->write8(_cpu->SP, pc & 0xFF);
     _cpu->PC = vector;
     _cpu->cycle_count += 20;
 }

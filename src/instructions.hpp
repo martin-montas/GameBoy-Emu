@@ -17,12 +17,12 @@ class Cpu;
  * in 2 files.
  */
 class InstructionSet {
-    SystemBus* _mmu; /* pointer to mem class */
+    SystemBus* _bus; /* pointer to mem class */
     Cpu*       _cpu; /* pointer to cpu class */
                      // Interrupt_Flags flags; /* interrupt enum */
 
   public:
-    InstructionSet(SystemBus* mmu, Cpu* cpu) : _mmu(mmu), _cpu(cpu) {
+    InstructionSet(SystemBus* bus, Cpu* cpu) : _bus(bus), _cpu(cpu) {
         /* initializes regs */
         post_boot_state();
     }

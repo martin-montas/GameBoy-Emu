@@ -26,7 +26,7 @@
 
 ## Milestones:
 - [X] CPU.
-- [X] Finish MMU.
+- [X] Finish bus.
 - [X] Boot rom rendering.
 - [X] Finish timer
 - [X] Finish Interrupt

@@ -22,19 +22,19 @@ void TestRunner::run_cpu_test(const std::string file) {
     }
     interrupt = new Interrupt();
     timer     = new Timer(interrupt);
-    mmu       = new SST();
+    bus       = new SST();
 
-    cpu = new Cpu(mmu, interrupt);
+    cpu = new Cpu(bus, interrupt);
     for (const auto& test : jsonData) {
         delete cpu;
-        delete mmu;
+        delete bus;
         delete timer;
         delete interrupt;
 
         interrupt = new Interrupt();
         timer     = new Timer(interrupt);
-        mmu       = new SST();
-        cpu       = new Cpu(mmu, interrupt);
+        bus       = new SST();
+        cpu       = new Cpu(bus, interrupt);
 
         std::string name = test["name"].get<std::string>();
         printf("Running: %s\n", name.c_str());
@@ -72,7 +72,7 @@ void TestRunner::load_initial_state(j initial) {
 
     j ram = initial["ram"];
     for (auto r : ram) {
-        mmu->write8(r[0].get<uint16_t>(), r[1].get<uint8_t>());
+        bus->write8(r[0].get<uint16_t>(), r[1].get<uint8_t>());
     }
 }
 void TestRunner::verify_final_state(j final) {
@@ -136,7 +136,7 @@ void TestRunner::verify_final_state(j final) {
     for (const auto& r : final["ram"]) {
         uint16_t addr     = r[0].get<uint16_t>();
         uint8_t  expected = r[1].get<uint8_t>();
-        uint8_t  actual   = mmu->read8(addr);
+        uint8_t  actual   = bus->read8(addr);
 
         if (actual != expected) {
             printf("RAM mismatch at %04X: expected %02X got %02X (PC=%04X)\n", addr, expected,

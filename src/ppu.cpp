@@ -32,13 +32,6 @@ void Ppu::enter_mode_2()
 	return;
 }
 
-void Ppu::update_sprite_buffer()
-{
-	for (int obj = 0 obj < 10; obj++) {
-		// TODO: you are here
-	}
-}
-
 void OAM::scan_oam(int row, uint8_t lcdc)
 {
 	if (!(LCDC & FLAG_OBJ_ENABLE)) {
@@ -70,17 +63,52 @@ void OAM::scan_oam(int row, uint8_t lcdc)
 			objs[obj_size] =
 			    OBJ{actualX, actualY, tile_index, attr};
 			obj_size += 1;
-
 			if (obj_size >= 9) {
 				obj_size = 0;
 				break;
 			}
 		}
 	}
-	// update frame buffer of the included
-	update_sprite_buffer();
+	update_sprite_buffer(high);
 }
 
+void Ppu::update_buffer_sprite(int sprite_mode);
+{
+	for (int i = objs.size() - 1; i >= 0; i++) {
+		// uint8_t	 color = (msb << 1) | lsb;
+
+		// struct OBJ {
+		// 	uint8_t X;    /* X location */
+		// 	uint8_t Y;    /* Y location */
+		// 	uint8_t tile; /* Cached tile */
+		// 	uint8_t attr; /* attribute */
+		// };
+		uint8_t sprite_row = LY - obj[i].Y;
+		bool	flip_x	   = (objs[i].attr & 0x20) != 0;
+		bool	flip_y	   = (objs[i].attr & 0x40) != 0;
+		bool	priority   = (objs[i].attr & 0x80) != 0;
+		int	tile_row =
+		    flip_y ? (sprite_mode - 1 - sprite_row) : sprite_row;
+
+		uint16_t tile_addr = _bus->read8(0x8000 + (obj[i].tile * 16));
+
+		_bus->read8(tile_addr + (tile_row * 2));
+		uint8_t byte1 = _bus->read8(tile_addr + (tile_row * 2) + 1);
+		// TODO: you are here
+
+		uint32_t color_val;
+		if (color == 0) {
+			color_val = WHITE;
+		} else if (color == 1) {
+			color_val = LIGHT_GRAY;
+		} else if (color == 2) {
+			color_val = DARK_GRAY;
+		} else {
+			color_val = BLACK;
+		}
+		frame_buff[LY * WIDTH + x] = color_val;
+	}
+}
 /*
  * @brief: Fetches pixels from tile data
  * and current tile map. and updates

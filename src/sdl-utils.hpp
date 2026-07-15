@@ -15,23 +15,24 @@
  * @brief: sdl2 helper class. does rendering and
  * event type management.
  */
-class SDL {
-    SDL_Renderer* renderer; /* render to the screen */
-    SDL_Surface*  screen;   /* screen to write to */
-    SDL_Texture*  texture;  /* deals with textures */
-    SDL_Window*   window;   /* window to display */
+class SDL
+{
+	SDL_Renderer* renderer; /* render to the screen */
+	SDL_Surface*  screen;	/* screen to write to */
+	SDL_Texture*  texture;	/* deals with textures */
+	SDL_Window*   window;	/* window to display */
 
-  public:
-    SDL_Event event;
-    void      init();
-    /*
-     * @brief: Updates frames per vblank
-     * @param[in]: pointer  to frame buffer
-     */
-    void frame_step(uint32_t* frame_buff);
-    bool display_running;
+      public:
+	SDL_Event event;
+	void	  init();
+	/*
+	 * @brief: Updates frames per vblank
+	 * @param[in]: pointer  to frame buffer
+	 */
+	void frame_step(uint32_t* frame_buff);
+	bool display_running;
 
-    ~SDL();
+	~SDL();
 };
 
 #endif // SRC_SDL_UTILS_HPP_

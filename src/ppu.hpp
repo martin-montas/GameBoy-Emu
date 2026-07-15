@@ -164,7 +164,7 @@ class Ppu
 	void render_frame();
 	void fetch_sprites();
 
-	void update_sprite_buffer();
+	void update_buffer_sprite(int sprite_mode);
 	void scan_oam(int row, uint8_t lcdc);
 };
 #endif // SRC_PPU_HPP_

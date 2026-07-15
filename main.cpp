@@ -2,13 +2,14 @@
 // All components of this software are licensed under the GNU License.
 // Author: Martin Montas, martinmontas1@gmail.com
 #include "src/gameboy.hpp"
-#include <iostream>
 #include <SDL2/SDL.h>
+#include <iostream>
 // #include "src/test/test-runner.hpp"
 
-int main(int argc, char** argv) {
-    GameBoy* game = new GameBoy(argv[1]);
-    game->run();
-    delete (game);
-    return 0;
+int main(int argc, char** argv)
+{
+  GameBoy* game = new GameBoy(argv[1]);
+  game->run();
+  delete (game);
+  return 0;
 }

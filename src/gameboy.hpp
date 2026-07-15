@@ -20,36 +20,38 @@
  * subsystems. its the main class for the whole game.
  */
 // class SystemBus;
-class GameBoy {
-    Cpu*       _cpu;             /* pointer to cpu object */
-    Serial*    _serial;          /* pointer to serial object */
-    Timer*     _timer;           /* pointer to timer object */
-    Bus*       _bus;             /* pointer to bus object */
-    Ppu*       _ppu;             /* pointer to ppu object */
-    Interrupt* _interrupt;       /* pointer to interrupt object */
-    SDL*       _sdl;             /* pointer to SDL2 object */
-    bool       emulationRunning; /* bool to emulator running state */
-    int        cycle_count = 0;  /* counter to CPU's T cycles */
-    uint8_t    _opcode;          /* current instruction */
+class GameBoy
+{
+	Cpu* _cpu;	       /* pointer to cpu object */
+	Serial* _serial;       /* pointer to serial object */
+	Timer* _timer;	       /* pointer to timer object */
+	Bus* _bus;	       /* pointer to bus object */
+	Ppu* _ppu;	       /* pointer to ppu object */
+	Interrupt* _interrupt; /* pointer to interrupt object */
+	SDL* _sdl;	       /* pointer to SDL2 object */
+	bool emulationRunning; /* bool to emulator running state */
+	int cycle_count = 0;   /* counter to CPU's T cycles */
+	uint8_t _opcode;       /* current instruction */
 
-    void interrupt_handler();
-    void unhalt();
+	void interrupt_handler();
+	void unhalt();
 
-  public:
-    inline explicit GameBoy(const std::string file) {
-        _interrupt = new Interrupt();
-        _timer     = new Timer(_interrupt);
-        _ppu       = new Ppu(_interrupt);
-        _bus       = new Bus(file, _timer, _interrupt);
-        _bus->attach(_ppu);
-        _sdl = new SDL();
-        _cpu = new Cpu(_bus, _interrupt);
-        _interrupt->attach(_cpu);
-        _ppu->attach(_bus);
-        emulationRunning = true;
-        // _instructions->post_boot_state();
-    }
+      public:
+	inline explicit GameBoy(const std::string file)
+	{
+		_interrupt = new Interrupt();
+		_timer = new Timer(_interrupt);
+		_ppu = new Ppu(_interrupt);
+		_bus = new Bus(file, _timer, _interrupt);
+		_bus->attach(_ppu);
+		_sdl = new SDL();
+		_cpu = new Cpu(_bus, _interrupt);
+		_interrupt->attach(_cpu);
+		_ppu->attach(_bus);
+		emulationRunning = true;
+		// _instructions->post_boot_state();
+	}
 
-    void run();
+	void run();
 };
 #endif // SRC_GAME_BOY_HPP_

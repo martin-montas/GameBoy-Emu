@@ -27,32 +27,10 @@
 #define BLACK      0x2c3521
 
 struct OBJ {
-    uint8_t X;     /* X location */
-    uint8_t Y;     /* Y location */
-    uint8_t flags; /* Cached flags */
-    uint8_t tile;  /* Cached tile */
-    int     num;   /* Original Object number */
-};
-
-class OAM {
-    uint8_t _data[256]; /* OAM data */
-  public:
-    struct OBJ objs[10];
-
-    inline OAM() {
-        for (int i = 0; i < 256; i++) {
-            _data[i] = 0;
-        }
-        /* Initialize objects to invalid */
-        for (int obj = 0; obj < 10; obj++) {
-            objs[obj].X     = 0xff;
-            objs[obj].Y     = 0xff;
-            objs[obj].flags = 0;
-            objs[obj].tile  = 0;
-        }
-    }
-
-    void scan_oam(int row, uint8_t lcdc);
+    uint8_t X;    /* X location */
+    uint8_t Y;    /* Y location */
+    uint8_t tile; /* Cached tile */
+    uint8_t attr; /* attribute */
 };
 
 /*
@@ -90,17 +68,18 @@ class SystemBus;
  * registers from  the game boy.
  */
 class Ppu {
-    SystemBus*     _bus;       /* pointer to memory object */
-    IInterrupt*    _interrupt; /* pointer to interrupt */
-    size_t         _dot_clock; /* updates the t cycles */
-    size_t         _mode;      /* updates to current mode */
-    uint8_t        _LCDC;      /* lcdc register */
-    uint8_t        _win_line;  /* used for window y */
-    uint8_t        LY;         /* LY register for scanlines bg */
-    uint8_t        wl_counter; /* WY register for scanlines win */
-    bgwin_priority _f_flag;    /* updates ppu rendering component */
-    bool           win_used;   /* for window rendering */
-    OAM            _oam;       /* oam class */
+    SystemBus*          _bus;       /* pointer to memory object */
+    IInterrupt*         _interrupt; /* pointer to interrupt */
+    size_t              _dot_clock; /* updates the t cycles */
+    size_t              _mode;      /* updates to current mode */
+    uint8_t             _LCDC;      /* lcdc register */
+    uint8_t             _win_line;  /* used for window y */
+    uint8_t             LY;         /* LY register for scanlines bg */
+    uint8_t             wl_counter; /* WY register for scanlines win */
+    bgwin_priority      _f_flag;    /* updates ppu rendering component */
+    bool                win_used;   /* for window rendering */
+    OAM                 _oam;       /* oam class */
+    std::array<OBJ, 10> objs{};
 
   public:
     inline explicit Ppu(IInterrupt* interrupt) : can_render(false), _mode(2), LY(0) {
@@ -109,6 +88,14 @@ class Ppu {
         /* updates frame buffer to black */
         for (int i = 0; i < WIDTH * HEIGHT; i++) {
             frame_buff[i] = 0xFF000000; // black
+        }
+
+        /* Initialize objects to invalid */
+        for (int obj = 0; obj < 10; obj++) {
+            objs[obj].X     = 0xff;
+            objs[obj].Y     = 0xff;
+            objs[obj].flags = 0;
+            objs[obj].tile  = 0;
         }
     }
     /*
@@ -169,5 +156,8 @@ class Ppu {
     void switch_mode(int mode);
     void render_frame();
     void fetch_sprites();
+
+    void update_sprite_buffer();
+    void scan_oam(int row, uint8_t lcdc);
 };
 #endif // SRC_PPU_HPP_

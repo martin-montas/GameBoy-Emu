@@ -30,57 +30,11 @@ void Ppu::enter_mode_2() {
     return;
 }
 
-// TODO: read this
-// private renderSpriteScanline(): void {
-//     const lcdControl = this.memory.read8(PPU.LCD_CONTROL);
-//     const spriteHeight = (lcdControl & 0x04) ? 16 : 8; // 8x8 or 8x16 sprites
-//
-//     // Game Boy can display up to 10 sprites per scanline, but we need to check all 40
-//     const spritesOnLine: Array<{x: number, y: number, tileIndex: number, attributes: number,
-//     oamIndex: number}> = [];
-//
-//     // Check all 40 sprites in OAM (0xFE00-0xFE9F)
-//     for (let spriteIndex = 0; spriteIndex < 40; spriteIndex++) {
-//       const oamAddress = 0xFE00 + (spriteIndex * 4);
-//
-//       const spriteY = this.memory.read8(oamAddress);     // Y position
-//       const spriteX = this.memory.read8(oamAddress + 1); // X position
-//       const tileIndex = this.memory.read8(oamAddress + 2); // Tile index
-//       const attributes = this.memory.read8(oamAddress + 3); // Attributes
-//
-//       // Convert coordinates (Game Boy uses offset coordinates)
-//       const actualY = spriteY - 16;
-//       const actualX = spriteX - 8;
-//
-//       // Check if sprite is on current scanline
-//       if (this._currentLine >= actualY && this._currentLine < actualY + spriteHeight) {
-//         spritesOnLine.push({
-//           x: actualX,
-//           y: actualY,
-//           tileIndex: tileIndex,
-//           attributes: attributes,
-//           oamIndex: spriteIndex
-//         });
-//       }
-//
-//       // Game Boy hardware limit: max 10 sprites per scanline
-//       if (spritesOnLine.length >= 10) {
-//         break;
-//       }
-//     }
-//      // Sort sprites by X position (leftmost first, then by OAM index for priority)
-//     spritesOnLine.sort((a, b) => {
-//       if (a.x === b.x) {
-//         return a.oamIndex - b.oamIndex; // Lower OAM index = higher priority
-//       }
-//       return a.x - b.x;
-//     });
-//
-//     // Render sprites from lowest priority to highest (reverse order for proper layering)
-//     for (let i = spritesOnLine.length - 1; i >= 0; i--) {
-//       this.renderSprite(spritesOnLine[i], spriteHeight);
-//     }
-//   }
+void Ppu::update_sprite_buffer() {
+    for (int obj = 0 obj < 10; obj++) {
+        // TODO: you are here
+    }
+}
 
 void OAM::scan_oam(int row, uint8_t lcdc) {
     if (!(LCDC & FLAG_OBJ_ENABLE)) {
@@ -97,8 +51,29 @@ void OAM::scan_oam(int row, uint8_t lcdc) {
     if ((lcdc & FLAG_OBJ_ENABLE) == 0) {
         return;
     }
-    for (int i = 0; i < 40; i++) {
+    size_t obj_size = 0;
+    for (int sprite_index = 0; sprite_index < 40; sprite_index++) {
+        const oam_addr = 0xFE00 + (sprite_index * 4);
+
+        uint8_t sprite_y   = _bus->read8(oam_addr);
+        uint8_t sprite_x   = _bus->read8(oam_addr + 1);
+        uint8_t tile_index = _bus->read8(oam_addr + 2);
+        uint8_t attr       = _bus->read8(oam_addr + 3);
+
+        uint8_t actualY = spriteY - 16;
+        uint8_t actualX = spriteX - 8;
+        if (LY >= actualY && LY < actualY + high) {
+            objs[obj_size] = OBJ{actualX, actualY, tile_index, attr};
+            obj_size += 1;
+
+            if (obj_size >= 9) {
+                obj_size = 0;
+                break;
+            }
+        }
     }
+    // update frame buffer of the included
+    update_sprite_buffer();
 }
 
 /*

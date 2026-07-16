@@ -32,7 +32,7 @@ void Ppu::enter_mode_2()
 	return;
 }
 
-void OAM::scan_oam(int row, uint8_t lcdc)
+void Ppu::scan_oam(int row, uint8_t lcdc)
 {
 	if (!(LCDC & FLAG_OBJ_ENABLE)) {
 		return;
@@ -69,9 +69,9 @@ void OAM::scan_oam(int row, uint8_t lcdc)
 			}
 		}
 	}
-	update_sprite_buffer(high);
 }
 
+// TODO run this function after window/background layer
 void Ppu::update_buffer_sprite(int sprite_mode);
 {
 	for (int i = objs.size() - 1; i >= 0; i++) {

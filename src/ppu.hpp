@@ -79,7 +79,6 @@ class Ppu
 	uint8_t		    wl_counter; /* WY register for scanlines win */
 	bgwin_priority	    _f_flag;	/* updates ppu rendering component */
 	bool		    win_used;	/* for window rendering */
-	OAM		    _oam;	/* oam class */
 	std::array<OBJ, 10> objs{};
 
       public:
@@ -95,10 +94,10 @@ class Ppu
 
 		/* Initialize objects to invalid */
 		for (int obj = 0; obj < 10; obj++) {
-			objs[obj].X	= 0xff;
-			objs[obj].Y	= 0xff;
-			objs[obj].flags = 0;
-			objs[obj].tile	= 0;
+			objs[obj].X    = 0xff;
+			objs[obj].Y    = 0xff;
+			objs[obj].tile = 0;
+			objs[obj].attr = 0;
 		}
 	}
 	/*

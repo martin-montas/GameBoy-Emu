@@ -27,10 +27,10 @@
 #define BLACK	   0x2c3521
 
 struct OBJ {
-	uint8_t X;    /* X location */
-	uint8_t Y;    /* Y location */
-	uint8_t tile; /* Cached tile */
-	uint8_t attr; /* attribute */
+	uint8_t X;	    /* X location */
+	uint8_t Y;	    /* Y location */
+	uint8_t tile_index; /* Cached tile */
+	uint8_t attr;	    /* attribute */
 };
 
 /*
@@ -94,10 +94,10 @@ class Ppu
 
 		/* Initialize objects to invalid */
 		for (int obj = 0; obj < 10; obj++) {
-			objs[obj].X    = 0xff;
-			objs[obj].Y    = 0xff;
-			objs[obj].tile = 0;
-			objs[obj].attr = 0;
+			objs[obj].X	     = 0xff;
+			objs[obj].Y	     = 0xff;
+			objs[obj].tile_index = 0;
+			objs[obj].attr	     = 0;
 		}
 	}
 	/*
@@ -163,7 +163,7 @@ class Ppu
 	void render_frame();
 	void fetch_sprites();
 
-	void update_buffer_sprite(int sprite_mode);
-	void scan_oam(int row, uint8_t lcdc);
+	void update_buffer_sprite(int obj_mode);
+	void scan_oam();
 };
 #endif // SRC_PPU_HPP_

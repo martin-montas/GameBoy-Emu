@@ -29,11 +29,13 @@ void Ppu::hblank_handler()
 
 void Ppu::enter_mode_2()
 {
-	return;
+	scan_oam();
 }
 
-void Ppu::scan_oam(int row, uint8_t lcdc)
+void Ppu::scan_oam()
 {
+
+	uint8_t LCDC = _bus->read8(0xFF40);
 	if (!(LCDC & FLAG_OBJ_ENABLE)) {
 		return;
 	}
@@ -41,27 +43,27 @@ void Ppu::scan_oam(int row, uint8_t lcdc)
 	uint8_t LY   = _bus->read8(0xFF44);
 	int	high = (LCDC & FLAG_OBJ_SIZE) ? 16 : 8;
 
-	for (obj = 0; obj < 10; obj++) {
+	for (int obj = 0; obj < 10; obj++) {
 		objs[obj].X = 0xff;
 	}
 
-	if ((lcdc & FLAG_OBJ_ENABLE) == 0) {
+	if ((LCDC & FLAG_OBJ_ENABLE) == 0) {
 		return;
 	}
 	size_t obj_size = 0;
 	for (int sprite_index = 0; sprite_index < 40; sprite_index++) {
-		const oam_addr = 0xFE00 + (sprite_index * 4);
+		uint16_t oam_addr = 0xFE00 + (sprite_index * 4);
 
 		uint8_t sprite_y   = _bus->read8(oam_addr);
 		uint8_t sprite_x   = _bus->read8(oam_addr + 1);
 		uint8_t tile_index = _bus->read8(oam_addr + 2);
 		uint8_t attr	   = _bus->read8(oam_addr + 3);
 
-		uint8_t actualY = spriteY - 16;
-		uint8_t actualX = spriteX - 8;
-		if (LY >= actualY && LY < actualY + high) {
+		uint8_t actual_Y = sprite_y - 16;
+		uint8_t actual_X = sprite_x - 8;
+		if (LY >= actual_Y && LY < actual_Y + high) {
 			objs[obj_size] =
-			    OBJ{actualX, actualY, tile_index, attr};
+			    OBJ{actual_X, actual_Y, tile_index, attr};
 			obj_size += 1;
 			if (obj_size >= 9) {
 				obj_size = 0;
@@ -71,47 +73,40 @@ void Ppu::scan_oam(int row, uint8_t lcdc)
 	}
 }
 
-// TODO run this function after window/background layer
-void Ppu::update_buffer_sprite(int sprite_mode);
+void Ppu::update_buffer_sprite(int obj_mode)
 {
-	for (int i = objs.size() - 1; i >= 0; i++) {
-		// struct OBJ {
-		// 	uint8_t X;    /* X location */
-		// 	uint8_t Y;    /* Y location */
-		// 	uint8_t tile; /* Cached tile */
-		// 	uint8_t attr; /* attribute */
-		// };
-		uint8_t sprite_row = LY - obj[i].Y;
+	for (int i = 0; i < objs.size(); i++) {
+		uint8_t sprite_row = LY - objs[i].Y;
+
 		bool	flip_x	   = (objs[i].attr & 0x20) != 0;
 		bool	flip_y	   = (objs[i].attr & 0x40) != 0;
+		uint8_t tile_index = objs[i].tile_index;
 		bool	belowbg	   = (objs[i].attr & 0x80) != 0;
 		int	tile_row =
-		    flip_y ? (sprite_mode - 1 - sprite_row) : sprite_row;
-		uint16_t tileAddress;
-
-		if (sprite_mode == 16) {
+		    flip_y ? (obj_mode - 1 - sprite_row) : sprite_row;
+		uint16_t tile_address;
+		if (obj_mode == 16) {
 			tile_index &= 0xFE;
 			if (tile_row >= 8) {
 				tile_index += 1;
-				tileAddress = 8000 + ((tile_index + 1) * 16);
+				tile_address = 8000 + ((tile_index) * 16);
 				tile_row -= 8;
 			}
 		} else {
-			tileAddress = 8000 + ((tile_index) * 16);
-			tile_row    = tile_row;
+			tile_address = 8000 + ((tile_index) * 16);
 		}
 
-		uint16_t tile_addr = _bus->read8(0x8000 + (obj[i].tile * 16));
+		// 	uint16_t tile_addr =
+		// _bus->read8(0x8000 + (objs[i].tile_index * 16));
+		uint8_t byte0 = _bus->read8(tile_address + (tile_row * 2));
+		uint8_t byte1 = _bus->read8(tile_address + (tile_row * 2) + 1);
 
-		uint8_t byte0 = _bus->read8(tile_addr + (tile_row * 2));
-		uint8_t byte1 = _bus->read8(tile_addr + (tile_row * 2) + 1);
-
-		for (int pix = 0; pix < 8; pix++) {
-			uint8_t screen_x = objs[i].X + pix;
+		for (int pixel_x = 0; pixel_x < 8; pixel_x++) {
+			uint8_t screen_x = objs[i].X + pixel_x;
 
 			int	bit_index = flip_x ? pixel_x : (7 - pixel_x);
-			bool	msb	  = ((byte0 >> (7 - bitIndex)) & 1);
-			bool	lsb	  = ((byte1 >> (7 - bitIndex)) & 1);
+			bool	msb	  = ((byte0 >> (7 - bit_index)) & 1);
+			bool	lsb	  = ((byte1 >> (7 - bit_index)) & 1);
 			uint8_t color	  = (msb << 1) | lsb;
 
 			if (color == 0) {
@@ -128,10 +123,13 @@ void Ppu::update_buffer_sprite(int sprite_mode);
 				color_val = BLACK;
 			}
 			if (belowbg) {
-				if ()
+				uint8_t bg_pix =
+				    frame_buff[LY * WIDTH + screen_x];
+				if (bg_pix != 0) {
+					continue;
+				}
 			}
-
-			frame_buff[LY * WIDTH + x] = color_val;
+			frame_buff[LY * WIDTH + screen_x] = color_val;
 		}
 	}
 }
@@ -253,6 +251,10 @@ void Ppu::update_framebuff()
 			}
 			frame_buff[LY * WIDTH + x] = color_val;
 		}
+		// TODO call the sprite_rendering
+		// part here
+		int obj_mode = (LCDC & FLAG_OBJ_SIZE);
+		update_buffer_sprite(obj_mode);
 	}
 }
 

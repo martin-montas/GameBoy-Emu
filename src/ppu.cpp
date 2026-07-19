@@ -18,7 +18,7 @@ void Ppu::hblank_handler()
 			LY += 1;
 			/* enters vblank */
 			if (LY == 144) {
-				// _interrupt->request_interrupt(INTERRUPT_VBLANK);
+				_interrupt->request_interrupt(INTERRUPT_VBLANK);
 			} else if (LY == 154) {
 				/* enters new frame */
 				enter_mode_2();
@@ -75,7 +75,12 @@ void Ppu::scan_oam()
 
 void Ppu::update_buffer_sprite(int obj_mode)
 {
-	for (int i = 0; i < objs.size(); i++) {
+	std::sort(objs.begin(), objs.end(), [](const OBJ& a, const OBJ& b) {
+		if (a.X == b.X)
+			return a.tile_index < b.tile_index;
+		return a.X < b.X;
+	});
+	for (int i = objs.size() - 1; i >= 0; i--) {
 		uint8_t sprite_row = LY - objs[i].Y;
 
 		bool	flip_x	   = (objs[i].attr & 0x20) != 0;
@@ -84,48 +89,45 @@ void Ppu::update_buffer_sprite(int obj_mode)
 		bool	belowbg	   = (objs[i].attr & 0x80) != 0;
 		int	tile_row =
 		    flip_y ? (obj_mode - 1 - sprite_row) : sprite_row;
-		uint16_t tile_address;
+		uint16_t actual_address;
 		if (obj_mode == 16) {
-			tile_index &= 0xFE;
 			if (tile_row >= 8) {
-				tile_index += 1;
-				tile_address = 8000 + ((tile_index) * 16);
-				tile_row -= 8;
+				actual_address = tile_index & 0xFE;
 			}
 		} else {
-			tile_address = 8000 + ((tile_index) * 16);
+			actual_address = tile_index | 0x01;
+			tile_row -= 8;
 		}
 
-		// 	uint16_t tile_addr =
-		// _bus->read8(0x8000 + (objs[i].tile_index * 16));
-		uint8_t byte0 = _bus->read8(tile_address + (tile_row * 2));
-		uint8_t byte1 = _bus->read8(tile_address + (tile_row * 2) + 1);
+		uint16_t tile_addr = 0x8000 + (actual_address * 16);
+
+		uint8_t byte0 = _bus->read8(tile_addr + (tile_row * 2));
+		uint8_t byte1 = _bus->read8(tile_addr + (tile_row * 2) + 1);
 
 		for (int pixel_x = 0; pixel_x < 8; pixel_x++) {
-			uint8_t screen_x = objs[i].X + pixel_x;
+			int screen_x = objs[i].X + pixel_x;
 
-			int	bit_index = flip_x ? pixel_x : (7 - pixel_x);
-			bool	msb	  = ((byte0 >> (7 - bit_index)) & 1);
-			bool	lsb	  = ((byte1 >> (7 - bit_index)) & 1);
-			uint8_t color	  = (msb << 1) | lsb;
-
-			if (color == 0) {
+			if (screen_x < 0 || screen_x >= WIDTH) {
 				continue;
 			}
+			int	 bit_index = flip_x ? pixel_x : (7 - pixel_x);
+			bool	 msb	   = (byte0 >> bit_index) & 1;
+			bool	 lsb	   = (byte1 >> bit_index) & 1;
+			uint8_t	 pixel_val = (msb << 1) | lsb;
 			uint32_t color_val;
-			if (color == 0) {
-				color_val = WHITE;
-			} else if (color == 1) {
+			if (pixel_val == 0) {
+				continue;
+			} else if (pixel_val == 1) {
 				color_val = LIGHT_GRAY;
-			} else if (color == 2) {
+			} else if (pixel_val == 2) {
 				color_val = DARK_GRAY;
 			} else {
 				color_val = BLACK;
 			}
 			if (belowbg) {
-				uint8_t bg_pix =
+				uint32_t bg_pix =
 				    frame_buff[LY * WIDTH + screen_x];
-				if (bg_pix != 0) {
+				if (bg_pix != BLACK) {
 					continue;
 				}
 			}
@@ -251,10 +253,8 @@ void Ppu::update_framebuff()
 			}
 			frame_buff[LY * WIDTH + x] = color_val;
 		}
-		// TODO call the sprite_rendering
-		// part here
-		int obj_mode = (LCDC & FLAG_OBJ_SIZE);
-		update_buffer_sprite(obj_mode);
+		int obj_size = (LCDC & FLAG_OBJ_SIZE);
+		update_buffer_sprite(obj_size);
 	}
 }
 

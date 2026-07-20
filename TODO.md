@@ -12,7 +12,7 @@
 
 ## fix immediately
 
-fix the hair of the acid2 man by using  bit 0 of the LCDC register and not displaying the background 
+- fix the hair of the acid2 man by using  bit 0 of the LCDC register and not displaying the background 
 use this info:
 
 ```
@@ -24,6 +24,11 @@ Non-CGB Mode (DMG, SGB and CGB in compatibility mode): BG and Window display
 When Bit 0 is cleared, both background and window become blank (white), and the Window Display Bit is ignored in that case. 
 Only objects may still be displayed (if enabled in Bit 1).
 ```
+
+***quick-fix*** 
+
+            make the scanline display the whole 
+            pixel as white when bit 0 of the lcdc register is not set
 
 ---
 

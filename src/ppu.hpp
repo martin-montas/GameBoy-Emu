@@ -21,10 +21,10 @@
 #define TT 2
 #define TF 3
 
-#define WHITE	   0xCADC9F
-#define LIGHT_GRAY 0xA3B57D
-#define DARK_GRAY  0x586a43
-#define BLACK	   0x2c3521
+#define WHITE	   0x8B956D
+#define LIGHT_GRAY 0x4D784E
+#define DARK_GRAY  0x2b543d
+#define BLACK	   0x183020
 
 struct OBJ {
 	uint8_t X;	    /* X location */

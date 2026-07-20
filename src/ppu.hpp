@@ -46,7 +46,8 @@ enum LCDFlag {
 	FLAG_BG_MAP	= (1 << 3), /* says which map should bg use */
 	FLAG_OBJ_SIZE	= (1 << 2), /* checks sprites (oam) size */
 	FLAG_OBJ_ENABLE = (1 << 1), /* whether the sprites are enabled */
-	FLAG_BG_ENABLE	= (1 << 0)  /* checks whether background is enabled */
+	FLAG_BGWIN_PRIORITY =
+	    (1 << 0) /* checks whether background is enabled */
 };
 
 /*

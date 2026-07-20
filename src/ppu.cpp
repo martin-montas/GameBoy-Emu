@@ -65,7 +65,7 @@ void Ppu::scan_oam()
 			objs[obj_size] =
 			    OBJ{actual_X, actual_Y, tile_index, attr};
 			obj_size += 1;
-			if (obj_size >= 9) {
+			if (obj_size >= 10) {
 				obj_size = 0;
 				break;
 			}
@@ -89,20 +89,19 @@ void Ppu::update_buffer_sprite(int obj_mode)
 		bool	belowbg	   = (objs[i].attr & 0x80) != 0;
 		int	tile_row =
 		    flip_y ? (obj_mode - 1 - sprite_row) : sprite_row;
-		uint16_t actual_address;
+		uint16_t actual_address = tile_index;
 		if (obj_mode == 16) {
 			if (tile_row >= 8) {
 				actual_address = tile_index & 0xFE;
+			} else {
+				actual_address = tile_index | 0x01;
+				tile_row -= 8;
 			}
-		} else {
-			actual_address = tile_index | 0x01;
-			tile_row -= 8;
 		}
-
 		uint16_t tile_addr = 0x8000 + (actual_address * 16);
 
-		uint8_t byte0 = _bus->read8(tile_addr + (tile_row * 2));
-		uint8_t byte1 = _bus->read8(tile_addr + (tile_row * 2) + 1);
+		uint8_t byte1 = _bus->read8(tile_addr + (tile_row * 2));
+		uint8_t byte2 = _bus->read8(tile_addr + (tile_row * 2) + 1);
 
 		for (int pixel_x = 0; pixel_x < 8; pixel_x++) {
 			int screen_x = objs[i].X + pixel_x;
@@ -110,14 +109,17 @@ void Ppu::update_buffer_sprite(int obj_mode)
 			if (screen_x < 0 || screen_x >= WIDTH) {
 				continue;
 			}
-			int	 bit_index = flip_x ? pixel_x : (7 - pixel_x);
-			bool	 msb	   = (byte0 >> bit_index) & 1;
-			bool	 lsb	   = (byte1 >> bit_index) & 1;
-			uint8_t	 pixel_val = (msb << 1) | lsb;
+			int  bit_index = flip_x ? pixel_x : (7 - pixel_x);
+			bool bit1      = (byte1 >> bit_index) & 1;
+			bool bit2      = (byte2 >> bit_index) & 1;
+
+			uint8_t	 pixel_val = (bit2 << 1) | bit1;
 			uint32_t color_val;
 			if (pixel_val == 0) {
 				continue;
-			} else if (pixel_val == 1) {
+			}
+
+			if (pixel_val == 1) {
 				color_val = LIGHT_GRAY;
 			} else if (pixel_val == 2) {
 				color_val = DARK_GRAY;
@@ -206,6 +208,7 @@ void Ppu::update_framebuff()
 			wl_counter += 1;
 		} else {
 			uint8_t _scy	     = _bus->read8(0xFF42);
+			uint8_t LCDC	     = _bus->read8(0xFF40);
 			uint8_t _scx	     = _bus->read8(0xFF43);
 			uint8_t background_x = (x + _scx);
 			uint8_t background_y = (LY + _scy);
@@ -240,7 +243,7 @@ void Ppu::update_framebuff()
 			bool msb = ((byte0 >> (7 - pixel_x)) & 1);
 			bool lsb = ((byte1 >> (7 - pixel_x)) & 1);
 
-			uint8_t	 color = (msb << 1) | lsb;
+			uint8_t	 color = (lsb << 1) | msb;
 			uint32_t color_val;
 			if (color == 0) {
 				color_val = WHITE;
@@ -253,9 +256,9 @@ void Ppu::update_framebuff()
 			}
 			frame_buff[LY * WIDTH + x] = color_val;
 		}
-		int obj_size = (LCDC & FLAG_OBJ_SIZE);
-		update_buffer_sprite(obj_size);
 	}
+	int obj_size = (LCDC & FLAG_OBJ_SIZE);
+	update_buffer_sprite(obj_size);
 }
 
 void Ppu::fetch_sprites() {}
@@ -296,7 +299,7 @@ void Ppu::dot_cycle(int t_cycle)
 	if ((_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_WIN_ENABLE))
 		_f_flag = win;
 
-	else if (!(_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_BG_ENABLE))
+	else if (!(_LCDC & FLAG_WIN_ENABLE) && (_LCDC & FLAG_BGWIN_PRIORITY))
 		_f_flag = bg;
 	else
 		_f_flag = obj;

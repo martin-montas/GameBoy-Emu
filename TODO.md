@@ -8,6 +8,25 @@
 - FF45 — LYC: LY compare The Game Boy constantly compares the value of the LYC and LY registers. When both values are identical, the “LYC=LY” **DONE**
 
 
+---
+
+## fix immediately
+
+fix the hair of the acid2 man by using  bit 0 of the LCDC register and not displaying the background 
+use this info:
+
+```
+LCDC.0 — BG and Window enable/priority
+
+LCDC.0 has different meanings depending on Game Boy type and Mode:
+Non-CGB Mode (DMG, SGB and CGB in compatibility mode): BG and Window display
+
+When Bit 0 is cleared, both background and window become blank (white), and the Window Display Bit is ignored in that case. 
+Only objects may still be displayed (if enabled in Bit 1).
+```
+
+---
+
 ## audio
 - finish audio
 

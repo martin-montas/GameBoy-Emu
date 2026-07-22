@@ -164,6 +164,7 @@ class Ppu
 	void render_frame();
 	void fetch_sprites();
 
+	void update_framebuff_blank();
 	void update_buffer_sprite(int obj_mode);
 	void scan_oam();
 };

@@ -115,11 +115,10 @@ void Ppu::update_buffer_sprite(int obj_mode)
 
 			uint8_t	 pixel_val = (bit2 << 1) | bit1;
 			uint32_t color_val;
-			if (pixel_val == 0) {
-				continue;
-			}
 
-			if (pixel_val == 1) {
+			if (pixel_val == 0) {
+				color_val = WHITE;
+			} else if (pixel_val == 1) {
 				color_val = LIGHT_GRAY;
 			} else if (pixel_val == 2) {
 				color_val = DARK_GRAY;
@@ -127,16 +126,25 @@ void Ppu::update_buffer_sprite(int obj_mode)
 				color_val = BLACK;
 			}
 			if (belowbg) {
-				uint32_t bg_pix =
-				    frame_buff[LY * WIDTH + screen_x];
-				if (bg_pix != BLACK) {
-					continue;
-				}
+				continue;
+				// uint32_t bg_pix =
+				//     frame_buff[LY * WIDTH + screen_x];
+				// if (bg_pix != BLACK) {
+				// 	continue;
+				// }
 			}
 			frame_buff[LY * WIDTH + screen_x] = color_val;
 		}
 	}
 }
+
+void Ppu::update_framebuff_blank()
+{
+	for (int x = 0; x < 160; x++) {
+		frame_buff[LY * WIDTH + x] = WHITE;
+	}
+}
+
 /*
  * @brief: Fetches pixels from tile data
  * and current tile map. and updates
@@ -155,6 +163,10 @@ void Ppu::update_framebuff()
 	bool	window_active  = window_enabled && (LY >= _wy);
 
 	for (int x = 0; x < 160; x++) {
+		if (!(LCDC & FLAG_BGWIN_PRIORITY)) {
+			update_framebuff_blank();
+			return;
+		}
 		bool window_fires = window_active && (x >= _wx - 7);
 
 		if (window_fires) {

@@ -12,23 +12,60 @@
 
 ## fix immediately
 
-- fix the hair of the acid2 man by using  bit 0 of the LCDC register and not displaying the background 
-use this info:
+```
+//     fn render_window_scanline(&mut self) {
+//         let line = self.ly as usize;
+// 
+//         let tilemap_base: u16 = if self.lcdc & LCDC_WIN_TILEMAP != 0 {
+//             0x9C00
+//         } else {
+//             0x9800
+//         };
+// 
+//         let unsigned_addressing = self.lcdc & LCDC_BG_WIN_TILEDATA != 0;
+// 
+//         // The window X on screen starts at (WX - 7). Values 0-6 are
+//         // effectively negative and clip the left side of the window.
+//         let wx_screen = self.wx as i16 - 7;
+// 
+//         let pixel_y = self.window_line % 8;
+//         let tile_row = (self.window_line as u16 / 8) & 31;
+// 
+//         let mut any_drawn = false;
+// 
+//         for px in 0..SCREEN_WIDTH {
+//             let screen_x = px as i16;
+//             if screen_x < wx_screen {
+//                 continue;
+//             }
+// 
+//             any_drawn = true;
+//             let win_x = (screen_x - wx_screen) as u8;
+//             let tile_col = (win_x as u16 / 8) & 31;
+//             let pixel_x = win_x % 8;
+// 
+//             let map_addr = tilemap_base + tile_row * 32 + tile_col;
+//             let tile_index = self.vram_read_internal(map_addr);
+// 
+//             let tile_data_addr = tile_data_address(tile_index, unsigned_addressing, pixel_y);
+// 
+//             let lo = self.vram_read_internal(tile_data_addr);
+//             let hi = self.vram_read_internal(tile_data_addr + 1);
+// 
+//             let colour_id = pixel_colour_id(lo, hi, pixel_x);
+//             self.bg_color_ids[px] = colour_id;
+//             self.frame_buf[line][px] = apply_palette(self.bgp, colour_id);
+//         }
+// 
+//         // The window line counter only increments on scanlines where the
+//         // window was actually rendered.
+//         if any_drawn {
+//             self.window_line += 1;
+//             self.window_triggered = true;
+//         }
+//     }
 
 ```
-LCDC.0 — BG and Window enable/priority
-
-LCDC.0 has different meanings depending on Game Boy type and Mode:
-Non-CGB Mode (DMG, SGB and CGB in compatibility mode): BG and Window display
-
-When Bit 0 is cleared, both background and window become blank (white), and the Window Display Bit is ignored in that case. 
-Only objects may still be displayed (if enabled in Bit 1).
-```
-
-***quick-fix*** 
-
-            make the scanline display the whole 
-            pixel as white when bit 0 of the lcdc register is not set
 
 ---
 

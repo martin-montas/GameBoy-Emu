@@ -11,6 +11,7 @@
 ---
 
 ## fix immediately
+- Try to understand this
 
 ```
 //     fn render_window_scanline(&mut self) {
@@ -66,6 +67,11 @@
 //     }
 
 ```
+
+- **ALSO**:
+try to read from this repo:
+`https://github.com/Dhi13man/gb-emulator/blob/main/gb-core/src/ppu/mod.rs`
+
 
 ---
 

@@ -127,11 +127,11 @@ void Ppu::update_buffer_sprite(int obj_mode)
 			}
 			if (belowbg) {
 				continue;
-				// uint32_t bg_pix =
-				//     frame_buff[LY * WIDTH + screen_x];
-				// if (bg_pix != BLACK) {
-				// 	continue;
-				// }
+				uint32_t bg_pix =
+				    frame_buff[LY * WIDTH + screen_x];
+				if (bg_pix != BLACK) {
+					continue;
+				}
 			}
 			frame_buff[LY * WIDTH + screen_x] = color_val;
 		}

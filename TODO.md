@@ -65,13 +65,13 @@
 //             self.window_triggered = true;
 //         }
 //     }
-
 ```
 
 - **ALSO**:
 try to read from this repo:
 `https://github.com/Dhi13man/gb-emulator/blob/main/gb-core/src/ppu/mod.rs`
 
+- create another loop that separate the other one from the background
 
 ---
 
@@ -97,8 +97,8 @@ try to read from this repo:
 - [X] Boot rom rendering.
 - [X] Finish timer
 - [X] Finish Interrupt
-- [ ] Finish PPU.
 - [ ] Dmg Acid2 test rom.
+- [ ] Finish PPU.
 - [ ] CPU-PPU-TIMER sync.
 
 ---

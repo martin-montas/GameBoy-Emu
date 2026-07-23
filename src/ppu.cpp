@@ -69,7 +69,10 @@ void Ppu::scan_oam() {
     }
 }
 
-void Ppu::update_obj_framebuff(int obj_mode) {
+void Ppu::update_obj_framebuff() {
+    uint8_t LCDC     = _bus->read8(0xFF40);
+    int     obj_mode = (LCDC & FLAG_OBJ_SIZE);
+
     std::sort(objs.begin(), objs.end(), [](const OBJ& a, const OBJ& b) {
         if (a.X == b.X)
             return a.tile_index < b.tile_index;
@@ -276,7 +279,7 @@ void Ppu::update_win_framebuff() {
             uint8_t  tile_index;
             uint16_t addr;
 
-            if (!(_LCDC & FLAG_WIN_MAP)) {
+            if ((_LCDC & FLAG_WIN_MAP)) {
                 addr = 0x9800;
             } else {
                 addr = 0x9C00;
@@ -335,8 +338,7 @@ void Ppu::render_scanline() {
     }
 
     if ((LCDC & FLAG_OBJ_ENABLE) != 0) {
-        int obj_size = (LCDC & FLAG_OBJ_SIZE);
-        update_obj_framebuff(obj_size);
+        update_obj_framebuff();
     }
 }
 

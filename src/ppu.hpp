@@ -153,7 +153,7 @@ class Ppu {
 
     void update_win_framebuff();
     void update_bg_framebuff();
-    void update_obj_framebuff(int obj_mode);
+    void update_obj_framebuff();
 
     void write_reg(uint8_t& data, uint16_t addr);
     void switch_mode(int mode);

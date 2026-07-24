@@ -178,23 +178,37 @@ void Ppu::update_bg_framebuff() {
         int pixel_y = background_y % 8;
         int pixel_x = background_x % 8;
 
-        uint8_t byte0   = _bus->read8(tile_data_addr + (pixel_y * 2));
-        uint8_t byte1   = _bus->read8(tile_data_addr + (pixel_y * 2) + 1);
-        uint8_t pix_pos = (7 - pixel_x);
-        bool    lsb     = ((byte0 >> pix_pos) & 1);
-        bool    msb     = ((byte1 >> pix_pos) & 1);
+        // 1. Fetch both bytes for row 'pixel_y'
+        uint8_t byte0 = _bus->read8(tile_data_addr + (pixel_y * 2));     // LSB
+        uint8_t byte1 = _bus->read8(tile_data_addr + (pixel_y * 2) + 1); // MSB
 
-        uint8_t  color = (msb << 1) | lsb;
+        // 2. Extract bits for column 'pixel_x' (Bit 7 is leftmost)
+        uint8_t bit_pos = 7 - pixel_x;
+        bool    lsb     = (byte0 >> bit_pos) & 1;
+        bool    msb     = (byte1 >> bit_pos) & 1;
+
+        uint8_t color_idx = (msb << 1) | lsb;
+
+        // 3. Map through BGP register (0xFF47)
+        uint8_t bgp   = _bus->read8(0xFF47);
+        uint8_t shade = (bgp >> (color_idx * 2)) & 0x03;
+
         uint32_t color_val;
-        if (color == 0) {
+        switch (shade) {
+        case 0:
             color_val = WHITE;
-        } else if (color == 1) {
+            break;
+        case 1:
             color_val = LIGHT_GRAY;
-        } else if (color == 2) {
+            break;
+        case 2:
             color_val = DARK_GRAY;
-        } else {
+            break;
+        case 3:
             color_val = BLACK;
+            break;
         }
+
         frame_buff[LY * WIDTH + x] = color_val;
     }
 }

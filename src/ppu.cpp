@@ -31,7 +31,6 @@ void Ppu::enter_mode_2() {
 }
 
 void Ppu::scan_oam() {
-
     uint8_t LCDC = _bus->read8(0xFF40);
     if (!(LCDC & FLAG_OBJ_ENABLE)) {
         return;
@@ -58,13 +57,13 @@ void Ppu::scan_oam() {
 
         uint8_t actual_Y = sprite_y - 16;
         uint8_t actual_X = sprite_x - 8;
-        if (LY >= actual_Y && LY < actual_Y + high) {
-            objs[obj_size] = OBJ{actual_X, actual_Y, tile_index, attr};
+        if ((LY >= actual_Y) && (LY < (actual_Y + high))) {
+            objs[obj_size] = OBJ{actual_X, actual_Y, tile_index, attr, sprite_index};
             obj_size += 1;
-            if (obj_size >= 10) {
-                obj_size = 0;
-                break;
-            }
+        }
+        if (obj_size >= 10) {
+            obj_size = 0;
+            break;
         }
     }
 }
@@ -75,10 +74,10 @@ void Ppu::update_obj_framebuff() {
 
     std::sort(objs.begin(), objs.end(), [](const OBJ& a, const OBJ& b) {
         if (a.X == b.X)
-            return a.tile_index < b.tile_index;
+            return a.oam_index < b.oam_index;
         return a.X < b.X;
     });
-    for (int i = objs.size() - 1; i >= 0; i--) {
+    for (int i = 0; i < objs.size(); i++) {
         uint8_t sprite_row = LY - objs[i].Y;
         bool    flip_x     = (objs[i].attr & 0x20) != 0;
         bool    flip_y     = (objs[i].attr & 0x40) != 0;
@@ -132,8 +131,15 @@ void Ppu::update_obj_framebuff() {
                 color_val = BLACK;
                 break;
             }
-
-            frame_buff[LY * WIDTH + screen_x] = color_val;
+            uint8_t bg_pixel = bg_tmp_buff[LY * WIDTH + screen_x];
+            if (belowbg == 0) {
+                frame_buff[LY * WIDTH + screen_x] = color_val;
+            } else {
+                // priority_bit == 1 ("behind BG")
+                if (bg_pixel == 0) {
+                    frame_buff[LY * WIDTH + screen_x] = color_val;
+                }
+            }
         }
     }
 }
@@ -209,7 +215,8 @@ void Ppu::update_bg_framebuff() {
             break;
         }
 
-        frame_buff[LY * WIDTH + x] = color_val;
+        frame_buff[LY * WIDTH + x]  = color_val;
+        bg_tmp_buff[LY * WIDTH + x] = color_idx;
     }
 }
 
@@ -294,7 +301,8 @@ void Ppu::update_win_framebuff() {
                 break;
             }
 
-            frame_buff[LY * WIDTH + x] = color_val;
+            frame_buff[LY * WIDTH + x]  = color_val;
+            bg_tmp_buff[LY * WIDTH + x] = color_idx;
         }
     }
     if (win_used) {
@@ -318,7 +326,6 @@ void Ppu::render_scanline() {
     if (((LCDC & FLAG_WIN_ENABLE) != 0) && LY >= _wy && _wx <= 166) {
         update_win_framebuff();
     }
-
     if ((LCDC & FLAG_OBJ_ENABLE) != 0) {
         update_obj_framebuff();
     }

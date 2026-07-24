@@ -27,10 +27,11 @@
 #define BLACK      0x183020
 
 struct OBJ {
-    uint8_t X;          /* X location */
-    uint8_t Y;          /* Y location */
+    int     X;          /* X location */
+    int     Y;          /* Y location */
     uint8_t tile_index; /* Cached tile */
     uint8_t attr;       /* attribute */
+    int     oam_index;  /* for priority */
 };
 
 /*
@@ -68,16 +69,17 @@ class SystemBus;
  * registers from  the game boy.
  */
 class Ppu {
-    SystemBus*          _bus;       /* pointer to memory object */
-    IInterrupt*         _interrupt; /* pointer to interrupt */
-    size_t              _dot_clock; /* updates the t cycles */
-    size_t              _mode;      /* updates to current mode */
-    uint8_t             _LCDC;      /* lcdc register */
-    uint8_t             _win_line;  /* used for window y */
-    uint8_t             LY;         /* LY register for scanlines bg */
-    uint8_t             wl_counter; /* WY register for scanlines win */
-    bgwin_priority      _f_flag;    /* updates ppu rendering component */
-    bool                win_used;   /* for window rendering */
+    SystemBus*          _bus;                        /* pointer to memory object */
+    IInterrupt*         _interrupt;                  /* pointer to interrupt */
+    size_t              _dot_clock;                  /* updates the t cycles */
+    size_t              _mode;                       /* updates to current mode */
+    uint8_t             _LCDC;                       /* lcdc register */
+    uint8_t             _win_line;                   /* used for window y */
+    uint8_t             LY;                          /* LY register for scanlines bg */
+    uint8_t             wl_counter;                  /* WY register for scanlines win */
+    bgwin_priority      _f_flag;                     /* updates ppu rendering component */
+    bool                win_used;                    /* for window rendering */
+    int                 bg_tmp_buff[HEIGHT * WIDTH]; /* holds bg frame data for priority purposes */
     std::array<OBJ, 10> objs{};
 
   public:
@@ -86,7 +88,8 @@ class Ppu {
 
         /* updates frame buffer to black */
         for (int i = 0; i < WIDTH * HEIGHT; i++) {
-            frame_buff[i] = 0xFF000000; // black
+            frame_buff[i]  = 0xFF000000; // black
+            bg_tmp_buff[i] = 0;
         }
 
         /* Initialize objects to invalid */

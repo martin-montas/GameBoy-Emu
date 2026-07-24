@@ -4,12 +4,10 @@
 #include "src/gameboy.hpp"
 #include <SDL2/SDL.h>
 #include <iostream>
-// #include "src/test/test-runner.hpp"
 
-int main(int argc, char** argv)
-{
-  GameBoy* game = new GameBoy(argv[1]);
-  game->run();
-  delete (game);
-  return 0;
+int main(int argc, char** argv) {
+    GameBoy* game = new GameBoy(argv[1]);
+    game->run();
+    delete (game);
+    return 0;
 }

@@ -164,7 +164,7 @@ void Ppu::update_bg_framebuff() {
         uint8_t  tile_number = _bus->read8(addr + offset);
         uint16_t tile_data_addr;
 
-        if (_LCDC & FLAG_BGWIN_AREA) {
+        if (LCDC & FLAG_BGWIN_AREA) {
             tile_data_addr = 0x8000 + (tile_number * 16);
         } else {
             int8_t signed_index = (int8_t)tile_number;
@@ -173,13 +173,13 @@ void Ppu::update_bg_framebuff() {
         int pixel_y = background_y % 8;
         int pixel_x = background_x % 8;
 
-        uint8_t byte0 = _bus->read8(tile_data_addr + (pixel_y * 2));
-        uint8_t byte1 = _bus->read8(tile_data_addr + (pixel_y * 2) + 1);
+        uint8_t byte0   = _bus->read8(tile_data_addr + (pixel_y * 2));
+        uint8_t byte1   = _bus->read8(tile_data_addr + (pixel_y * 2) + 1);
+        uint8_t pix_pos = (7 - pixel_x);
+        bool    lsb     = ((byte0 >> pix_pos) & 1);
+        bool    msb     = ((byte1 >> pix_pos) & 1);
 
-        bool msb = ((byte0 >> (7 - pixel_x)) & 1);
-        bool lsb = ((byte1 >> (7 - pixel_x)) & 1);
-
-        uint8_t  color = (lsb << 1) | msb;
+        uint8_t  color = (msb << 1) | lsb;
         uint32_t color_val;
         if (color == 0) {
             color_val = WHITE;
@@ -226,7 +226,7 @@ void Ppu::update_win_framebuff() {
             uint8_t  tile_index;
             uint16_t addr;
 
-            if ((_LCDC & FLAG_WIN_MAP)) {
+            if ((LCDC & FLAG_WIN_MAP) == 0) {
                 addr = 0x9800;
             } else {
                 addr = 0x9C00;
@@ -241,24 +241,40 @@ void Ppu::update_win_framebuff() {
                 tile_data_addr      = 0x9000 + (signed_index * 16);
             }
 
-            int     pixel_y = px_y % 8;
-            int     pixel_x = px_x % 8;
-            uint8_t byte0   = _bus->read8(tile_data_addr + (pixel_x * 2));
-            uint8_t byte1   = _bus->read8(tile_data_addr + (pixel_y * 2) + 1);
-            bool    msb     = ((byte0 >> (7 - px_y)) & 1);
-            bool    lsb     = ((byte1 >> (7 - px_x)) & 1);
-            uint8_t color   = (msb << 1) | lsb;
+            int pixel_y = px_y % 8; // Row within the 8x8 tile
+            int pixel_x = px_x % 8; // Column within the 8x8 tile
+
+            // 1. Fetch both bytes for row 'pixel_y'
+            uint8_t byte0 = _bus->read8(tile_data_addr + (pixel_y * 2));     // LSB
+            uint8_t byte1 = _bus->read8(tile_data_addr + (pixel_y * 2) + 1); // MSB
+
+            // 2. Extract bits for column 'pixel_x' (Bit 7 is leftmost)
+            uint8_t bit_pos = 7 - pixel_x;
+            bool    lsb     = (byte0 >> bit_pos) & 1;
+            bool    msb     = (byte1 >> bit_pos) & 1;
+
+            uint8_t color_idx = (msb << 1) | lsb;
+
+            // 3. Map through BGP register (0xFF47)
+            uint8_t bgp   = _bus->read8(0xFF47);
+            uint8_t shade = (bgp >> (color_idx * 2)) & 0x03;
 
             uint32_t color_val;
-            if (color == 0) {
+            switch (shade) {
+            case 0:
                 color_val = WHITE;
-            } else if (color == 1) {
+                break;
+            case 1:
                 color_val = LIGHT_GRAY;
-            } else if (color == 2) {
+                break;
+            case 2:
                 color_val = DARK_GRAY;
-            } else {
+                break;
+            case 3:
                 color_val = BLACK;
+                break;
             }
+
             frame_buff[LY * WIDTH + x] = color_val;
         }
     }

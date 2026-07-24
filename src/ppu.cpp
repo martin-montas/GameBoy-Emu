@@ -79,22 +79,22 @@ void Ppu::update_obj_framebuff() {
         return a.X < b.X;
     });
     for (int i = objs.size() - 1; i >= 0; i--) {
-        uint8_t  sprite_row     = LY - objs[i].Y;
-        bool     flip_x         = (objs[i].attr & 0x20) != 0;
-        bool     flip_y         = (objs[i].attr & 0x40) != 0;
-        uint8_t  tile_index     = objs[i].tile_index;
-        bool     belowbg        = (objs[i].attr & 0x80) != 0;
-        int      tile_row       = flip_y ? (obj_mode - 1 - sprite_row) : sprite_row;
-        uint16_t actual_address = tile_index;
+        uint8_t sprite_row = LY - objs[i].Y;
+        bool    flip_x     = (objs[i].attr & 0x20) != 0;
+        bool    flip_y     = (objs[i].attr & 0x40) != 0;
+        uint8_t tile_index = objs[i].tile_index;
+        bool    belowbg    = (objs[i].attr & 0x80) != 0;
+        int     tile_row   = flip_y ? (obj_mode - 1 - sprite_row) : sprite_row;
+
         if (obj_mode == 16) {
+            tile_index &= 0xFE;
             if (tile_row >= 8) {
-                actual_address = tile_index & 0xFE;
-            } else {
-                actual_address = tile_index | 0x01;
+                tile_index += 1;
                 tile_row -= 8;
             }
         }
-        uint16_t tile_addr = 0x8000 + (actual_address * 16);
+
+        uint16_t tile_addr = 0x8000 + (tile_index * 16);
 
         uint8_t byte1 = _bus->read8(tile_addr + (tile_row * 2));
         uint8_t byte2 = _bus->read8(tile_addr + (tile_row * 2) + 1);
@@ -105,29 +105,34 @@ void Ppu::update_obj_framebuff() {
             if (screen_x < 0 || screen_x >= WIDTH) {
                 continue;
             }
-            int  bit_index = flip_x ? pixel_x : (7 - pixel_x);
-            bool bit1      = (byte1 >> bit_index) & 1;
-            bool bit2      = (byte2 >> bit_index) & 1;
+            int bit_index = flip_x ? pixel_x : (7 - pixel_x);
 
-            uint8_t  pixel_val = (bit2 << 1) | bit1;
-            uint32_t color_val;
+            bool bit1 = (byte1 >> bit_index) & 1;
+            bool bit2 = (byte2 >> bit_index) & 1;
+
+            uint8_t pixel_val = (bit2 << 1) | bit1;
 
             if (pixel_val == 0) {
-                color_val = WHITE;
-            } else if (pixel_val == 1) {
-                color_val = LIGHT_GRAY;
-            } else if (pixel_val == 2) {
-                color_val = DARK_GRAY;
-            } else {
-                color_val = BLACK;
-            }
-            if (belowbg) {
                 continue;
-                uint32_t bg_pix = frame_buff[LY * WIDTH + screen_x];
-                if (bg_pix != BLACK) {
-                    continue;
-                }
             }
+
+            bool    use_obp1 = (objs[i].attr & 0x10) != 0;
+            uint8_t palette  = _bus->read8(use_obp1 ? 0xFF49 : 0xFF48);
+            uint8_t shade    = (palette >> (pixel_val * 2)) & 0x03;
+
+            uint32_t color_val;
+            switch (shade) {
+            case 1:
+                color_val = LIGHT_GRAY;
+                break;
+            case 2:
+                color_val = DARK_GRAY;
+                break;
+            case 3:
+                color_val = BLACK;
+                break;
+            }
+
             frame_buff[LY * WIDTH + screen_x] = color_val;
         }
     }

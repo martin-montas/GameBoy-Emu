@@ -48,15 +48,14 @@ void Ppu::scan_oam() {
     }
     size_t obj_size = 0;
     for (int sprite_index = 0; sprite_index < 40; sprite_index++) {
-        uint16_t oam_addr = 0xFE00 + (sprite_index * 4);
+        uint16_t oam_addr   = 0xFE00 + (sprite_index * 4);
+        uint8_t  sprite_y   = _bus->read8(oam_addr);
+        uint8_t  sprite_x   = _bus->read8(oam_addr + 1);
+        uint8_t  tile_index = _bus->read8(oam_addr + 2);
+        uint8_t  attr       = _bus->read8(oam_addr + 3);
+        uint8_t  actual_Y   = sprite_y - 16;
+        uint8_t  actual_X   = sprite_x - 8;
 
-        uint8_t sprite_y   = _bus->read8(oam_addr);
-        uint8_t sprite_x   = _bus->read8(oam_addr + 1);
-        uint8_t tile_index = _bus->read8(oam_addr + 2);
-        uint8_t attr       = _bus->read8(oam_addr + 3);
-
-        uint8_t actual_Y = sprite_y - 16;
-        uint8_t actual_X = sprite_x - 8;
         if ((LY >= actual_Y) && (LY < (actual_Y + high))) {
             objs[obj_size] = OBJ{actual_X, actual_Y, tile_index, attr, sprite_index};
             obj_size += 1;
@@ -184,18 +183,15 @@ void Ppu::update_bg_framebuff() {
         int pixel_y = background_y % 8;
         int pixel_x = background_x % 8;
 
-        // 1. Fetch both bytes for row 'pixel_y'
         uint8_t byte0 = _bus->read8(tile_data_addr + (pixel_y * 2));     // LSB
         uint8_t byte1 = _bus->read8(tile_data_addr + (pixel_y * 2) + 1); // MSB
 
-        // 2. Extract bits for column 'pixel_x' (Bit 7 is leftmost)
         uint8_t bit_pos = 7 - pixel_x;
         bool    lsb     = (byte0 >> bit_pos) & 1;
         bool    msb     = (byte1 >> bit_pos) & 1;
 
         uint8_t color_idx = (msb << 1) | lsb;
 
-        // 3. Map through BGP register (0xFF47)
         uint8_t bgp   = _bus->read8(0xFF47);
         uint8_t shade = (bgp >> (color_idx * 2)) & 0x03;
 

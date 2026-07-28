@@ -92,13 +92,13 @@ class Ppu {
             bg_tmp_buff[i] = 0;
         }
 
-        /* Initialize objects to invalid */
-        for (int obj = 0; obj < 10; obj++) {
-            objs[obj].X          = 0xff;
-            objs[obj].Y          = 0xff;
-            objs[obj].tile_index = 0;
-            objs[obj].attr       = 0;
-        }
+        // /* Initialize objects to invalid */
+        // for (int obj = 0; obj < 10; obj++) {
+        //     objs[obj].X          = 0xff;
+        //     objs[obj].Y          = 0xff;
+        //     objs[obj].tile_index = 0;
+        //     objs[obj].attr       = 0;
+        // }
     }
     /*
      * @brief: gets interrupt object for later use.

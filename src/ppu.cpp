@@ -66,7 +66,6 @@ void Ppu::update_obj_framebuff() {
             obj_size += 1;
         }
         if (obj_size >= 10) {
-            obj_size = 0;
             break;
         }
     }
@@ -81,20 +80,19 @@ void Ppu::update_obj_framebuff() {
             return a.oam_index < b.oam_index;
         return a.X < b.X;
     });
-    for (int i = objs.size(); i >= 0; i--) {
+    for (int i = objs.size() - 1; i >= 0; i--) {
         uint8_t sprite_row = LY - objs[i].Y;
         bool    flip_x     = (objs[i].attr & 0x20) != 0;
         bool    flip_y     = (objs[i].attr & 0x40) != 0;
         uint8_t tile_index = objs[i].tile_index;
         bool    belowbg    = (objs[i].attr & 0x80) != 0;
-        int     tile_row   = flip_y ? (obj_mode - 1 - sprite_row) : sprite_row;
 
-        if (obj_mode == 16) {
+        // FLAG_OBJ_SIZE       = (1 << 2), /* checks sprites (oam) size */
+        int obj_size = (LCDC & FLAG_OBJ_SIZE) ? 16 : 8;
+        int tile_row = flip_y ? (obj_size - 1 - sprite_row) : sprite_row;
+
+        if (obj_size == 16) {
             tile_index &= 0xFE;
-            if (tile_row >= 8) {
-                tile_index += 1;
-                tile_row -= 8;
-            }
         }
 
         uint16_t tile_addr = 0x8000 + (tile_index * 16);
@@ -123,7 +121,7 @@ void Ppu::update_obj_framebuff() {
             uint8_t palette  = _bus->read8(use_obp1 ? 0xFF49 : 0xFF48);
             uint8_t shade    = (palette >> (pixel_val * 2)) & 0x03;
 
-            uint32_t color_val;
+            uint32_t color_val = 0;
             switch (shade) {
             case 1:
                 color_val = LIGHT_GRAY;
@@ -139,7 +137,6 @@ void Ppu::update_obj_framebuff() {
             if (belowbg == 0) {
                 frame_buff[LY * WIDTH + screen_x] = color_val;
             } else {
-                // priority_bit == 1 ("behind BG")
                 if (bg_pixel == 0) {
                     frame_buff[LY * WIDTH + screen_x] = color_val;
                 }

@@ -10,9 +10,9 @@
 ---
 
 ## fix immediately
-- **ALSO**:
-try to read from this repo:
-`https://github.com/Dhi13man/gb-emulator/blob/main/gb-core/src/ppu/mod.rs`
+- **ALSO**: check this out:
+https://github.com/dtabacaru/SADGE/blob/main/Sadge.Core/LcdController.cpp
+
 
 ---
 

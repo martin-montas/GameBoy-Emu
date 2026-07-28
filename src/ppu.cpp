@@ -3,6 +3,8 @@
 // Author: Martin Montas, martinmontas1@gmail.com
 #include "ppu.hpp"
 #include <cstdio>
+#include <algorithm>
+#include <execution>
 
 /*
  * @brief Handles hblank-related things like
@@ -30,7 +32,9 @@ void Ppu::enter_mode_2() {
     scan_oam();
 }
 
-void Ppu::scan_oam() {
+void Ppu::scan_oam() {}
+
+void Ppu::update_obj_framebuff() {
     uint8_t LCDC = _bus->read8(0xFF40);
     if (!(LCDC & FLAG_OBJ_ENABLE)) {
         return;
@@ -46,8 +50,9 @@ void Ppu::scan_oam() {
     if ((LCDC & FLAG_OBJ_ENABLE) == 0) {
         return;
     }
-    size_t obj_size = 0;
-    for (int sprite_index = 0; sprite_index < 40; sprite_index++) {
+    size_t obj_size     = 0;
+    int    sprite_index = 0;
+    for (sprite_index = 0; sprite_index < 40; sprite_index++) {
         uint16_t oam_addr   = 0xFE00 + (sprite_index * 4);
         uint8_t  sprite_y   = _bus->read8(oam_addr);
         uint8_t  sprite_x   = _bus->read8(oam_addr + 1);
@@ -65,18 +70,18 @@ void Ppu::scan_oam() {
             break;
         }
     }
-}
 
-void Ppu::update_obj_framebuff() {
-    uint8_t LCDC     = _bus->read8(0xFF40);
-    int     obj_mode = (LCDC & FLAG_OBJ_SIZE);
+    LCDC         = _bus->read8(0xFF40);
+    int obj_mode = (LCDC & FLAG_OBJ_SIZE);
+    std::stable_sort(objs.begin(), objs.begin() + sprite_index,
+                     [](const OBJ& a, const OBJ& b) { return a.X < b.X; });
 
-    std::sort(objs.begin(), objs.end(), [](const OBJ& a, const OBJ& b) {
-        if (a.X == b.X)
-            return a.oam_index < b.oam_index;
-        return a.X < b.X;
-    });
-    for (int i = 0; i < objs.size(); i++) {
+    // std::sort(objs.begin(), objs.end(), [](const OBJ& a, const OBJ& b) {
+    //     if (a.X == b.X)
+    //         return a.oam_index < b.oam_index;
+    //     return a.X < b.X;
+    // });
+    for (int i = 0; i < sprite_index; i++) {
         uint8_t sprite_row = LY - objs[i].Y;
         bool    flip_x     = (objs[i].attr & 0x20) != 0;
         bool    flip_y     = (objs[i].attr & 0x40) != 0;

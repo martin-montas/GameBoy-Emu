@@ -16,15 +16,14 @@
 #define WY_ADDR   0xFF4A
 #define WX_ADDR   0xFF4B
 
-#define TY 0
-#define TX 1
-#define TT 2
-#define TF 3
-
-#define WHITE      0x8B956D
-#define LIGHT_GRAY 0x4D784E
-#define DARK_GRAY  0x2b543d
-#define BLACK      0x183020
+#define TY         0
+#define TX         1
+#define TT         2
+#define TF         3
+#define WHITE      0x9BBC0F
+#define LIGHT_GRAY 0x8BAC0F
+#define DARK_GRAY  0x306230
+#define BLACK      0x0F380F
 
 struct OBJ {
     int     X;          /* X location */

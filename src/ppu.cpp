@@ -73,15 +73,15 @@ void Ppu::update_obj_framebuff() {
 
     LCDC         = _bus->read8(0xFF40);
     int obj_mode = (LCDC & FLAG_OBJ_SIZE);
-    std::stable_sort(objs.begin(), objs.begin() + sprite_index,
-                     [](const OBJ& a, const OBJ& b) { return a.X < b.X; });
+    // std::stable_sort(objs.begin(), objs.begin() + sprite_index,
+    //                  [](const OBJ& a, const OBJ& b) { return a.X < b.X; });
 
-    // std::sort(objs.begin(), objs.end(), [](const OBJ& a, const OBJ& b) {
-    //     if (a.X == b.X)
-    //         return a.oam_index < b.oam_index;
-    //     return a.X < b.X;
-    // });
-    for (int i = 0; i < sprite_index; i++) {
+    std::sort(objs.begin(), objs.end(), [](const OBJ& a, const OBJ& b) {
+        if (a.X == b.X)
+            return a.oam_index < b.oam_index;
+        return a.X < b.X;
+    });
+    for (int i = objs.size(); i >= 0; i--) {
         uint8_t sprite_row = LY - objs[i].Y;
         bool    flip_x     = (objs[i].attr & 0x20) != 0;
         bool    flip_y     = (objs[i].attr & 0x40) != 0;

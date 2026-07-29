@@ -10,6 +10,7 @@ test/*
 gameboy-todo.md
 test_repos/
 gameboy
+GameBoy
 out.txt
 src/*.gch
 *.vim

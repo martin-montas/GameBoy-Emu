@@ -7,9 +7,8 @@ LDFLAGS := -lSDL2
 COMMON_OBJS := main.o gameboy.o cpu.o instructions.o \
                extended-instructions.o bus.o MBC.o \
                MBC0.o timer.o serial.o ppu.o  sdl-utils.o \
-			   # test-runner.o 
 
-gameboy: $(COMMON_OBJS)
+GameBoy: $(COMMON_OBJS)
 	$(CXX) $^ -g -o $@ $(LDFLAGS)
 
 # =====================================================
@@ -59,7 +58,7 @@ sdl-utils.o: src/sdl-utils.cpp src/sdl-utils.hpp
 # =====================================================
 
 clean:
-	rm -f *.o gameboy
+	rm -f *.o GameBoy
 
 format:
 	find . \( -name "*.cpp" -o -name "*.hpp" \) | \

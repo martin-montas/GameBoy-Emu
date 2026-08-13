@@ -16,14 +16,24 @@
 #define WY_ADDR   0xFF4A
 #define WX_ADDR   0xFF4B
 
+// | Shade        | Hex       |                  |
+// | ------------ | --------- | ---------------- |
+// | 0 (lightest) | `#C4CFA1` |                  |
+// | 1            | `#8B956D` |                  |
+// | 2            | `#4D533C` |                  |
+// | 3 (darkest)  | `#1F1F1F` | ([Wikipedia][1]) |
+//
+// [1]: https://en.wikipedia.org/wiki/List_of_video_game_console_palettes?utm_source=chatgpt.com
+// "List of video game console palettes"
+
 #define TY         0
 #define TX         1
 #define TT         2
 #define TF         3
-#define WHITE      0x9BBC0F
-#define LIGHT_GRAY 0x8BAC0F
-#define DARK_GRAY  0x306230
-#define BLACK      0x0F380F
+#define WHITE      0xC4CFA1
+#define LIGHT_GRAY 0x8B956D
+#define DARK_GRAY  0x4D533C
+#define BLACK      0x1F1F1F
 
 struct OBJ {
     int     X;          /* X location */

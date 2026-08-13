@@ -47,7 +47,6 @@ class GameBoy {
         _interrupt->attach(_cpu);
         _ppu->attach(_bus);
         emulationRunning = true;
-        // _instructions->post_boot_state();
     }
 
     void run();

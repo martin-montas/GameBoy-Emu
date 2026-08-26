@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include "bus.hpp"
+#include "interface-interrupt.hpp"
 
 // $FF00
 // Bit 5 = P15 = select button group
@@ -17,24 +18,25 @@
 // Bit 0 = Right / A
 
 enum JoyReg {
-    SELECT_BUTTONS    = (5 << 1), /* for parsing the button bit */
-    BUTTON_D_PAD      = (4 << 1), /* for parsing the directions */
-    BUTTON_START_DOWN = (3 << 1), /* selects Down/Start Button */
-    BUTTON_SELECT_UP  = (2 << 1), /* selects Up/Select Button */
+    SELECT_BUTTONS    = (1 << 5), /* for parsing the button bit */
+    SELECT_D_PAD      = (1 << 4), /* for parsing the directions */
+    BUTTON_START_DOWN = (1 << 3), /* selects Down/Start Button */
+    BUTTON_SELECT_UP  = (1 << 2), /* selects Up/Select Button */
     BUTTON_B_LEFT     = (1 << 1), /* selects Left/B Button */
-    BUTTON_A_RIGHT    = (0 << 1), /* selects Right/A Button */
+    BUTTON_A_RIGHT    = (1 << 0), /* selects Right/A Button */
 
 };
 
+class IInterrupt;
 class JoyPad {
-
-    Bus* _bus; /* pointer to the bus instance */
+    uint8_t     _JOYP;      /* main joypad register */
+    Bus*        _bus;       /* pointer to the bus instance */
+    IInterrupt* _interrupt; /* pointer to interrupt object */
 
   public:
-    explicit JoyPad();
+    explicit JoyPad() {};
     void write(uint8_t reg, uint8_t val);
     void read(uint8_t reg);
-
     void set_button();
 };
 

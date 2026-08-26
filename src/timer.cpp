@@ -1,11 +1,12 @@
 // Copyright 2022 Robot Locomotion Group @ CSAIL. All rights reserved.
 // All components of this software are licensed under the GNU License.
 // Author: Martin Montas, martinmontas1@gmail.com
-//
-#include "timer.hpp"
-#include "interface-interrupt.hpp"
+
 #include <stddef.h>
 #include <stdint.h>
+#include "timer.hpp"
+#include "interface-interrupt.hpp"
+
 // Timer::Timer() {}
 int Timer::clock_speed() {
     switch (_tac & 0x03) {

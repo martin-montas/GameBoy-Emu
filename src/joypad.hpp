@@ -24,20 +24,22 @@ enum JoyReg {
     BUTTON_SELECT_UP  = (1 << 2), /* selects Up/Select Button */
     BUTTON_B_LEFT     = (1 << 1), /* selects Left/B Button */
     BUTTON_A_RIGHT    = (1 << 0), /* selects Right/A Button */
-
 };
 
 class IInterrupt;
 class JoyPad {
-    uint8_t     _JOYP;      /* main joypad register */
-    Bus*        _bus;       /* pointer to the bus instance */
-    IInterrupt* _interrupt; /* pointer to interrupt object */
+    uint8_t     _joy_buttons; /* main joypad register */
+    Bus*        _bus;         /* pointer to the bus instance */
+    IInterrupt* _interrupt;   /* pointer to interrupt object */
 
   public:
-    explicit JoyPad() {};
+    explicit JoyPad() : _joy_buttons(0) {};
     void write(uint8_t reg, uint8_t val);
     void read(uint8_t reg);
     void set_button();
+    // TODO: write these 2 for for SDL
+    // void release_button();
+    // void press_button();
 };
 
 #endif // !JOYPAD_HPP_

@@ -50,6 +50,9 @@ ppu.o: src/ppu.cpp src/ppu.hpp
 sdl-utils.o: src/sdl-utils.cpp src/sdl-utils.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
+joypad.o: /src/joypad.cpp src/joypad.hpp
+	$(CXX) -c $< $(CXXFLAGS)
+
 # test-runner.o: src/test/test-runner.cpp src/test/test-runner.hpp
 # 	$(CXX) -c $< $(CXXFLAGS)
 

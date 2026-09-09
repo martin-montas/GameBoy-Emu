@@ -30,10 +30,10 @@
 #define TX         1
 #define TT         2
 #define TF         3
-#define WHITE      0xC4CFA1
-#define LIGHT_GRAY 0x8B956D
-#define DARK_GRAY  0x4D533C
-#define BLACK      0x1F1F1F
+#define WHITE      0x8CFF38
+#define LIGHT_GRAY 0x39A52C
+#define DARK_GRAY  0x124D18
+#define BLACK      0x0B1F12
 
 struct OBJ {
     int     X;          /* X location */

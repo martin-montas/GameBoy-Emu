@@ -6,7 +6,7 @@ LDFLAGS := -lSDL2
 
 COMMON_OBJS := main.o gameboy.o cpu.o instructions.o \
                extended-instructions.o bus.o MBC.o \
-               MBC0.o timer.o serial.o ppu.o  sdl-utils.o \
+               MBC0.o timer.o serial.o ppu.o  sdl-utils.o joypad.o \
 
 GameBoy: $(COMMON_OBJS)
 	$(CXX) $^ -g -o $@ $(LDFLAGS)

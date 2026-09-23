@@ -37,9 +37,8 @@ class JoyPad {
     void write(uint8_t reg, uint8_t val);
     void read(uint8_t reg);
     void set_button();
-    // TODO: write these 2 for SDL
-    // void release_button();
-    // void press_button();
+    void release_button(uint8_t reg);
+    void press_button(uint8_t reg);
 };
 
 #endif // !JOYPAD_HPP_

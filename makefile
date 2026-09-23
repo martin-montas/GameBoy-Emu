@@ -6,7 +6,7 @@ LDFLAGS := -lSDL2
 
 COMMON_OBJS := main.o gameboy.o cpu.o instructions.o \
                extended-instructions.o bus.o MBC.o \
-               MBC0.o timer.o serial.o ppu.o  sdl-utils.o joypad.o \
+               MBC0.o timer.o serial.o ppu.o  sdl-utils.o joypad.o 
 
 GameBoy: $(COMMON_OBJS)
 	$(CXX) $^ -g -o $@ $(LDFLAGS)
@@ -50,7 +50,7 @@ ppu.o: src/ppu.cpp src/ppu.hpp
 sdl-utils.o: src/sdl-utils.cpp src/sdl-utils.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
-joypad.o: /src/joypad.cpp src/joypad.hpp
+joypad.o: src/joypad.cpp src/joypad.hpp
 	$(CXX) -c $< $(CXXFLAGS)
 
 # test-runner.o: src/test/test-runner.cpp src/test/test-runner.hpp

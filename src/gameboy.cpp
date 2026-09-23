@@ -4,6 +4,7 @@
 //
 #include "gameboy.hpp"
 #include "cpu.hpp"
+#include "joypad.hpp"
 
 #include <cstdio>
 #include <stdint.h>
@@ -15,42 +16,49 @@ void GameBoy::run() {
             switch (_sdl->event.type) {
             case SDL_QUIT:
                 _sdl->display_running = false;
-                break;
+                return;
             case SDL_KEYDOWN:
-                if (_sdl->event.key.keysym.sym == SDLK_ESCAPE) {
+                switch (_sdl->event.key.keysym.scancode) {
+                case SDLK_a:
+                    break;
+                case SDLK_b:
+                    _sdl->display_running = false;
+                    return;
+                case SDLK_RETURN:
+                case SDLK_ESCAPE:
                     _sdl->display_running = false;
                     return;
                 }
-                break;
             }
+            break;
         }
-        int current_cycle = _cpu->step();
+    }
+    int current_cycle = _cpu->step();
 
-        if (_cpu->ime_pending) {
-            _cpu->_ime        = 1;
-            _cpu->ime_pending = false;
+    if (_cpu->ime_pending) {
+        _cpu->_ime        = 1;
+        _cpu->ime_pending = false;
+    }
+
+    if (current_cycle > 0) {
+        _timer->tick(current_cycle);
+        _ppu->dot_cycle(current_cycle);
+        if (_ppu->can_render) {
+            _sdl->frame_step(_ppu->frame_buff);
+            _ppu->clear_can_render();
         }
+    }
 
-        if (current_cycle > 0) {
-            _timer->tick(current_cycle);
-            _ppu->dot_cycle(current_cycle);
-            if (_ppu->can_render) {
-                _sdl->frame_step(_ppu->frame_buff);
-                _ppu->clear_can_render();
-            }
+    if (_cpu->halted) {
+        if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
+            _cpu->halted = false;
         }
+    }
 
-        if (_cpu->halted) {
-            if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
-                _cpu->halted = false;
-            }
-        }
-
-        if (_cpu->_ime) {
-            if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
-                _interrupt->exec_handler();
-                _cpu->_ime = 0;
-            }
+    if (_cpu->_ime) {
+        if (((_interrupt->_IF & _interrupt->_IE) & 0x1F) != 0) {
+            _interrupt->exec_handler();
+            _cpu->_ime = 0;
         }
     }
 }

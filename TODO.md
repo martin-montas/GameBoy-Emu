@@ -5,7 +5,6 @@
 - **ALSO**: check this out:
 https://github.com/dtabacaru/SADGE/blob/main/Sadge.Core/LcdController.cpp
 
-
 ---
 
 
@@ -17,7 +16,6 @@ https://github.com/dtabacaru/SADGE/blob/main/Sadge.Core/LcdController.cpp
 - [X] Finish Interrupt
 - [X] Dmg Acid2 test rom.
 - [X] Finish PPU.
-- [ ] Finish 
 - [ ] Finish joypad.
 - [ ] CPU-PPU-TIMER sync.
 - [ ] Finish audio

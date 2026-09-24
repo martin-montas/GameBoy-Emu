@@ -2,15 +2,17 @@
 // All components of this software are licensed under the GNU License.
 // Author: Martin Montas, martinmontas1@gmail.com
 //
+
+#include <cstdio>
+#include <stdint.h>
 #include "gameboy.hpp"
 #include "cpu.hpp"
 #include "joypad.hpp"
 
-#include <cstdio>
-#include <stdint.h>
-
 void GameBoy::run() {
     _sdl->init();
+    // TODO: write the controllers for
+    // the joypad with sdl
     while (_sdl->display_running) {
         while (SDL_PollEvent(&_sdl->event)) {
             switch (_sdl->event.type) {

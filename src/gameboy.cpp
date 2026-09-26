@@ -2,7 +2,6 @@
 // All components of this software are licensed under the GNU License.
 // Author: Martin Montas, martinmontas1@gmail.com
 //
-
 #include <cstdio>
 #include <stdint.h>
 #include "gameboy.hpp"

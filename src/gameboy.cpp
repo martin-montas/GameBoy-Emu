@@ -23,11 +23,11 @@ void GameBoy::run() {
                 case SDLK_a:
                     break;
                 case SDLK_b:
-                    _sdl->display_running = false;
+                    // _sdl->display_running = false;
                     return;
                 case SDLK_RETURN:
                 case SDLK_ESCAPE:
-                    _sdl->display_running = false;
+                    // _sdl->display_running = false;
                     return;
                 }
             }

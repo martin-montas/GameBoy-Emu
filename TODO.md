@@ -1,14 +1,14 @@
-## Project TODOs
+### Project TODOs
 ---
 
-## fix immediately
+### fix immediately
 - **ALSO**: check this out:
 https://github.com/dtabacaru/SADGE/blob/main/Sadge.Core/LcdController.cpp
 
 ---
 
 
-## Milestones:
+### Milestones:
 - [X] CPU.
 - [X] Finish bus.
 - [X] Boot rom rendering.

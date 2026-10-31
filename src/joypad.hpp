@@ -18,27 +18,27 @@
 // Bit 0 = Right / A
 
 enum JoyReg {
-    SELECT_BUTTONS    = (1 << 5), /* for parsing the button bit */
-    SELECT_D_PAD      = (1 << 4), /* for parsing the directions */
-    BUTTON_START_DOWN = (1 << 3), /* selects Down/Start Button */
-    BUTTON_SELECT_UP  = (1 << 2), /* selects Up/Select Button */
-    BUTTON_B_LEFT     = (1 << 1), /* selects Left/B Button */
-    BUTTON_A_RIGHT    = (1 << 0), /* selects Right/A Button */
+        SELECT_BUTTONS    = (1 << 5), /* for parsing the button bit */
+        SELECT_D_PAD      = (1 << 4), /* for parsing the directions */
+        BUTTON_START_DOWN = (1 << 3), /* selects Down/Start Button */
+        BUTTON_SELECT_UP  = (1 << 2), /* selects Up/Select Button */
+        BUTTON_B_LEFT     = (1 << 1), /* selects Left/B Button */
+        BUTTON_A_RIGHT    = (1 << 0), /* selects Right/A Button */
 };
 
 class IInterrupt;
 class JoyPad {
-    uint8_t     _joy_buttons; /* main joypad register */
-    Bus*        _bus;         /* pointer to the bus instance */
-    IInterrupt* _interrupt;   /* pointer to interrupt object */
+        uint8_t     _joy_buttons; /* main joypad register */
+        Bus*        _bus;         /* pointer to the bus instance */
+        IInterrupt* _interrupt;   /* pointer to interrupt object */
 
-  public:
-    explicit JoyPad() : _joy_buttons(0) {};
-    void write(uint8_t reg, uint8_t val);
-    void read(uint8_t reg);
-    void set_button();
-    void release_button(uint8_t reg);
-    void press_button(uint8_t reg);
+        public:
+        explicit JoyPad() : _joy_buttons(0) {};
+        void write(uint8_t reg, uint8_t val);
+        void read(uint8_t reg);
+        void set_button();
+        void release_button(uint8_t reg);
+        void press_button(uint8_t reg);
 };
 
 #endif // !JOYPAD_HPP_

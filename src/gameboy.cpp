@@ -12,30 +12,17 @@ void GameBoy::run() {
     _sdl->init();
     // TODO: write the controllers for
     // the joypad with sdl
+    // while (SDL_PollEvent(&_sdl->event) && _sdl->display_running) {
+    
     while (_sdl->display_running) {
-        while (SDL_PollEvent(&_sdl->event)) {
+    while (SDL_PollEvent(&_sdl->event)) {
             switch (_sdl->event.type) {
             case SDL_QUIT:
                 _sdl->display_running = false;
-                return;
-            case SDL_KEYDOWN:
-                switch (_sdl->event.key.keysym.scancode) {
-                case SDLK_a:
-                    break;
-                case SDLK_b:
-                    // _sdl->display_running = false;
-                    return;
-                case SDLK_RETURN:
-                case SDLK_ESCAPE:
-                    // _sdl->display_running = false;
-                    return;
-                }
+                break;
             }
-            break;
-        }
     }
     int current_cycle = _cpu->step();
-
     if (_cpu->ime_pending) {
         _cpu->_ime        = 1;
         _cpu->ime_pending = false;
@@ -61,5 +48,7 @@ void GameBoy::run() {
             _interrupt->exec_handler();
             _cpu->_ime = 0;
         }
+        }
     }
-}
+    }
+

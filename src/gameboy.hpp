@@ -12,6 +12,7 @@
 #include "bus.hpp"
 #include "serial.hpp"
 #include "timer.hpp"
+#include "joypad.hpp"
 #include "interrupt.hpp"
 #include "ppu.hpp"
 
@@ -27,6 +28,7 @@ class GameBoy {
     Bus*       _bus;             /* pointer to bus object */
     Ppu*       _ppu;             /* pointer to ppu object */
     Interrupt* _interrupt;       /* pointer to interrupt object */
+    JoyPad*    _joypad;          /* pinter to joypad object */
     SDL*       _sdl;             /* pointer to SDL2 object */
     bool       emulationRunning; /* bool to emulator running state */
     int        cycle_count = 0;  /* counter to CPU's T cycles */
@@ -41,6 +43,8 @@ class GameBoy {
         _timer     = new Timer(_interrupt);
         _ppu       = new Ppu(_interrupt);
         _bus       = new Bus(file, _timer, _interrupt);
+        _joypad    = new JoyPad();
+
         _bus->attach(_ppu);
         _sdl = new SDL();
         _cpu = new Cpu(_bus, _interrupt);

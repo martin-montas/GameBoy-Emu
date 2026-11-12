@@ -5,12 +5,30 @@
 #include <iostream>
 #include "joypad.hpp"
 
-// void JoyPad::write(uint8_t val) {
-//         _joy_buttons = val;
-// }
-// uint8_t JoyPad::read(uint8_t reg) {
-//         return _joy_buttons;
-// }
+bool JoyPad::is_dpad_on() {
+    bool dpad = !((_joy_buttons >> 4) & 1);
+    if (dpad) {
+        return true;
+    }
+    return false;
+}
+
+bool JoyPad::is_select_keys_on() {
+    bool select = !((_joy_buttons >> 5) & 1);
+    if (select) {
+        return true;
+    }
+    return false;
+}
+
+void JoyPad::press_button(uint8_t bit) {
+    _joy_buttons &= ~(1 << bit);
+}
+
+void JoyPad::release_button(uint8_t bit) {
+    _joy_buttons |= (1 << bit);
+}
+
 // void JoyPad::set_button() {
 //         if (!(__joy_buttons & SELECT_BUTTONS)) {
 //                 if (!(__joy_buttons & BUTTON_START_DOWN)) {

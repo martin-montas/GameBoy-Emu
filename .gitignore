@@ -1,7 +1,6 @@
 todo.md
 *.gb
 *.o
-ROM/
 test_runner
 .map
 dummy/

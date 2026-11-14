@@ -29,6 +29,15 @@ void JoyPad::release_button(uint8_t bit) {
     _joy_buttons |= (1 << bit);
 }
 
+uint8_t JoyPad::read() {
+    return _joy_buttons;
+}
+
+uint8_t JoyPad::write(uint8_t val) {
+    // _joy_buttons = val;
+    _joyp_selection = (val >> 3) & 1;
+}
+
 // void JoyPad::set_button() {
 //         if (!(__joy_buttons & SELECT_BUTTONS)) {
 //                 if (!(__joy_buttons & BUTTON_START_DOWN)) {

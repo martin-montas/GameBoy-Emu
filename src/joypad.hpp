@@ -5,7 +5,7 @@
 #define JOYPAD_HPP_
 
 #include <stdint.h>
-#include "bus.hpp"
+// #include "bus.hpp"
 #include "interface-interrupt.hpp"
 
 // $FF00
@@ -28,15 +28,16 @@ enum JoyReg {
 
 class IInterrupt;
 class JoyPad {
-    uint8_t     _joy_buttons; /* main joypad register */
-    Bus*        _bus;         /* pointer to the bus instance */
-    IInterrupt* _interrupt;   /* pointer to interrupt object */
+    uint8_t _joy_buttons; /* main joypad register */
+    // Bus*        _bus;        /* pointer to the bus instance */
+    IInterrupt* _interrupt; /* pointer to interrupt object */
 
   public:
     explicit JoyPad() : _joy_buttons(0) {};
     void    release_button(uint8_t bit);
     void    press_button(uint8_t bit);
-    uint8_t read(uint8_t reg);
+    uint8_t read();
+    uint8_t write(uint8_t value);
     void    set_button();
     void    check_register();
     bool    is_dpad_on();

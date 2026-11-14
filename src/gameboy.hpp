@@ -42,8 +42,8 @@ class GameBoy {
         _interrupt = new Interrupt();
         _timer     = new Timer(_interrupt);
         _ppu       = new Ppu(_interrupt);
-        _bus       = new Bus(file, _timer, _interrupt);
         _joypad    = new JoyPad();
+        _bus       = new Bus(file, _timer, _interrupt, _joypad);
 
         _bus->attach(_ppu);
         _sdl = new SDL();

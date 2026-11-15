@@ -4,8 +4,8 @@
 #ifndef JOYPAD_HPP_
 #define JOYPAD_HPP_
 
+#include <cstdint>
 #include <stdint.h>
-// #include "bus.hpp"
 #include "interface-interrupt.hpp"
 
 // $FF00
@@ -28,9 +28,10 @@ enum JoyReg {
 
 class IInterrupt;
 class JoyPad {
-    uint8_t _joy_buttons; /* main joypad register */
-    // Bus*        _bus;        /* pointer to the bus instance */
-    IInterrupt* _interrupt; /* pointer to interrupt object */
+    uint8_t     _joy_buttons;    /* main joypad register */
+    IInterrupt* _interrupt;      /* pointer to interrupt object */
+    uint8_t     _joyp_selection; /* distinguish between direction/other key type */
+    uint8_t     _buttons;        /* uses the 4 first bits for the keys type */
 
   public:
     explicit JoyPad() : _joy_buttons(0) {};
